@@ -1,3 +1,7 @@
-# OFFERTIFY
+# Offertify
 
-Participantes del grupo son Pablo Muñoz, David Gilarranz, Gonzalo Álvarez y Pedro Bereilh 
+## Miembros de la empresa:
+- Pablo Muñoz
+- David Gilarranz
+- Gonzalo Álvarez 
+- Pedro Bereilh 

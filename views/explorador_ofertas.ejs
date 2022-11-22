@@ -23,6 +23,22 @@
                 <a class="nav-link" aria-current="page" href="#">Mis Reservas</a>
               </li>
             <% } %>
+            <% if (user.group === "owner") { %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Acciones
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Ofertas Activas</a></li>
+                  <li><a class="dropdown-item" href="#">Añadir Oferta</a></li>
+                  <li><a class="dropdown-item" href="#">Chats</a></li>
+                  <li><a class="dropdown-item" href="#">Histórico</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">Editar Sitio</a>
+              </li>
+            <% } %>
           </ul>
         </div>
       </nav>

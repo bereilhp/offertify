@@ -28,6 +28,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Antes de cargar los manejadores, guardamos las variables
+app.use(function(req, res, next) {
+  // Hacemos la sesión accesible para las vistas
+  res.locals.user = {
+    name: "Pablito",
+    group: "owner"   // User, admin, owner
+  }
+
+  // Continuamos gestionando la petición
+  next();
+});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/explorador_ofertas', exploradorRoutes);

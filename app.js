@@ -33,7 +33,7 @@ app.use(function(req, res, next) {
   // Hacemos la sesión accesible para las vistas
   res.locals.user = {
     name: "Pablito",
-    group: "owner"   // User, admin, owner
+    group: "user"   // User, admin, owner
   }
 
   // Continuamos gestionando la petición

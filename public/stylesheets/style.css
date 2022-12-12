@@ -20,6 +20,32 @@ nav {
   background-color: #cc9600;
 }
 
+button.btn-primary {
+  background-color: #cc9600;
+  border-style: solid;
+  border-color: #8e6800;
+}
+
+button.btn-primary:hover {
+  background-color: #eaac00;
+  border-style: solid;
+  border-color: #8e6800;
+}
+
+button.btn-primary:active {
+  background-color: #ae8000 !important;
+  border-style: solid !important;
+  border-color: #8e6800 !important;
+}
+
+body.pagina-dialogo {
+  background-color: #e4b637;
+}
+
+body.pagina-dialogo > div {
+  background-color: white;
+}
+
 .oferta {
   // Vacío
 }

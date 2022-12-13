@@ -13,6 +13,7 @@
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
     "install": "^0.13.0",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "nodemon": "^2.0.20"
   }
 }

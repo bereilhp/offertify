@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title><%= title %></title>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body class="pagina-dialogo">
+    <div class="container w-50 p-5 rounded">
+        <h1 class="text-center">REGISTRO</h1>
+        <hr>
+        <form id="formulario" method="post" action="/registro" class="row mb-3">
+            <div id="div-email" class="mb-3">
+                <label class="form-label" for="email-input">Email</label>
+                <input id="email-input" class="form-control" type="text" name="email" required>
+            </div>
+            <div id="div-password" class="mb-3 row">
+                <div class="col">
+                  <label class="form-label" for="password-input">Contraseña</label>
+                  <input id="password-input" class="form-control" type="password" name="password" required>
+                </div>
+                <div class="col">
+                  <label class="form-label" for="repeat-password-input">Repite la contraseña</label>
+                  <input id="repeat-password-input" class="form-control" type="password" name="repeatPassword" required>
+                </div>
+            </div>
+            <div id="div-uso" class="mb-3 row">
+              <div class="col">
+                <label class="form-label">Uso de aplicación:</label>
+                <div class="form-check">
+                  <input class="form-check-input" id="check-cliente" type="radio" name="uso" value="cliente" checked>
+                  <label class="form-check-label" for="check-cliente">
+                    Cliente
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" id="check-duenno" type="radio" name="uso" value="duenno">
+                  <label class="form-check-label" for="check-duenno">
+                    Dueño de local
+                  </label>
+                </div>
+              </div>
+              <div class="col">
+               <strong>FALTA CAPTCHA</strong>
+              </div>
+          </div>
+            <div class="d-flex justify-content-center">
+                <button id="submit-btn" class="btn btn-primary w-50" type="submit">Crear Cuenta</button>
+            </div>
+        </form>
+        <div class="d-flex justify-content-center">
+          <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
+        </div>
+    </div>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="javascripts/registro.js"></script>
+</html>

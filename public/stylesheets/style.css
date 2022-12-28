@@ -47,9 +47,17 @@ body.pagina-dialogo > div {
 }
 
 .oferta {
-  // Vacío
+  /*vacio*/
 }
 
 a {
   color: #00B7FF;
+}
+
+#map {
+  height: 85vh;
+}
+
+#offerBts {
+  text-align: center;
 }

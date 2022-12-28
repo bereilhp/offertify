@@ -1,14 +1,29 @@
 <%- include("header", {}) %>
 
-<div class="content row w-100">
-    <div id="div-ofertas" class="col-4">
-        <div class="title d-flex flex-column align-items-center justify-content-center">
-            OFERTAS CERCANAS
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="">
+        </script>
+
+
+    <div class="content row w-100">
+        <div id="div-ofertas" class="col-4">
+            <div class="title d-flex flex-column align-items-center justify-content-center">
+                OFERTAS CERCANAS
+            </div>
+        </div>
+        <div id="div-mapa" class="col">
+            <div id="map" style="height: 85vh"></div>
         </div>
     </div>
-    <div id="div-mapa" class="col">
-        <p>Mapa</p>
-    </div>
-</div>
 
-<%- include("footer", {}) %>
+    <script>
+        var map = L.map('map').setView([40.416775, -3.703790], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+    </script>
+
+    <%- include("footer", {}) %>

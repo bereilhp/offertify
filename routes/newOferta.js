@@ -3,7 +3,7 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('explorador_ofertas', { title: 'Explorador Ofertas' });
+  res.render('newOferta', { title: 'Añadir Oferta' });
 });
 
 module.exports = router;

@@ -14,6 +14,7 @@ const contactoRouter = require('./routes/contacto');
 const registroRouter = require('./routes/registro');
 const reservasRoutes = require('./routes/misReservas');
 const newOfertaRouter = require('./routes/newOferta');
+const interfazAdminRouter = require('./routes/interfaz_admin')
 
 const app = express();
 
@@ -41,8 +42,14 @@ app.use(function(req, res, next) {
     name: "Pablito",
     group: "user"   // User, admin, owner
   }
-
   // Continuamos gestionando la petición
+  next();
+});
+app.use(function(req,res, next){
+  res.locals.user = {
+    name: "Pepe",
+    group: "admin"
+  }
   next();
 });
 
@@ -55,6 +62,7 @@ app.use('/registro', registroRouter);
 app.use('/contacto', contactoRouter);
 app.use('/Reservas', reservasRoutes);
 app.use('/NuevaOferta', newOfertaRouter);
+ // app.use('/interfazAdmin', interfazAdminRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

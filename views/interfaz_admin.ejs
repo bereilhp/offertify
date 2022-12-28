@@ -1,0 +1,23 @@
+<%- include("header", {}) %>
+
+    <!--Link tiene que ir primero que script-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="">
+        </script>
+
+
+    <div class="content row w-100">
+        <div id="div-ofertas" class="col-2">
+            <div class="title d-flex flex-column align-items-center justify-content-center">
+                Offertify
+            </div>
+        </div>
+        <div id="div-mapa" class="col">
+            <div id="map"></div>
+        </div>
+    </div>
+        
+
+    <%- include("footer", {}) %>

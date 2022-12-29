@@ -105,3 +105,15 @@ a {
   border-width: 1px;
   background-color: #6c3e13;
 }
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}

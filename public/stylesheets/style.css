@@ -133,6 +133,14 @@ a {
   margin-left: 0.5cm;
   width: 9cm;
 }
+.espaciadoChats {
+  margin-left: 0.5cm;
+}
+#chats {
+  padding-top: 13.5cm;
+}
 
-
+#mensaje {
+  width: 16cm;
+}
 

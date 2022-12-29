@@ -7,6 +7,21 @@ const User = class User {
     }
 };
 
+const Client = class Client extends User {
+    
+};
+
+const Owner = class Owner extends User {
+    
+};
+
+const Admin = class Admin extends User {
+    
+};
+
 module.exports = {
-    User
+    User,
+    Client,
+    Owner,
+    Admin
 }

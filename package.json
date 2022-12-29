@@ -19,5 +19,8 @@
     "nodemon": "^2.0.20",
     "nvm": "^0.0.4",
     "sqlite3": "^5.1.4"
+  },
+  "devDependencies": {
+    "rewire": "^6.0.0"
   }
 }

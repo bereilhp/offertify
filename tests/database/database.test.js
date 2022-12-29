@@ -2,11 +2,9 @@ const sqlite3  = require('sqlite3');
 const rewire = require('rewire');
 const fs = require('fs');
 const path = require('path');
-const { User } = require('../../model/usuarios');
+const { Client, Owner, Admin } = require('../../model/usuarios');
 
 const database = rewire('../../database/database');
-    
-const Client = require('../../model/usuarios').Client;
 
 test('Módulo database se conecta a base de datos', () => {
     const db = database.__get__('db');
@@ -31,7 +29,7 @@ test('Módulo database se conecta a la base de datos adecuada', done => {
 
 describe('Tests que requieren base de datos de pruebas', () => {
     // Antes de todos los tests, se sustituye la BBDD original por una BBDD en memoria
-    beforeEach(() => {
+    beforeAll(() => {
         const db = new sqlite3.Database(':memory:', function(err) {
             const sqlCreationScript = fs.readFileSync(
                 path.join(__dirname, '..', '..', 'database', 'creation_script.sql')
@@ -40,8 +38,12 @@ describe('Tests que requieren base de datos de pruebas', () => {
     
             db.serialize(() => {
                 statementArray.forEach((statement) => {
-                    statement += ';';           // Volvemos a añadir el ; al final del statement
-                    db.run(statement);
+                    // NOTA -> Al separar por ;, la última posición del array es un espacio en blanco.
+                    //         Sqlite interpreta esto como un error y hace que fallen los tests
+                    if (statement !== statementArray[statementArray.length - 1] ) {
+                        statement += ';';           // Volvemos a añadir el ; al final del statement
+                        db.run(statement);
+                    }
                 });
             });
         });
@@ -49,16 +51,15 @@ describe('Tests que requieren base de datos de pruebas', () => {
         database.__set__({ db: db });
     });
 
-    afterEach(() => {
+    afterAll(() => {
         database.__get__('db').close();
-    })
+    });
 
     test('UserTableGateway tiene operación para insertar usuario', done => {
-        const db = database.__get__('db');
         const UserTableGateway = database.UserTableGateway;
 
-        const uuid = '12345678901234567890123456789012';
-        const name = 'Nombre';
+        const uuid = '12325677901234567890123456789012';
+        const name = 'Usuario 1';
         const hash = 0x01;
         const user = new Client(uuid, name, hash);
 
@@ -66,6 +67,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         utg.insertUser(user.uuid, user.name, user.hash, user.rol, function(err) {
             // Verificamos que se ha insertado el usuario correctamente
             expect(err).toBeNull();
+            
             done();
             return;
         });
@@ -75,8 +77,8 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const db = database.__get__('db');
         const UserTableGateway = database.UserTableGateway;
 
-        const uuid = '12345678901234567890123456789012';
-        const name = 'Nombre';
+        const uuid = '12345678901334567890123456789012';
+        const name = 'Usuario 2';
         const hash = 0x01;
         const user = new Client(uuid, name, hash);
 
@@ -88,6 +90,75 @@ describe('Tests que requieren base de datos de pruebas', () => {
                 return;
             } else {
                 expect(user.uuid).toBe(uuid);
+                done();
+                return;
+            }
+        });
+    });
+    
+    test('UserTableGateway recupera Clientes para rol user', done => {
+        const db = database.__get__('db');
+        const UserTableGateway = database.UserTableGateway;
+
+        const uuid = '12345678901234567890123456789016';
+        const name = 'Cliente 1';
+        const hash = 0x01;
+        const user = new Client(uuid, name, hash);
+
+        utg = new UserTableGateway();
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
+        utg.loadUser(user.name, function(err, user) {
+            if (err) {
+                done(err);
+                return;
+            } else {
+                expect(user.rol).toBe('user');
+                done();
+                return;
+            }
+        });
+    });
+    
+    test('UserTableGateway recupera Admins para rol admin', done => {
+        const db = database.__get__('db');
+        const UserTableGateway = database.UserTableGateway;
+
+        const uuid = '12345678901234567890123456789014';
+        const name = 'Admin 1';
+        const hash = 0x01;
+        const user = new Admin(uuid, name, hash);
+
+        utg = new UserTableGateway();
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
+        utg.loadUser(user.name, function(err, user) {
+            if (err) {
+                done(err);
+                return;
+            } else {
+                expect(user.rol).toBe('admin');
+                done();
+                return;
+            }
+        });
+    });
+    
+    test('UserTableGateway recupera Dueños para rol owner', done => {
+        const db = database.__get__('db');
+        const UserTableGateway = database.UserTableGateway;
+
+        const uuid = '12345678901234567890123456789013';
+        const name = 'Owner 1';
+        const hash = 0x01;
+        const user = new Owner(uuid, name, hash);
+
+        utg = new UserTableGateway();
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
+        utg.loadUser(user.name, function(err, user) {
+            if (err) {
+                done(err);
+                return;
+            } else {
+                expect(user.rol).toBe('owner');
                 done();
                 return;
             }

@@ -1,0 +1,73 @@
+<%- include("header", {}) %>
+
+    <!--Link tiene que ir primero que script-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="">
+        </script>
+
+<div class="title d-flex flex-column align-items-center justify-content-center">
+  Revisión XD
+</div>
+    <div class="content row w-100">
+        <div class="row2">
+            <div class="column2">
+
+
+              <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
+                <h3>BAR MANOLO</h3>
+                <p>Ofertas destacadas: cerveza 3€</p>
+                <button class="btn btn-dark">ver</button>
+                
+             
+             </div>
+             <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
+              
+              <button class="btn btn-success">Añadir sitio</button>
+              
+           
+           </div>
+
+
+            </div>
+            <div id="editar_local" class="column2">
+
+
+              <form id="formulario2" method="post" action="" class="row mb-3">
+                <div class="mb-3">
+                  <br>
+                  <br>
+                  <br>
+                  <br>
+                    <label class="form-label" for="local-input"><strong>Local</strong></label>
+                    <input id="local-input" class="form-control" type="text" name="local" placeholder="Bar Manolo" required>
+                </div>
+                <div class="mb-4 row">
+                    <div class="col">
+                      <label class="form-label" for="descripcion"><strong>Calle</strong></label>
+                      <textarea id="descripcion" class="form-control" name="text" placeholder="Calle de Álvarez de Baena"></textarea>
+                    </div>
+                    <div class="col">
+                      <label class="form-label" for="precioOferta"><strong>Código Postal</strong></label>
+                      <input id="precioOferta" class="form-control" type="number" name="precio" placeholder="28000" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="imagen"><strong>Logo</strong></label>
+                    <div class="mt-3"></div>
+                    <input type="file" name="imagen" id="imagen">
+                    
+                </div>
+                <div id="offerBts" class="mt-5">
+                    <button type="button" class="btn btn-success">Activar</button>
+                    <button type="button" class="btn btn-danger">Borrar</button>
+                </div>
+            </form>
+
+
+            </div>
+          </div> 
+        </div>
+    </div>
+    <%- include("footer", {}) %>

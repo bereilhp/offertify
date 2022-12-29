@@ -13,15 +13,34 @@
             <div class="title d-flex flex-column align-items-center justify-content-center">
                 OFERTAS CERCANAS
             </div>
+
+            <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
+               <h3>BAR MANOLO</h3>
+               <p>Ofertas destacadas: cerveza 3€</p>
+               <button>reservar</button>
+               <img id="img_ofertas" src="/images/CERVEZAS.png"  width="1%">
+            
+            </div>
+
+            <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
+                <h3>BAR ESTRELLA</h3>
+                <p>Ofertas destacadas: cerveza 4€</p>
+                <button>reservar</button>
+                <img id="img_ofertas" src="/images/CERVEZAS.png"  width="1%">
+             
+             </div>
+             
         </div>
-        <div id="div-mapa" class="col">
+        <div id="div-mapa" class="col"><button onclick="generar_bar()">
+        Buscar en esta zona
+    </button>
             <div id="map"></div>
         </div>
     </div>
 
     <script>
         //Añadir mapa 
-        var map = L.map('map').setView([40.416775, -3.703790], 13);
+        var map = L.map('map').setView([40.416775, -3.703790], 14);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -29,6 +48,16 @@
 
         //Marcador
         var marker = L.marker([40.416775, -3.703790]).addTo(map);
+    </script>
+    
+
+    <script>
+        function generar_bar(){
+        //Marcador
+        var marker = L.marker([40.411872, -3.665494]).addTo(map);
+        let ofertas = document.querySelector('.col-4');
+        let 
+        }
     </script>
 
     <%- include("footer", {}) %>

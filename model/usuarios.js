@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 
+let { UserTableGateway } = require('../database/database');
+
 const User = class User {
     constructor(uuid, name, hash) {
         this.uuid = uuid;
@@ -71,7 +73,14 @@ function registerUser(name, password, rol, callback) {
             callback(err, null);
        } else {
             let user = userFactory(name, hash, rol);
-            callback(null, user);
+            const utg = new UserTableGateway();
+            utg.insertUser(user.uuid, user.name, user.hash, user.rol, function(err) {
+                if(err) {
+                    callback(err, user);
+                } else {
+                    callback(null, user);
+                }
+            })
        }
     });
 }

@@ -20,7 +20,7 @@ const UserTableGateway = class UserTableGateway {
      */
     insertUser(uuid, name, hash, role, callback) {
         db.serialize(() => {
-            const statement = `INSERT INTO Usuarios (UUID, Nombre, Hash, Rol) VALUES ('${uuid}', '${name}', ${hash}, '${role}');`;
+            const statement = `INSERT INTO Usuarios (UUID, Nombre, Hash, Rol) VALUES ('${uuid}', '${name}', '${hash}', '${role}');`;
             db.serialize(() => {
                 db.run('BEGIN TRANSACTION;');
                 db.run(statement, function(err) {

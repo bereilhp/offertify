@@ -1,12 +1,13 @@
 const bcrypt = require('bcrypt');
+const rewire = require('rewire');
 
-const usuarios = require('../../model/usuarios');
+const usuarios = rewire('../../model/usuarios');
 const User = usuarios.User;
 const Client = usuarios.Client;
 const Owner = usuarios.Owner;
 const Admin = usuarios.Admin;
-const registerUser = usuarios.registerUser;
 const userFactory = usuarios.userFactory;
+const registerUser = usuarios.registerUser;
 
 test('Clase User almacena UUID', () => {
     const user = new User('uuid-prueba', 'Nombre', 0x01);
@@ -90,14 +91,69 @@ test('userFactory() crea uuid sólo si no se especifica', () => {
     expect(user.uuid).toBe('id');
 });
 
-test('registerUser() haseha la contraseña y crea un usuario', () => {
-    const name = 'Usuario';
-    const password = '1234';
-    const rol = 'admin';
 
-    registerUser(name, password, rol, function(user) {
-        bcrypt.compare(password, user.hash, function(err, result) {
-            expect(result).toBeTruthy();
+describe('Tests que requieren Mock de BBDD', () => {
+    const sqlite3 = require('sqlite3');
+    const fs = require('fs');
+    const path = require('path');
+    const database = rewire('../../database/database');
+
+    // Antes de todos los tests, se sustituye la BBDD original por una BBDD en memoria
+    beforeAll(() => {
+        const db = new sqlite3.Database(':memory:', function(err) {
+            const sqlCreationScript = fs.readFileSync(
+                path.join(__dirname, '..', '..', 'database', 'creation_script.sql')
+            );
+            const statementArray = sqlCreationScript.toString().split(';');
+    
+            db.serialize(() => {
+                statementArray.forEach((statement) => {
+                    // NOTA -> Al separar por ;, la última posición del array es un espacio en blanco.
+                    //         Sqlite interpreta esto como un error y hace que fallen los tests
+                    if (statement !== statementArray[statementArray.length - 1] ) {
+                        statement += ';';           // Volvemos a añadir el ; al final del statement
+                        db.run(statement);
+                    }
+                });
+            });
+        });
+        
+        database.__set__({ db: db });
+    });
+
+    afterAll(() => {
+        database.__get__('db').close();
+    });
+
+    test('registerUser() haseha la contraseña y crea un usuario', () => {
+        const UserTableGateway = database.UserTableGateway;
+        usuarios.__set__({ UserTableGateway: UserTableGateway });
+        const name = 'Usuario';
+        const password = '1234';
+        const rol = 'admin';
+
+        registerUser(name, password, rol, function(err, user) {
+            bcrypt.compare(password, user.hash, function(err, result) {
+                expect(result).toBeTruthy();
+            });
+        });
+    });
+
+    test('registerUser() guarda el usuario en la BBDD', done => {
+        const UserTableGateway = database.UserTableGateway;
+        usuarios.__set__({ UserTableGateway: UserTableGateway });
+        const name = 'Usuario';
+        const password = '1234';
+        const rol = 'admin';
+
+        registerUser(name, password, rol, function(err, user) {
+            const utg = new UserTableGateway();
+            utg.loadUser(name, function(err, readUser) {
+                expect(readUser.uuid).toEqual(user.uuid);
+
+                done();
+                return;
+            });
         });
     });
 });

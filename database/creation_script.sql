@@ -1,7 +1,7 @@
 -- SINGLE TABLE INHERITANCE (POEAA)
 CREATE TABLE Usuarios (
     UUID CHAR(32) PRIMARY KEY,
-    Hash BLOB NOT NULL,
+    Hash TEXT NOT NULL,
     Nombre TEXT NOT NULL,
     Rol VARCHAR(5) NOT NULL CHECK (Rol IN ('admin', 'user', 'owner'))
 );

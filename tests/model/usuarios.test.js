@@ -59,3 +59,9 @@ test('userFactory() crea Clientes para Rol = user', () => {
     cliente = userFactory('Nombre', 0x01, 'user');
     expect(cliente).toBeInstanceOf(Client);
 });
+
+test('userFactory() crea uuids diferentes para cada usuario', () => {
+    user_1 = userFactory('Usuario 1', 0x01, 'user');
+    user_2 = userFactory('Usuario 2', 0x02, 'admin');
+    expect(user_1.uuid).not.toEqual(user_2.uuid);
+});

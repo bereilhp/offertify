@@ -1,3 +1,5 @@
+const uuid = require('uuid');
+
 const User = class User {
     constructor(uuid, name, hash) {
         this.uuid = uuid;
@@ -29,7 +31,8 @@ const Admin = class Admin extends User {
 };
 
 function userFactory(name, hash, rol) {
-    return new Client('id', name, hash);
+    const userId = uuid.v4();
+    return new Client(userId, name, hash);
 }
 
 module.exports = {

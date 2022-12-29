@@ -59,38 +59,10 @@ test('Clase Admin tiene rol admin', () => {
     expect(admin.rol).toBe('admin');
 });
 
-test('userFactory() crea Clientes para Rol = user', () => {
-    const cliente = userFactory('Nombre', 0x01, 'user');
-    expect(cliente).toBeInstanceOf(Client);
+test('Clase Owner tiene lista de ofertas', () => {
+    const owner = new Owner('uuid-prueba', 'Nombre', 0x01);
+    expect(owner.ofertas).toEqual([]);
 });
-
-test('userFactory() crea uuids diferentes para cada usuario', () => {
-    const user_1 = userFactory('Usuario 1', 0x01, 'user');
-    const user_2 = userFactory('Usuario 2', 0x02, 'admin');
-    expect(user_1.uuid).not.toEqual(user_2.uuid);
-});
-
-test('userFactory() crea Dueños para Rol = owner', () => {
-    const owner = userFactory('Nombre', 0x01, 'owner');
-    expect(owner).toBeInstanceOf(Owner);
-});
-
-test('userFactory() crea Admins para Rol = admin', () => {
-    const owner = userFactory('Nombre', 0x01, 'owner');
-    expect(owner).toBeInstanceOf(Owner);
-});
-
-test('userFactory() devuelve null si el rol no es válido', () => {
-    const user = userFactory('Nombre', 0x01, 'Infiltrado');
-    expect(user).toBeNull();
-});
-
-test('userFactory() crea uuid sólo si no se especifica', () => {
-    const uuid = 'id';
-    const user = userFactory('Nombre', 0x01, 'user', uuid);
-    expect(user.uuid).toBe('id');
-});
-
 
 describe('Tests que requieren Mock de BBDD', () => {
     const sqlite3 = require('sqlite3');
@@ -123,6 +95,38 @@ describe('Tests que requieren Mock de BBDD', () => {
 
     afterAll(() => {
         database.__get__('db').close();
+    });
+
+    test('userFactory() crea Clientes para Rol = user', () => {
+        const cliente = userFactory('Nombre', 0x01, 'user');
+        expect(cliente).toBeInstanceOf(Client);
+    });
+
+    test('userFactory() crea uuids diferentes para cada usuario', () => {
+        const user_1 = userFactory('Usuario 1', 0x01, 'user');
+        const user_2 = userFactory('Usuario 2', 0x02, 'admin');
+        expect(user_1.uuid).not.toEqual(user_2.uuid);
+    });
+
+    test('userFactory() crea Dueños para Rol = owner', () => {
+        const owner = userFactory('Nombre', 0x01, 'owner');
+        expect(owner).toBeInstanceOf(Owner);
+    });
+
+    test('userFactory() crea Admins para Rol = admin', () => {
+        const owner = userFactory('Nombre', 0x01, 'owner');
+        expect(owner).toBeInstanceOf(Owner);
+    });
+
+    test('userFactory() devuelve null si el rol no es válido', () => {
+        const user = userFactory('Nombre', 0x01, 'Infiltrado');
+        expect(user).toBeNull();
+    });
+
+    test('userFactory() crea uuid sólo si no se especifica', () => {
+        const uuid = 'id';
+        const user = userFactory('Nombre', 0x01, 'user', uuid);
+        expect(user.uuid).toBe('id');
     });
 
     test('registerUser() haseha la contraseña y crea un usuario', () => {

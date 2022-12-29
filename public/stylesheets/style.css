@@ -106,13 +106,13 @@ a {
   background-color: #6c3e13;
 }
 
-.column {
+.column2 {
   float: left;
   width: 50%;
 }
 
 /* Clear floats after the columns */
-.row:after {
+.row2:after {
   content: "";
   display: table;
   clear: both;

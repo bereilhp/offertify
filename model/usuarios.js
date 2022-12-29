@@ -40,7 +40,7 @@ function userFactory(name, hash, rol) {
         case 'admin':
             return new Admin(userId, name, hash);
         default:
-            return new Client(userId, name, hash);
+            return null;
     }
 }
 

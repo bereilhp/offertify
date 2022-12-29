@@ -75,3 +75,8 @@ test('userFactory() crea Admins para Rol = admin', () => {
     owner = userFactory('Nombre', 0x01, 'owner');
     expect(owner).toBeInstanceOf(Owner);
 });
+
+test('userFactory() devuelve null si el rol no es válido', () => {
+    user = userFactory('Nombre', 0x01, 'Infiltrado');
+    expect(user).toBeNull();
+});

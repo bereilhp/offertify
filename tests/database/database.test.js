@@ -3,6 +3,7 @@ const rewire = require('rewire');
 const fs = require('fs');
 const path = require('path');
 const { Client, Owner, Admin } = require('../../model/usuarios');
+const { Local } = require('../../model/locales');
 
 const database = rewire('../../database/database');
 
@@ -159,6 +160,59 @@ describe('Tests que requieren base de datos de pruebas', () => {
                 return;
             } else {
                 expect(user.rol).toBe('owner');
+                done();
+                return;
+            }
+        });
+    });
+
+    test('LocalTableGateway tiene operación para insertar Local', done => {
+        const LocalTableGateway = database.LocalTableGateway;
+
+        const ownerUuid = '12345678901234567890123456789013';
+        const name = 'Owner 1';
+        const hash = 0x01;
+        const owner = new Owner(ownerUuid, name, hash);
+
+        const venueUuid = 'id';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const local = new Local(venueUuid, nombre, calle, codigoPostal);
+
+        ltg = new LocalTableGateway();  
+        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, owner.uuid, function(err) {
+            // Verificamos que se ha insertado el local correctamente
+            expect(err).toBeNull();
+            
+            done();
+            return;
+        });
+    });
+
+    test('LocalTableGateway tiene operación para cargar todos los Locales', done => {
+        const db = database.__get__('db');
+        const LocalTableGateway = database.LocalTableGateway;
+
+        const ownerUuid = '12345678234234567890123456789013';
+        const name = 'Owner 1';
+        const hash = 0x02;
+        const owner = new Owner(ownerUuid, name, hash);
+
+        const venueUuid = 'asdfasdf';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const local = new Local(venueUuid, nombre, calle, codigoPostal);
+
+        ltg = new LocalTableGateway();  
+        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, owner.uuid, () => {});
+        ltg.loadVenues(owner.uuid, function(err, venueList) {
+            if (err) {
+                done(err);
+                return;
+            } else {
+                expect(venueList[0].uuid).toBe(local.uuid);
                 done();
                 return;
             }

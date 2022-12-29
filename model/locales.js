@@ -1,3 +1,5 @@
+const uuid = require('uuid');
+
 const Local = class Local {
     constructor(uuid, nombre, calle, codigoPostal) {
        this.uuid = uuid;
@@ -7,6 +9,21 @@ const Local = class Local {
     }
 }
 
+/**
+ * Función para crear locales.
+ *  
+ * @param {string} nombre Nombre del local
+ * @param {string} calle Calle en la que se ubica el local
+ * @param {int} codigoPostal Código postal del local
+ * @param {string | null} localId Opcional. UUID del local. Si no se especifica, se genera uno nuevo
+ * @returns Un objeto local con los datos proporcionados
+ */
+function localFactory(nombre, calle, codigoPostal, localId = null) {
+    localId = localId ?? uuid.v4();
+    return new Local(localId, nombre, calle, codigoPostal);
+}
+
 module.exports = {
-    Local
+    Local,
+    localFactory
 }

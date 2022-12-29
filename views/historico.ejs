@@ -1,0 +1,61 @@
+<%- include("header", {}) %>
+
+    <div class="title d-flex flex-column align-items-center justify-content-center">
+        Historico de Ofertas
+    </div>
+
+    <div>
+        <div class="row2">
+            <div class="column2">
+                <div class="ofertas d-flex flex-column align-items-center justify-content-center">
+                    <div class="mt-2"></div>
+                    <h5 class="pl-2">BAR MANOLO</h5>
+                    <p>Ofertas destacadas: <span style="color: red;"> cerveza 3€</span></p>
+                    <button class="btn btn-dark">Ver Oferta</button>
+                </div>
+
+                <div class="ofertas d-flex flex-column align-items-center justify-content-center">
+                    <button class="btn btn-success">Añadir sitio</button>
+                </div>
+
+            </div>
+
+            <div id="editar_local" class="column2">
+                <div class="mt-3"></div>
+                <form id="formulario2" method="post" action="">
+                    <div>
+                        <label class="form-label espaciadoHistoric" for="local-input"><strong>Local</strong></label>
+                        <input id="historicLocal" class="form-control espaciadoHistoric" type="text" name="local" placeholder="Bar Manolo"
+                            required>
+                    </div>
+                    <div class="mt-3"></div>
+                    <div class="mb-4 row">
+                        <div class="col">
+                            <label class="form-label espaciadoHistoric" for="descripcion"><strong>Descripcion</strong></label>
+                            <textarea id="descripcion" class="form-control espaciadoHistoric" name="text"
+                                placeholder="Cubo de Cerveza"></textarea>
+                        </div>
+                        <div class="col">
+                            <label class="form-label espaciadoHistoric" for="precioOferta"><strong>Precio</strong></label>
+                            <input id="precioOferta espaciadoHistoric" class="form-control espaciadoHistoric" type="number" name="precio"
+                                placeholder="3 €" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="imagen" class="espaciadoHistoric"><strong>Imagen</strong></label>
+                        <div class="mt-3"></div>
+                        <input type="file" name="imagen" id="imagen" class="espaciadoHistoric">
+                    </div>
+                    <div id="offerBts" class="mt-5">
+                        <button type="button" class="btn btn-success">Activar</button>
+                        <button type="button" class="btn btn-danger">Borrar</button>
+                    </div>
+                    <div class="mb-3"></div>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+    </div>
+    <%- include("footer", {}) %>

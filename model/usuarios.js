@@ -8,15 +8,24 @@ const User = class User {
 };
 
 const Client = class Client extends User {
-    
+    constructor(uuid, name, hash) {
+        super(uuid, name, hash)
+        this.rol = 'user';
+    }
 };
 
 const Owner = class Owner extends User {
-    
+    constructor(uuid, name, hash) {
+        super(uuid, name, hash)
+        this.rol = 'owner';
+    }
 };
 
 const Admin = class Admin extends User {
-    
+    constructor(uuid, name, hash) {
+        super(uuid, name, hash)
+        this.rol = 'admin';
+    }
 };
 
 module.exports = {

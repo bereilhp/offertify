@@ -18,6 +18,7 @@ const interfazAdminRouter = require('./routes/interfaz_admin');
 const interfazEditarSitio = require('./routes/editarSitio');
 const historicoRouter = require("./routes/historico");
 const chatsRouter = require("./routes/chats");
+const ofertasActivasRouter = require("./routes/ofertasActivas");
 
 const app = express();
 
@@ -69,6 +70,7 @@ app.use('/interfaz_admin', interfazAdminRouter);
 app.use('/editarSitio', interfazEditarSitio);
 app.use("/historico", historicoRouter);
 app.use("/chats", chatsRouter);
+app.use("/ofertasActivas", ofertasActivasRouter);
 
 
 // catch 404 and forward to error handler

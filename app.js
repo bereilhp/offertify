@@ -62,7 +62,7 @@ app.use('/registro', registroRouter);
 app.use('/contacto', contactoRouter);
 app.use('/Reservas', reservasRoutes);
 app.use('/NuevaOferta', newOfertaRouter);
- // app.use('/interfazAdmin', interfazAdminRouter)
+app.use('/interfaz_admin', interfazAdminRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

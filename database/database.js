@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3');
 const path = require('path');
-const { User } = require('../model/usuarios');
+const { userFactory } = require('../model/usuarios');
 
 const DB_PATH = path.join(__dirname, 'database.db');
 
@@ -21,14 +21,17 @@ const UserTableGateway = class UserTableGateway {
     insertUser(uuid, name, hash, role, callback) {
         db.serialize(() => {
             const statement = `INSERT INTO Usuarios (UUID, Nombre, Hash, Rol) VALUES ('${uuid}', '${name}', ${hash}, '${role}');`;
-
-            db.run(statement, function(err) {
-                if (err) {
-                    console.log(err);
-                    callback(err);
-                } else {
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
                     callback(null);
-                }
+                });
             });
         });
     } 
@@ -47,10 +50,10 @@ const UserTableGateway = class UserTableGateway {
                 if (err) {
                     callback(err, null);
                 } else {
-                    let user = new User(row.UUID, name, row.hash);
+                    let user = userFactory(name, row.Hash, row.Rol, row.UUID);
                     callback(null, user);
                 }
-            })
+            });
         });
     }
 }

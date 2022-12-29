@@ -30,8 +30,8 @@ const Admin = class Admin extends User {
     }
 };
 
-function userFactory(name, hash, rol) {
-    const userId = uuid.v4();
+function userFactory(name, hash, rol, userId = null) {
+    userId = userId ?? uuid.v4();
     switch(rol) {
         case 'user':
             return new Client(userId, name, hash);

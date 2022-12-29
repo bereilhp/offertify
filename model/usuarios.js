@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 
 const User = class User {
@@ -30,6 +31,16 @@ const Admin = class Admin extends User {
     }
 };
 
+/**
+ * Función que crea un usuario nuevo. Opcionalmente toma como parámetro su UUID, si no recibe un UUID
+ * generará uno.
+ * 
+ * @param {string} name Nombre del usuario
+ * @param {*} hash Hash de la contraseña del usuario
+ * @param {string} rol Rol del usuario
+ * @param {string | null} userId UUID del usuario, null si se debe generar uno nuevo
+ * @returns 
+ */
 function userFactory(name, hash, rol, userId = null) {
     userId = userId ?? uuid.v4();
     switch(rol) {
@@ -44,10 +55,32 @@ function userFactory(name, hash, rol, userId = null) {
     }
 }
 
+/**
+ * Función que registra un usuario nuevo.
+ * 
+ * @param {string} name Nombre del Usuario
+ * @param {string} password Contraseña del usuario
+ * @param {string} rol Rol del usuario
+ * @param {function(err, user)} callback Función a ejecutar una vez registrado el usuario. Toma como parámetro `err`
+ * (`null` si no hay errores) y `user` (usuario creado o `null` si ha habido un error)
+ */
+function registerUser(name, password, rol, callback) {
+    const saltRounds = 10;
+    bcrypt.hash(password, saltRounds, (err, hash) => {
+       if (err) {
+            callback(err, null);
+       } else {
+            let user = userFactory(name, hash, rol);
+            callback(null, user);
+       }
+    });
+}
+
 module.exports = {
     User,
     Client,
     Owner,
     Admin,
-    userFactory
+    userFactory,
+    registerUser
 }

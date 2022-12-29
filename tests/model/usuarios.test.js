@@ -1,8 +1,11 @@
+const bcrypt = require('bcrypt');
+
 const usuarios = require('../../model/usuarios');
 const User = usuarios.User;
 const Client = usuarios.Client;
 const Owner = usuarios.Owner;
 const Admin = usuarios.Admin;
+const registerUser = usuarios.registerUser;
 const userFactory = usuarios.userFactory;
 
 test('Clase User almacena UUID', () => {
@@ -85,4 +88,16 @@ test('userFactory() crea uuid sólo si no se especifica', () => {
     const uuid = 'id';
     const user = userFactory('Nombre', 0x01, 'user', uuid);
     expect(user.uuid).toBe('id');
-})
+});
+
+test('registerUser() haseha la contraseña y crea un usuario', () => {
+    const name = 'Usuario';
+    const password = '1234';
+    const rol = 'admin';
+
+    registerUser(name, password, rol, function(user) {
+        bcrypt.compare(password, user.hash, function(err, result) {
+            expect(result).toBeTruthy();
+        });
+    });
+});

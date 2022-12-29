@@ -38,3 +38,19 @@ test('Clase Admin es hija de User', () => {
     admin = new Admin('uuid-prueba', 'Nombre', 0x01);
     expect(admin).toBeInstanceOf(User);
 });
+
+test('Clase Client tiene rol user', () => {
+    cliente = new Client('uuid-prueba', 'Nombre', 0x01);
+    expect(cliente.rol).toBe('user');
+});
+
+test('Clase Owner tiene rol owner', () => {
+    owner = new Owner('uuid-prueba', 'Nombre', 0x01);
+    expect(owner.rol).toBe('owner');
+});
+
+test('Clase Admin tiene rol admin', () => {
+    admin = new Admin('uuid-prueba', 'Nombre', 0x01);
+    expect(admin.rol).toBe('admin');
+});
+

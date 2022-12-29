@@ -65,3 +65,9 @@ test('userFactory() crea uuids diferentes para cada usuario', () => {
     user_2 = userFactory('Usuario 2', 0x02, 'admin');
     expect(user_1.uuid).not.toEqual(user_2.uuid);
 });
+
+test('userFactory() crea Dueños para Rol = owner', () => {
+    owner = userFactory('Nombre', 0x01, 'owner');
+    expect(owner).toBeInstanceOf(Owner);
+});
+

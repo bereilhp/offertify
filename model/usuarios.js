@@ -32,7 +32,14 @@ const Admin = class Admin extends User {
 
 function userFactory(name, hash, rol) {
     const userId = uuid.v4();
-    return new Client(userId, name, hash);
+    switch(rol) {
+        case 'user':
+            return new Client(userId, name, hash);
+        case 'owner':
+            return new Owner(userId, name, hash);
+        default:
+            return new Client(userId, name, hash);
+    }
 }
 
 module.exports = {

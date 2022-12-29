@@ -71,3 +71,7 @@ test('userFactory() crea Dueños para Rol = owner', () => {
     expect(owner).toBeInstanceOf(Owner);
 });
 
+test('userFactory() crea Admins para Rol = admin', () => {
+    owner = userFactory('Nombre', 0x01, 'owner');
+    expect(owner).toBeInstanceOf(Owner);
+});

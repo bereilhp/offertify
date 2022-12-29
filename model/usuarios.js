@@ -37,6 +37,8 @@ function userFactory(name, hash, rol) {
             return new Client(userId, name, hash);
         case 'owner':
             return new Owner(userId, name, hash);
+        case 'admin':
+            return new Admin(userId, name, hash);
         default:
             return new Client(userId, name, hash);
     }

@@ -53,3 +53,4 @@ test('Clase Admin tiene rol admin', () => {
     admin = new Admin('uuid-prueba', 'Nombre', 0x01);
     expect(admin.rol).toBe('admin');
 });
+

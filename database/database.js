@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3');
 const path = require('path');
+const { User } = require('../model/usuarios');
 
 const DB_PATH = path.join(__dirname, 'database.db');
 
@@ -31,6 +32,27 @@ const UserTableGateway = class UserTableGateway {
             });
         });
     } 
+
+    /**
+     * Función que carga un usuario de la base de datos.
+     *  
+     * @param {string} name Nombre del usuario
+     * @param {function(err, user)} callback Callback ejecutado al cargar el usuario. Si todo va bien, devuelve 
+     * un usuario y err será null.
+     */
+    loadUser(name, callback) {
+        db.serialize(() => {
+            const statement = `SELECT UUID, Hash, Rol FROM Usuarios WHERE Nombre = '${name}'`;
+            db.get(statement, function(err, row) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    let user = new User(row.UUID, name, row.hash);
+                    callback(null, user);
+                }
+            })
+        });
+    }
 }
 
 module.exports = { 

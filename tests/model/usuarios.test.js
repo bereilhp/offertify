@@ -3,6 +3,7 @@ const User = usuarios.User;
 const Client = usuarios.Client;
 const Owner = usuarios.Owner;
 const Admin = usuarios.Admin;
+const userFactory = usuarios.userFactory;
 
 test('Clase User almacena UUID', () => {
     user = new User('uuid-prueba', 'Nombre', 0x01);
@@ -54,3 +55,7 @@ test('Clase Admin tiene rol admin', () => {
     expect(admin.rol).toBe('admin');
 });
 
+test('userFactory() crea Clientes para Rol = user', () => {
+    cliente = userFactory('Nombre', 0x01, 'user');
+    expect(cliente).toBeInstanceOf(Client);
+});

@@ -28,9 +28,14 @@ const Admin = class Admin extends User {
     }
 };
 
+function userFactory(name, hash, rol) {
+    return new Client('id', name, hash);
+}
+
 module.exports = {
     User,
     Client,
     Owner,
-    Admin
+    Admin,
+    userFactory
 }

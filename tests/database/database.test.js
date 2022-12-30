@@ -267,7 +267,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
-    test.skip('MessageTableGateway tiene operación para insertar mensaje', done => {
+    test('MessageTableGateway tiene operación para insertar mensaje', done => {
         const MessageTableGateway = database.MessageTableGateway;
 
         const senderUuid = '12345678234234567890123456789013';
@@ -291,7 +291,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
-    test.skip('MessageTableGateway tiene operación para cargar todos los Mensajes', done => {
+    test('MessageTableGateway tiene operación para cargar todos los Mensajes', done => {
         const MessageTableGateway = database.MessageTableGateway;
 
         const senderUuid = '12345678234234567890123456789013';

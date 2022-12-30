@@ -6,6 +6,7 @@ const { mensajeFactory } = require('../model/mensajes');
 const { ofertaFactory } = require('../model/ofertas');
 const { chatFactory } = require('../model/chats');
 const { reservaFactory } = require('../model/reservas');
+const { resennaFactory } = require('../model/resennas');
 
 const DB_PATH = path.join(__dirname, 'database.db');
 
@@ -339,11 +340,67 @@ const ReservaTableGateway = class ReservaTableGateway {
     }
 }
 
+const ResennaTableGateway = class ResennaTableGateway {
+
+    /**
+     * Método qu inserta una reseña en la Base de Datos.
+     * 
+     * @param {string} idResenna Id de la Reseña a insertar.
+     * @param {string} descripcion Descripción dejada por el usuario.
+     * @param {string} userId Id del usuario que realiza la reseña.
+     * @param {string} ofertaId Id de la oferta asociada a la reseña.
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la inserción. Devuelve `null` o el error
+     */
+    insertResenna(idResenna, descripcion, userId, ofertaId, callback) {
+        db.serialize(() => {
+            const statement = `INSERT INTO Resennas (UUID, descripcion, UserId, OfertaId) VALUES ('${idResenna}', '${descripcion}', '${userId}', '${ofertaId}');`;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
+            });
+        });
+    } 
+
+    /**
+     * Función que carga todas las reseñas asociadas a una oferta.
+     *  
+     * @param {string} ofertaId Id de la oferta a la que pertenece la reseña
+     * @param {function(any | null, array<Reserva>| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve una lista de reseñas y err será null.
+     */
+    loadResennas(ofertaId, callback) {
+        db.serialize(() => {
+            const statement = `SELECT UUID, Descripcion FROM Resennas WHERE OfertaId = '${ofertaId}';`;
+            db.all(statement, function(err, rows) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    let resennasList = [];
+                    rows.forEach((row) => {
+                        let resenna = resennaFactory(row.Descripcion, row.UUID);
+                        resennasList.push(resenna);
+                    })
+                    callback(null, resennasList);
+                }
+            });
+        });
+    }
+}
+
 module.exports = { 
     UserTableGateway,
     LocalTableGateway,
     MessageTableGateway,
     ChatTableGateway,
     OfertaTableGateway,
-    ReservaTableGateway
+    ReservaTableGateway,
+    ResennaTableGateway
 }

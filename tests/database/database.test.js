@@ -8,6 +8,7 @@ const { Chat } = require('../../model/chats');
 const { Mensaje } = require('../../model/mensajes');
 const { Oferta } = require('../../model/ofertas');
 const { Reserva } = require('../../model/reservas');
+const { Resenna } = require('../../model/resennas');
 
 const database = rewire('../../database/database');
 
@@ -408,6 +409,48 @@ describe('Tests que requieren base de datos de pruebas', () => {
                 return;
             } else {
                 expect(reservasList[0].uuid).toBe(reserva.uuid);
+                done();
+                return;
+            }
+        });
+    });
+
+    test('ResennaTableGateway tiene operación para insertar Reseña', done => {
+        const ResennaTableGateway = database.ResennaTableGateway;
+
+        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const ofertaId = '9142-247901204567899123h56789012';
+        const resennaId = '30feor230jfen32800fi30g4n40g02n0';
+        const descripcion = 'Reseña de Prueba';
+        const resenna = new Resenna(resennaId, descripcion);
+
+        const rtg = new ResennaTableGateway();  
+        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, function(err) {
+            // Verificamos que se ha insertado el usuario correctamente
+            expect(err).toBeNull();
+            
+            done();
+            return;
+        });
+    });
+
+    test('ReservaTableGateway tiene operación para recuperar lista de reservas', done => {
+        const ResennaTableGateway = database.ResennaTableGateway;
+
+        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const ofertaId = '9142-247901204567899123h56789012';
+        const resennaId = '30feor230jfen32800fi30g4n40g02n0';
+        const descripcion = 'Reseña de Prueba';
+        const resenna = new Resenna(resennaId, descripcion);
+
+        const rtg = new ResennaTableGateway();  
+        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {});
+        rtg.loadResennas(ofertaId, function(err, resennasList) {
+            if (err) {
+                done(err);
+                return;
+            } else {
+                expect(resennasList[0].uuid).toBe(resenna.uuid);
                 done();
                 return;
             }

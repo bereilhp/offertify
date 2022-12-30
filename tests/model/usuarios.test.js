@@ -64,6 +64,11 @@ test('Clase Owner tiene lista de ofertas', () => {
     expect(owner.ofertas).toEqual([]);
 });
 
+test('Clase Owner tiene lista de locales', () => {
+    const owner = new Owner('uuid-prueba', 'Nombre', 0x01);
+    expect(owner.locales).toEqual([]);
+});
+
 describe('Tests que requieren Mock de BBDD', () => {
     const sqlite3 = require('sqlite3');
     const fs = require('fs');
@@ -146,7 +151,7 @@ describe('Tests que requieren Mock de BBDD', () => {
     test('registerUser() guarda el usuario en la BBDD', done => {
         const UserTableGateway = database.UserTableGateway;
         usuarios.__set__({ UserTableGateway: UserTableGateway });
-        const name = 'Usuario';
+        const name = 'Usuario Nuevo';
         const password = '1234';
         const rol = 'admin';
 

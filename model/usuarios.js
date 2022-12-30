@@ -24,6 +24,7 @@ const Owner = class Owner extends User {
         super(uuid, name, hash);
         this.rol = 'owner';
         this.ofertas = [];
+        this.locales = [];
     }
 };
 
@@ -39,7 +40,7 @@ const Admin = class Admin extends User {
  * generará uno.
  * 
  * @param {string} name Nombre del usuario
- * @param {*} hash Hash de la contraseña del usuario
+ * @param {string} hash Hash de la contraseña del usuario
  * @param {string} rol Rol del usuario
  * @param {string | null} userId UUID del usuario, null si se debe generar uno nuevo
  * @returns 

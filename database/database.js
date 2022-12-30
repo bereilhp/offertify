@@ -280,6 +280,30 @@ const OfertaTableGateway = class OfertaTableGateway {
             });
         });
     }
+
+    /**
+     * Función que borra una oferta de la base de datos.
+     * 
+     * @param {string} idOferta Id de la oferta a borrar.
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
+     */
+    deleteOferta(idOferta, callback) {
+        db.serialize(() => {
+            const statement = `DELETE FROM Ofertas WHERE UUID = '${idOferta}';`;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
+            });
+        });
+    }
 }
 
 const ReservaTableGateway = class ReservaTableGateway {

@@ -369,6 +369,29 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
+    test('OfertaTableGateway tiene operación para borrar una Oferta', done => {
+        const OfertaTableGateway = database.OfertaTableGateway;
+
+        const ownerId = '1232asdf2308f003fwefj03rewe0fjqf';
+        const localId = '3asdfj30w02jfjs030ja0dfj30fjae0f';
+        const ofertaId = '4q3fjf302fj0vn20ng04j0ejf03j0402';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const activa = 1;
+        const descripcion = 'Oferta de Prueba 3';
+        const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
+
+        const otg = new OfertaTableGateway();  
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
+        otg.deleteOferta(oferta.uuid, function(err) {
+            // Si todo va bien, err = null
+            expect(err).toBeNull();
+
+            done();
+            return;
+        });
+    });
+
     test('ReservaTableGateway tiene operación para insertar reserva', done => {
         const ReservaTableGateway = database.ReservaTableGateway;
 
@@ -440,7 +463,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
         const ofertaId = '9142-247901204567899123h56789012';
         const resennaId = '30feor230jfen32800fi30g4n40g02n0';
-        const descripcion = 'Reseña de Prueba';
+        const descripcion = 'Reseña de Prueba 2';
         const resenna = new Resenna(resennaId, descripcion);
 
         const rtg = new ResennaTableGateway();  
@@ -463,7 +486,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
         const ofertaId = '9142-247901204567899123h56789012';
         const resennaId = '30feor230jfen32800fi30g4n40g02n0';
-        const descripcion = 'Reseña de Prueba';
+        const descripcion = 'Reseña de Prueba 3';
         const resenna = new Resenna(resennaId, descripcion);
 
         const rtg = new ResennaTableGateway();  

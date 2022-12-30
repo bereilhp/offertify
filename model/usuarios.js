@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 
-let { UserTableGateway } = require('../database/database');
+let { UserTableGateway, OfertaTableGateway } = require('../database/database');
 
 const User = class User {
     constructor(uuid, name, hash) {
@@ -71,7 +71,8 @@ const Admin = class Admin extends User {
     }
 
     borrarOferta(idOferta) {
-        // TO DO
+        const otg = new OfertaTableGateway();
+        otg.deleteOferta(idOferta, () => {});
     }
     
     borrarResenna(idResenna) {

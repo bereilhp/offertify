@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const rewire = require('rewire');
+const { Oferta } = require('../../model/ofertas');
 
 const usuarios = rewire('../../model/usuarios');
 const User = usuarios.User;
@@ -174,6 +175,31 @@ describe('Tests que requieren Mock de BBDD', () => {
                 done();
                 return;
             });
+        });
+    });
+
+    test('Admin -> Método para borrar ofertas borra ofertas de la Base de Datos', done => {
+        const OfertaTableGateway = database.OfertaTableGateway;
+        const admin = new Admin('uuid-prueba', 'Admin Prueba', 0x01);
+        
+        const ownerId = '12325c779012i4567890123456789012';
+        const localId = '42c2527790120456789j123456789012';
+        const ofertaId = '23fj0jf02n0204567899123h56789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const activa = 1;
+        const descripcion = 'Oferta de Prueba 1';
+        const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
+
+        const otg = new OfertaTableGateway();
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
+        admin.borrarOferta(oferta.uuid);
+
+        otg.loadOfertas(ownerId, function(err, listaOfertas) {
+            expect(listaOfertas).toEqual([]);
+
+            done();
+            return;
         });
     });
 });

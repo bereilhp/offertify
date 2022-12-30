@@ -1,11 +1,12 @@
 const uuid = require('uuid');
 
 const Reserva = class Reserva {
-    constructor(uuid, hora, dia, telefono) {
+    constructor(uuid, hora, dia, telefono, idOferta) {
        this.uuid = uuid;
        this.hora = hora;
        this.dia = dia;
-       this.telefono = telefono
+       this.telefono = telefono;
+       this.idOferta = idOferta;
     }
 }
 
@@ -18,9 +19,9 @@ const Reserva = class Reserva {
  * @returns Objeto reserva con los datos proporcionados
  */
 
-function reservaFactory(hora, dia, telefono, localId = null) {
-    localId = localId ?? uuid.v4();
-    return new Reserva(localId,hora, dia, telefono);
+function reservaFactory(hora, dia, telefono, idOferta, reservaId = null) {
+    reservaId = reservaId ?? uuid.v4();
+    return new Reserva(reservaId,hora, dia, telefono, idOferta);
 }
 
 module.exports = {

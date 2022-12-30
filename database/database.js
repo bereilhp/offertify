@@ -5,6 +5,7 @@ const { localFactory } = require('../model/locales');
 const { mensajeFactory } = require('../model/mensajes');
 const { ofertaFactory } = require('../model/ofertas');
 const { chatFactory } = require('../model/chats');
+const { reservaFactory } = require('../model/reservas');
 
 const DB_PATH = path.join(__dirname, 'database.db');
 
@@ -279,10 +280,70 @@ const OfertaTableGateway = class OfertaTableGateway {
         });
     }
 }
+
+const ReservaTableGateway = class ReservaTableGateway {
+
+    /**
+     * Función que inserta una reserva en la Base de Datos.
+     * 
+     * @param {string} idReserva Id de la reserva a insertar.
+     * @param {int} telefono Teléfono del usuario que realiza la reseña.
+     * @param {string} hora String conteniendo la hora.
+     * @param {string} dia String con la fecha de la reserva.
+     * @param {string} userId Id del usuario que realiza la reserva.
+     * @param {string} idOferta Id de la oferta asociada a la reserva.
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la inserción. Devuelve `null` o el error
+     * producido.
+     */
+    insertReserva(idReserva, telefono, hora, dia, userId, idOferta, callback) {
+        db.serialize(() => {
+            const statement = `INSERT INTO Reservas (UUID, Telefono, Hora, Dia, UserId, OfertaId) VALUES ('${idReserva}', '${telefono}', '${hora}', '${dia}', '${userId}', '${idOferta}');`;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
+            });
+        });
+    } 
+
+    /**
+     * Función que carga todas las reservas asociadas a un usuario.
+     *  
+     * @param {string} userId Id del usuario al que pertenece la reserva
+     * @param {function(any | null, array<Reserva>| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve una lista de reservas y err será null.
+     */
+    loadReservas(userId, callback) {
+        db.serialize(() => {
+            const statement = `SELECT UUID, Telefono, Hora, Dia, OfertaId FROM Reservas WHERE UserId = '${userId}';`;
+            db.all(statement, function(err, rows) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    let reservasList = [];
+                    rows.forEach((row) => {
+                        let reserva = reservaFactory(row.Hora, row.Dia, row.Telefono, row.OfertaId, row.UUID);
+                        reservasList.push(reserva);
+                    })
+                    callback(null, reservasList);
+                }
+            });
+        });
+    }
+}
+
 module.exports = { 
     UserTableGateway,
     LocalTableGateway,
     MessageTableGateway,
     ChatTableGateway,
-    OfertaTableGateway
+    OfertaTableGateway,
+    ReservaTableGateway
 }

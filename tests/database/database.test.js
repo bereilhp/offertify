@@ -7,6 +7,7 @@ const { Local } = require('../../model/locales');
 const { Chat } = require('../../model/chats');
 const { Mensaje } = require('../../model/mensajes');
 const { Oferta } = require('../../model/ofertas');
+const { Reserva } = require('../../model/reservas');
 
 const database = rewire('../../database/database');
 
@@ -67,7 +68,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const hash = 0x01;
         const user = new Client(uuid, name, hash);
 
-        utg = new UserTableGateway();  
+        const utg = new UserTableGateway();  
         utg.insertUser(user.uuid, user.name, user.hash, user.rol, function(err) {
             // Verificamos que se ha insertado el usuario correctamente
             expect(err).toBeNull();
@@ -86,7 +87,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const hash = 0x01;
         const user = new Client(uuid, name, hash);
 
-        utg = new UserTableGateway();
+        const utg = new UserTableGateway();
         utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
         utg.loadUser(user.name, function(err, user) {
             if (err) {
@@ -109,7 +110,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const hash = 0x01;
         const user = new Client(uuid, name, hash);
 
-        utg = new UserTableGateway();
+        const utg = new UserTableGateway();
         utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
         utg.loadUser(user.name, function(err, user) {
             if (err) {
@@ -132,7 +133,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const hash = 0x01;
         const user = new Admin(uuid, name, hash);
 
-        utg = new UserTableGateway();
+        const utg = new UserTableGateway();
         utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
         utg.loadUser(user.name, function(err, user) {
             if (err) {
@@ -155,7 +156,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const hash = 0x01;
         const user = new Owner(uuid, name, hash);
 
-        utg = new UserTableGateway();
+        const utg = new UserTableGateway();
         utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
         utg.loadUser(user.name, function(err, user) {
             if (err) {
@@ -184,7 +185,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const logo = 'https://url.logo.com/logo.png'
         const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
 
-        ltg = new LocalTableGateway();  
+        const ltg = new LocalTableGateway();  
         ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, local.logo, owner.uuid, function(err) {
             // Verificamos que se ha insertado el local correctamente
             expect(err).toBeNull();
@@ -210,7 +211,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const logo = 'https://url.logo.com/logo.png'
         const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
 
-        ltg = new LocalTableGateway();  
+        const ltg = new LocalTableGateway();  
         ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, local.logo, owner.uuid, () => {});
         ltg.loadVenues(owner.uuid, function(err, venueList) {
             if (err) {
@@ -233,7 +234,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const chatId = 'efifj4040402850gj20fj40gn20n9012';
         const chat = new Chat(chatId);
 
-        ctg = new ChatTableGateway();  
+        const ctg = new ChatTableGateway();  
         ctg.insertChat(chatId, ownerId, userId, reservaId, function(err) {
             // Verificamos que se ha insertado el usuario correctamente
             expect(err).toBeNull();
@@ -253,7 +254,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const chatId = '30f84jf0nvn0n40wmfme0gm40hn20384';
         const chat = new Chat(chatId);
 
-        ctg = new ChatTableGateway();
+        const ctg = new ChatTableGateway();
         ctg.insertChat(chat.uuid, ownerId, userId, reservaId, () => {});
         ctg.loadChat(reservaId, function(err, loadedChat) {
             if (err) {
@@ -281,7 +282,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const timestamp = null
         const message = new Mensaje(messageId, sender, texto, timestamp);
 
-        mtg = new MessageTableGateway();  
+        const mtg = new MessageTableGateway();  
         mtg.insertMessage(message.uuid, message.texto, sender.uuid, chatId, function(err) {
             // Verificamos que se ha insertado el usuario correctamente
             expect(err).toBeNull();
@@ -305,7 +306,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const timestamp = null
         const message = new Mensaje(messageId, sender, texto, timestamp);
 
-        mtg = new MessageTableGateway();  
+        const mtg = new MessageTableGateway();  
         mtg.insertMessage(message.uuid, message.texto, sender.uuid, chatId, () => {});
         mtg.loadMessages(chatId, function(err, messageList) {
             if (err) {
@@ -331,7 +332,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const descripcion = 'Oferta de Prueba 1';
         const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
 
-        otg = new OfertaTableGateway();  
+        const otg = new OfertaTableGateway();  
         otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, function(err) {
             // Verificamos que se ha insertado el usuario correctamente
             expect(err).toBeNull();
@@ -353,7 +354,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const descripcion = 'Oferta de Prueba 2';
         const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
 
-        otg = new OfertaTableGateway();  
+        const otg = new OfertaTableGateway();  
         otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
         otg.loadOfertas(localId, function(err, ofertasList) {
             if (err) {
@@ -361,6 +362,52 @@ describe('Tests que requieren base de datos de pruebas', () => {
                 return;
             } else {
                 expect(ofertasList[0].uuid).toBe(oferta.uuid);
+                done();
+                return;
+            }
+        });
+    });
+
+    test('ReservaTableGateway tiene operación para insertar reserva', done => {
+        const ReservaTableGateway = database.ReservaTableGateway;
+
+        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const ofertaId = '9142-247901204567899123h56789012';
+        const reservaId = '38fji328fjio3208jfiojfnj32823fa2';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+        const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
+
+        const rtg = new ReservaTableGateway();  
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, function(err) {
+            // Verificamos que se ha insertado el usuario correctamente
+            expect(err).toBeNull();
+            
+            done();
+            return;
+        });
+    });
+
+    test('ReservaTableGateway tiene operación para recuperar lista de reservas', done => {
+        const ReservaTableGateway = database.ReservaTableGateway;
+
+        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const ofertaId = '9142-247901204567899123h56789012';
+        const reservaId = '38fji328fjio3208jfiojfnj32823fa2';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+        const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
+
+        const rtg = new ReservaTableGateway();  
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {});
+        rtg.loadReservas(userId, function(err, reservasList) {
+            if (err) {
+                done(err);
+                return;
+            } else {
+                expect(reservasList[0].uuid).toBe(reserva.uuid);
                 done();
                 return;
             }

@@ -319,7 +319,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
     
-    test.skip('OfertaTableGateway tiene operación para insertar oferta', done => {
+    test('OfertaTableGateway tiene operación para insertar oferta', done => {
         const OfertaTableGateway = database.OfertaTableGateway;
 
         const ownerId = '12325c779012i4567890123456789012';
@@ -341,7 +341,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
-    test.skip('OfertaTableGateway tiene operación para recuperar lista de ofertas', done => {
+    test('OfertaTableGateway tiene operación para recuperar lista de ofertas', done => {
         const OfertaTableGateway = database.OfertaTableGateway;
 
         const ownerId = '1232asdf2308f003fwefj03rewe0fjqf';

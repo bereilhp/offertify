@@ -132,7 +132,6 @@ const MessageTableGateway = class MessageTableGateway {
     insertMessage(messageId, text, senderId, chatId, callback) {
         db.serialize(() => {
             const statement = `INSERT INTO Mensajes (UUID, Texto, SenderId, ChatId) VALUES ('${messageId}', '${text}', '${senderId}', '${chatId}');`;
-            console.log(statement)
             db.serialize(() => {
                 db.run('BEGIN TRANSACTION;');
                 db.run(statement, function(err) {
@@ -262,9 +261,9 @@ const OfertaTableGateway = class OfertaTableGateway {
      * @param {function(any | null, array<Oferta>| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
      * devuelve una lista de ofertas y err será null.
      */
-    loadOfertas(chatId, callback) {
+    loadOfertas(localId, callback) {
         db.serialize(() => {
-            const statement = `SELECT UUID, Precio, Descripcion, Foto, Activa FROM Ofertas WHERE ChatId = '${chatId}';`;
+            const statement = `SELECT UUID, Precio, Descripcion, Foto, Activa FROM Ofertas WHERE LocalId = '${localId}';`;
             db.all(statement, function(err, rows) {
                 if (err) {
                     callback(err, null);

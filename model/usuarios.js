@@ -20,11 +20,11 @@ const Client = class Client extends User {
 };
 
 const Owner = class Owner extends User {
-    constructor(uuid, name, hash) {
+    constructor(uuid, name, hash, ofertas=[], locales=[]) {
         super(uuid, name, hash);
         this.rol = 'owner';
-        this.ofertas = [];
-        this.locales = [];
+        this.ofertas = ofertas;
+        this.locales = locales;
     }
 };
 

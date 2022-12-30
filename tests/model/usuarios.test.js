@@ -69,6 +69,17 @@ test('Clase Owner tiene lista de locales', () => {
     expect(owner.locales).toEqual([]);
 });
 
+
+test('Constructor de Owner toma opcionalmente lista de ofertas', () => {
+    const owner = new Owner('uuid-prueba', 'Nombre', 0x01, ['blibli']);
+    expect(owner.ofertas).toEqual(['blibli']);
+});
+
+test('Constructor de Owner toma opcionalmente lista de locales', () => {
+    const owner = new Owner('uuid-prueba', 'Nombre', 0x01, [], ['blabla']);
+    expect(owner.locales).toEqual(['blabla']);
+});
+
 describe('Tests que requieren Mock de BBDD', () => {
     const sqlite3 = require('sqlite3');
     const fs = require('fs');

@@ -4,6 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const { Client, Owner, Admin } = require('../../model/usuarios');
 const { Local } = require('../../model/locales');
+const { Chat } = require('../../model/chats');
+// const { Reserva } = require('../../model/reservas');
+// const { Mensaje } = require('../../model/mensajes');
 
 const database = rewire('../../database/database');
 
@@ -178,10 +181,11 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const nombre = 'Local';
         const calle = 'Calle Ensamblador 15';
         const codigoPostal = 29078;
-        const local = new Local(venueUuid, nombre, calle, codigoPostal);
+        const logo = 'https://url.logo.com/logo.png'
+        const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
 
         ltg = new LocalTableGateway();  
-        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, owner.uuid, function(err) {
+        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, local.logo, owner.uuid, function(err) {
             // Verificamos que se ha insertado el local correctamente
             expect(err).toBeNull();
             
@@ -203,16 +207,112 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const nombre = 'Local';
         const calle = 'Calle Ensamblador 15';
         const codigoPostal = 29078;
-        const local = new Local(venueUuid, nombre, calle, codigoPostal);
+        const logo = 'https://url.logo.com/logo.png'
+        const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
 
         ltg = new LocalTableGateway();  
-        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, owner.uuid, () => {});
+        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, local.logo, owner.uuid, () => {});
         ltg.loadVenues(owner.uuid, function(err, venueList) {
             if (err) {
                 done(err);
                 return;
             } else {
                 expect(venueList[0].uuid).toBe(local.uuid);
+                done();
+                return;
+            }
+        });
+    });
+
+    test('ChatTableGateway tiene operación para insertar chat', done => {
+        const ChatTableGateway = database.ChatTableGateway;
+
+        const ownerId = '12338677901224867893123359789012';
+        const userId = '12325677931224562893123336789012';
+        const reservaId = '12325277902224587493129356489010';
+        const chatId = '12325677901224567893123356789012';
+        const chat = new Chat(chatId);
+
+        ctg = new ChatTableGateway();  
+        ctg.insertChat(chat.uuid, ownerId, userId, reservaId, function(err) {
+            // Verificamos que se ha insertado el usuario correctamente
+            expect(err).toBeNull();
+            
+            done();
+            return;
+        });
+    });
+
+    test('ChatTableGateway tiene operación para recuperar Chat', done => {
+        const db = database.__get__('db');
+        const ChatTableGateway = database.ChatTableGateway;
+
+        const ownerId = '12338677901224867893123359789012';
+        const userId = '12325677931224562893123336789012';
+        const reservaId = '12325277902224587493129356489010';
+        const chatId = '12325677901224567893123356789012';
+        const chat = new Chat(chatId);
+
+        ctg = new ChatTableGateway();
+        ctg.insertChat(chat.uuid, ownerId, userId, reservaId, () => {});
+        ctg.loadChat(reservaId, function(err, loadedChat) {
+            if (err) {
+                done(err);
+                return;
+            } else {
+                expect(loadedChat.uuid).toBe(chat.uuid);
+                done();
+                return;
+            }
+        });
+    });
+
+    test('MessageTableGateway tiene operación para insertar mensaje', done => {
+        const MessageTableGateway = database.MessageTableGateway;
+
+        const senderUuid = '12345678234234567890123456789013';
+        const senderName = 'Message Sender 1';
+        const senderHash = 0x02;
+        const sender = new Owner(senderUuid, senderName, senderHash);
+
+        const chatId = '12325677901224567893123356789012';
+        const messageId = '12325677901224567893123356789012';
+        const texto = 'Mensaje de Prueba';
+        const timestamp = null
+        const message = Mensaje(messageId, sender, texto, timestamp);
+
+        mtg = new MessageTableGateway();  
+        mtg.insertMessage(message.uuid, message.texto, sender.uuid, chatId, function(err) {
+            // Verificamos que se ha insertado el usuario correctamente
+            expect(err).toBeNull();
+            
+            done();
+            return;
+        });
+    });
+
+    test('MessageTableGateway tiene operación para cargar todos los Mensajes', done => {
+        const MessageTableGateway = database.MessageTableGateway;
+
+        const senderUuid = '12345678234234567890123456789013';
+        const senderName = 'Message Sender 1';
+        const senderHash = 0x02;
+        const sender = new Owner(senderUuid, senderName, senderHash);
+
+        const chatId = '1232167700122436789l123356789012';
+        const messageId = '12325677901224567893123356789012';
+        const texto = 'Mensaje de Prueba';
+        const timestamp = null
+        const message = Mensaje(messageId, sender, texto, timestamp);
+
+        mtg = new MessageTableGateway();  
+        mtg.insertMessage(message.uuid, message.texto, sender.uuid, chatId, () => {});
+        mtg.loadMessages(chatId, function(err, messageList) {
+            if (err) {
+                done(err);
+                return;
+            } else {
+                expect(messageList[0].uuid).toBe(message.uuid);
                 done();
                 return;
             }

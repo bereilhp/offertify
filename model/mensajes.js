@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-const Mensajes = class Mensajes {
+const Mensaje = class Mensaje {
     constructor(uuid, nombreU, texto, timestamp) {
        this.uuid = uuid;
        this.nombreU = nombreU;

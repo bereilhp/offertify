@@ -7,10 +7,16 @@ const Resenna = class Resenna {
     }
 }
 
+/**
+ * 
+ * @param {string} descripcion 
+ * @param {string | null} localId Opcional. UUID de la reseña. Si no se especifica, se genera uno nuevo
 
+ * @returns Un objeto resenna con los datos proporcionados
+ */
 function resennaFactory(descripcion, localId = null) {
     localId = localId ?? uuid.v4();
-    return new Oferta(localId,descripcion);
+    return new Resenna(localId,descripcion);
 }
 
 module.exports = {

@@ -51,6 +51,26 @@ test('Clase Client tiene rol user', () => {
     expect(cliente.rol).toBe('user');
 });
 
+test('Clase Client tiene lista de Reservas', () => {
+    const cliente = new Client('uuid-prueba', 'Nombre', 0x01);
+    expect(cliente.reservas).toEqual([]);
+});
+
+test('Clase Client guarda las Reservas', () => {
+    const cliente = new Client('uuid-prueba', 'Nombre', 0x01, ['jaja']);
+    expect(cliente.reservas).toEqual(['jaja']);
+});
+
+test('Clase Client tiene lista de Reseñas', () => {
+    const cliente = new Client('uuid-prueba', 'Nombre', 0x01);
+    expect(cliente.resennas).toEqual([]);
+});
+
+test('Clase Client guarda las Reseñas', () => {
+    const cliente = new Client('uuid-prueba', 'Nombre', 0x01, [], ['Reseña']);
+    expect(cliente.resennas).toEqual(['Reseña']);
+});
+
 test('Clase Owner tiene rol owner', () => {
     const owner = new Owner('uuid-prueba', 'Nombre', 0x01);
     expect(owner.rol).toBe('owner');

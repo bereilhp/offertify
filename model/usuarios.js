@@ -13,9 +13,11 @@ const User = class User {
 };
 
 const Client = class Client extends User {
-    constructor(uuid, name, hash, reservas = []) {
+    constructor(uuid, name, hash, reservas = [], resennas = []) {
         super(uuid, name, hash);
         this.rol = 'user';
+        this.reservas = reservas;
+        this.resennas = resennas;
     }
 
     hacerResenna(descripcion) {

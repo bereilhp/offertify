@@ -2,7 +2,7 @@
 CREATE TABLE Usuarios (
     UUID CHAR(32) PRIMARY KEY,
     Hash TEXT NOT NULL,
-    Nombre TEXT NOT NULL,
+    Nombre TEXT UNIQUE NOT NULL,
     Rol VARCHAR(5) NOT NULL CHECK (Rol IN ('admin', 'user', 'owner'))
 );
 

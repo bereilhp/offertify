@@ -499,4 +499,26 @@ describe('Tests que requieren base de datos de pruebas', () => {
             return;
         });
     });
+    
+    test('ResennaTableGateway borra las reseñas', done => {
+        const ResennaTableGateway = database.ResennaTableGateway;
+
+        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const ofertaId = '9142-247901204567899123h56789012';
+        const resennaId = 'f3f22bnb02m30032m0fmwcyc0c9t0ux5';
+        const descripcion = 'Reseña de Prueba 4';
+        const resenna = new Resenna(resennaId, descripcion);
+
+        const rtg = new ResennaTableGateway();  
+        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {});
+        rtg.deleteResenna(resenna.uuid, function(err) {
+            // Si todo va bien, err = null
+            rtg.loadResennas(ofertaId, function(err, listaResennas) {
+                expect(listaResennas).toEqual([]);
+
+                done();
+                return;
+            });
+        });
+    });
 });

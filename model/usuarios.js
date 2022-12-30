@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 
-let { UserTableGateway, OfertaTableGateway } = require('../database/database');
+let { UserTableGateway, OfertaTableGateway, ResennaTableGateway } = require('../database/database');
 
 const User = class User {
     constructor(uuid, name, hash) {
@@ -70,14 +70,27 @@ const Admin = class Admin extends User {
         this.rol = 'admin';
     }
 
-    borrarOferta(idOferta) {
+    /**
+     * Método para borrar ofertas.
+     * 
+     * @param {string} idOferta Id de la oferta a borrar
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
+     */
+    borrarOferta(idOferta, callback) {
         const otg = new OfertaTableGateway();
-        otg.deleteOferta(idOferta, () => {});
+        otg.deleteOferta(idOferta, callback);
     }
-    
-    borrarResenna(idResenna) {
-        // TO DO
-    }
+
+    /**
+     * Método para borrar reseñas.
+     * 
+     * @param {string} idResenna Id de la reseña a borrar.
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
+     */
+    borrarResenna(idResenna, callback) {
+        const rtg = new ResennaTableGateway();
+        rtg.deleteResenna(idResenna, callback);
+    }   
 };
 
 /**

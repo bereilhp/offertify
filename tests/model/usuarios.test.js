@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const rewire = require('rewire');
 const { Oferta } = require('../../model/ofertas');
+const { Resenna } = require('../../model/resennas');
 
 const usuarios = rewire('../../model/usuarios');
 const User = usuarios.User;
@@ -178,7 +179,7 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
-    test('Admin -> Método para borrar ofertas borra ofertas de la Base de Datos', done => {
+    test('Admin -> Método para borrar ofertas de la Base de Datos', done => {
         const OfertaTableGateway = database.OfertaTableGateway;
         const admin = new Admin('uuid-prueba', 'Admin Prueba', 0x01);
         
@@ -193,10 +194,32 @@ describe('Tests que requieren Mock de BBDD', () => {
 
         const otg = new OfertaTableGateway();
         otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
-        admin.borrarOferta(oferta.uuid);
 
-        otg.loadOfertas(ownerId, function(err, listaOfertas) {
-            expect(listaOfertas).toEqual([]);
+        admin.borrarOferta(oferta.uuid, function(err) {
+            otg.loadOfertas(ownerId, function(err, listaOfertas) {
+                expect(listaOfertas).toEqual([]);
+
+                done();
+                return;
+            });
+        });
+    });
+
+    test('Admin -> Método para borrar Reseñas de la Base de Datos', done => {
+        const ResennaTableGateway = database.ResennaTableGateway;
+        const admin = new Admin('uuid-prueba', 'Admin Prueba', 0x01);
+
+        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const ofertaId = '23r2r34fweja0sdf034ng03wner0f012';
+        const resennaId = '3fj03jf0j30en32800fi30g4n40g02n0';
+        const descripcion = 'Reseña de Prueba';
+        const resenna = new Resenna(resennaId, descripcion);
+
+        const rtg = new ResennaTableGateway();  
+        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {});
+        
+        admin.borrarResenna(resenna.uuid, function(err) {
+            expect(err).toBeNull();
 
             done();
             return;

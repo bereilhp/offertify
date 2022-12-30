@@ -11,11 +11,11 @@ const Reserva = class Reserva {
 
 /**
  * 
- * @param {Time} hora 
- * @param {Date} dia 
- * @param {int} telefono 
+ * @param {Time} hora Nos dice la hora exacta de la reserva
+ * @param {Date} dia Nos dice la hora de la reserva
+ * @param {int} telefono Nos dice el teleno que esta relacionado con la reserva 
  * @param {string | null} localId Opcional. UUID de la reserva. Si no se especifica, se genera uno nuevo
- * @returns 
+ * @returns Objeto reserva con los datos proporcionados
  */
 
 function reservaFactory(hora, dia, telefono, localId = null) {

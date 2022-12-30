@@ -2,6 +2,20 @@ const resennas = require('../../model/resennas');
 const Resenna = resennas.Resenna;
 const resennaFactory = resennas.resennaFactory;
 
+test('Resenna tiene uuid', () => {
+    const uuid = 'id';
+    const descripcion = "Soy una descripcion"
+    const resenna = new Resenna(uuid,descripcion)
+    expect(resenna.uuid).toBe(uuid);
+});
+
+test('Resenna tiene descripcion', () => {
+    const uuid = 'id';
+    const descripcion = "Soy una descripcion"
+    const resenna = new Resenna(uuid,descripcion)
+    expect(resenna.descripcion).toBe(descripcion);
+});
+
 test('resennaFactory() crea reseña', () => {
     const resenna = resennaFactory("Soy una reseña");
     expect(resenna).toBeInstanceOf(Resenna);

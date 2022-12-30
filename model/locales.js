@@ -16,6 +16,7 @@ const Local = class Local {
  * @param {string} nombre Nombre del local
  * @param {string} calle Calle en la que se ubica el local
  * @param {int} codigoPostal Código postal del local
+ * @param {Blob} logo logo del local
  * @param {string | null} localId Opcional. UUID del local. Si no se especifica, se genera uno nuevo
  * @returns Un objeto local con los datos proporcionados
  */

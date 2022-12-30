@@ -11,13 +11,13 @@ const Oferta = class Oferta {
 }
 
 /**
- * Función para crear locales.
- *  
- * @param {string} nombre Nombre del local
- * @param {string} calle Calle en la que se ubica el local
- * @param {int} codigoPostal Código postal del local
- * @param {string | null} localId Opcional. UUID del local. Si no se especifica, se genera uno nuevo
- * @returns Un objeto local con los datos proporcionados
+ * 
+ * @param {Blob} foto foto de la oferta
+ * @param {int} precio precio de la oferta es de tipo numero
+ * @param {BinaryData} activa 0 o 1 si la oferta esa activa o no
+ * @param {string} descripcion Pequena descripcion del la oferta 
+ * @param {string | null} localId Opcional. UUID del la oferta. Si no se especifica, se genera uno nuevo
+ * @returns Objeto oferta con los datos proporcionados
  */
 function ofertaFactory(foto, precio, activa, descripcion, localId = null) {
     localId = localId ?? uuid.v4();

@@ -13,9 +13,21 @@ const User = class User {
 };
 
 const Client = class Client extends User {
-    constructor(uuid, name, hash) {
+    constructor(uuid, name, hash, reservas = []) {
         super(uuid, name, hash);
         this.rol = 'user';
+    }
+
+    hacerResenna(descripcion) {
+        // TO DO
+    }
+
+    hacerReserva(telefono, hora, dia) {
+        // TO DO       
+    }
+
+    cancelarReserva(id) {
+        // TO DO
     }
 };
 
@@ -26,12 +38,44 @@ const Owner = class Owner extends User {
         this.ofertas = ofertas;
         this.locales = locales;
     }
+
+    hacerOferta(foto, precio, descripcion, local) {
+        // TO DO
+    }
+
+    editarOferta(idOferta, foto = null, precio = null, descripcion = null) {
+        // TO DO
+    }
+
+    desactivarOferta(idOferta) {
+        // TO DO
+    }
+
+    crearLocal(nombre, calle, codigoPostal, logo) {
+        // TO DO
+    }
+
+    editarLocal(idLocal, nombre = null, calle = null, codigoPostal = null, logo = null) {
+        // TO DO
+    }
+
+    borrarLocal(idLocal) {
+        // TO DO
+    }
 };
 
 const Admin = class Admin extends User {
     constructor(uuid, name, hash) {
         super(uuid, name, hash);
         this.rol = 'admin';
+    }
+
+    borrarOferta(idOferta) {
+        // TO DO
+    }
+    
+    borrarResenna(idResenna) {
+        // TO DO
     }
 };
 

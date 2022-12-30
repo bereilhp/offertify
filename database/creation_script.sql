@@ -11,6 +11,7 @@ CREATE TABLE Locales (
     Nombre TEXT NOT NULL,
     Calle TEXT NOT NULL,
     CodigoPostal INTEGER NOT NULL,
+    Logo BLOB NOT NULL,
     OwnerId CHAR(32) NOT NULL REFERENCES Usuarios(UUID)
 );
 

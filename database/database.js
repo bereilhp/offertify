@@ -393,6 +393,30 @@ const ResennaTableGateway = class ResennaTableGateway {
             });
         });
     }
+
+    /**
+     * Función que borra una reseña de la base de datos.
+     * 
+     * @param {string} idResenna Id de la reseña a borrar
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
+     */
+    deleteResenna(idResenna, callback) {
+        db.serialize(() => {
+            const statement = `DELETE FROM Resennas WHERE UUID = '${idResenna}';`;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
+            });
+        });
+    } 
 }
 
 module.exports = { 

@@ -393,9 +393,9 @@ describe('Tests que requieren base de datos de pruebas', () => {
     test('ReservaTableGateway tiene operación para recuperar lista de reservas', done => {
         const ReservaTableGateway = database.ReservaTableGateway;
 
-        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const userId = '1R23fdsdcasv23n233r0fjwfnce0fn12';
         const ofertaId = '9142-247901204567899123h56789012';
-        const reservaId = '38fji328fjio3208jfiojfnj32823fa2';
+        const reservaId = '38fji328f0ir3208jfiojfnj32823fa2';
         const telefono = 660800902;
         const hora = '03:43';
         const dia = '29/12/22';
@@ -419,8 +419,8 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const ResennaTableGateway = database.ResennaTableGateway;
 
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
-        const ofertaId = '9142-247901204567899123h56789012';
-        const resennaId = '30feor230jfen32800fi30g4n40g02n0';
+        const ofertaId = '9142-247901r04567899123h56789012';
+        const resennaId = '32feor230j0en32800fi30g4n40g02n0';
         const descripcion = 'Reseña de Prueba';
         const resenna = new Resenna(resennaId, descripcion);
 
@@ -434,7 +434,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
-    test('ReservaTableGateway tiene operación para recuperar lista de reservas', done => {
+    test('ResennaTableGateway tiene operación para recuperar lista de Reseñas', done => {
         const ResennaTableGateway = database.ResennaTableGateway;
 
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
@@ -454,6 +454,26 @@ describe('Tests que requieren base de datos de pruebas', () => {
                 done();
                 return;
             }
+        });
+    });
+
+    test('ResennaTableGateway tiene operación para borrar una reseña', done => {
+        const ResennaTableGateway = database.ResennaTableGateway;
+
+        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const ofertaId = '9142-247901204567899123h56789012';
+        const resennaId = '30feor230jfen32800fi30g4n40g02n0';
+        const descripcion = 'Reseña de Prueba';
+        const resenna = new Resenna(resennaId, descripcion);
+
+        const rtg = new ResennaTableGateway();  
+        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {});
+        rtg.deleteResenna(resenna.uuid, function(err) {
+            // Si todo va bien, err = null
+            expect(err).toBeNull();
+
+            done();
+            return;
         });
     });
 });

@@ -3,6 +3,8 @@ const path = require('path');
 const { userFactory } = require('../model/usuarios');
 const { localFactory } = require('../model/locales');
 const { mensajeFactory } = require('../model/mensajes');
+const { ofertaFactory } = require('../model/ofertas');
+const { chatFactory } = require('../model/chats');
 
 const DB_PATH = path.join(__dirname, 'database.db');
 
@@ -93,7 +95,7 @@ const LocalTableGateway = class LocalTableGateway {
      * Función que carga todos los locales asociados al dueño indicado.
      *  
      * @param {string} ownerId Id del dueño del local
-     * @param {function(any | null, Local | null)} callback Callback ejecutado al cargar los locales. Si todo va bien, devuelve 
+     * @param {function(any | null, array<Local> | null)} callback Callback ejecutado al cargar los locales. Si todo va bien, devuelve 
      * una lista de locales y err será null.
      */
     loadVenues(ownerId, callback) {
@@ -130,6 +132,7 @@ const MessageTableGateway = class MessageTableGateway {
     insertMessage(messageId, text, senderId, chatId, callback) {
         db.serialize(() => {
             const statement = `INSERT INTO Mensajes (UUID, Texto, SenderId, ChatId) VALUES ('${messageId}', '${text}', '${senderId}', '${chatId}');`;
+            console.log(statement)
             db.serialize(() => {
                 db.run('BEGIN TRANSACTION;');
                 db.run(statement, function(err) {
@@ -148,8 +151,8 @@ const MessageTableGateway = class MessageTableGateway {
     /**
      * Función que carga todos los mensajes asociacos a un chat.
      *  
-     * @param {string} ownerId Id del dueño del local
-     * @param {function(any | null, Message | null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * @param {string} chatId Id del chat al que pertenece el mensaje
+     * @param {function(any | null, array<Mensaje> | null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
      * devuelve una lista de mensajes y err será null.
      */
     loadMessages(chatId, callback) {
@@ -207,7 +210,7 @@ const ChatTableGateway = class MessageTableGateway {
      */
     loadChat(reservaId, callback) {
         db.serialize(() => {
-            const statement = `SELECT UUID FROM Chat WHERE IdReserva = '${reservaId}'`;
+            const statement = `SELECT UUID FROM Chats WHERE IdReserva = '${reservaId}'`;
             db.get(statement, function(err, row) {
                 if (err) {
                     callback(err, null);
@@ -220,9 +223,67 @@ const ChatTableGateway = class MessageTableGateway {
     }
 }
 
+const OfertaTableGateway = class OfertaTableGateway {
+
+    /**
+     * 
+     * @param {string} ofertaId Id de la oferta
+     * @param {string} precio Precio de la oferta
+     * @param {string} descripcion Descripción de la oferta
+     * @param {string} foto URL de la imagen asociada a la oferta
+     * @param {int} activa `1` si la oferta está activa, `0` si no
+     * @param {string} ownerId Id del dueño creador de la oferta
+     * @param {string} localId Id del local asociado a la oferta
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la inserción. Devuelve `null` o el error
+     * producido.
+     */
+    insertOferta(ofertaId, precio, descripcion, foto, activa, ownerId, localId, callback) {
+        db.serialize(() => {
+            const statement = `INSERT INTO Ofertas (UUID, Precio, Descripcion, Foto, Activa, OwnerId, LocalId) VALUES ('${ofertaId}', '${precio}', '${descripcion}', '${foto}', '${activa}', '${ownerId}', '${localId}');`;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
+            });
+        });
+    } 
+
+    /**
+     * Función que carga todas las ofertas asociadas a un local.
+     *  
+     * @param {string} localId Id del local al que pertenece la oferta
+     * @param {function(any | null, array<Oferta>| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve una lista de ofertas y err será null.
+     */
+    loadOfertas(chatId, callback) {
+        db.serialize(() => {
+            const statement = `SELECT UUID, Precio, Descripcion, Foto, Activa FROM Ofertas WHERE ChatId = '${chatId}';`;
+            db.all(statement, function(err, rows) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    let ofertasList = [];
+                    rows.forEach((row) => {
+                        let oferta = ofertaFactory(row.Foto, row.Precio, row.Activa, row.Descripcion, row.UUID);
+                        ofertasList.push(oferta);
+                    })
+                    callback(null, ofertasList);
+                }
+            });
+        });
+    }
+}
 module.exports = { 
     UserTableGateway,
     LocalTableGateway,
     MessageTableGateway,
-    ChatTableGateway
+    ChatTableGateway,
+    OfertaTableGateway
 }

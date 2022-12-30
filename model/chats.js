@@ -9,9 +9,9 @@ const Chat = class Chat {
     }
 };
 
-function chatFactory(mensajes, localId = null) {
+function chatFactory(localId = null) {
     localId = localId ?? uuid.v4();
-    return new Chat(localId, mensajes);
+    return new Chat(localId, /*mensajes*/);
 }
 
 

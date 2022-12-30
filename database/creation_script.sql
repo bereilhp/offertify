@@ -19,6 +19,7 @@ CREATE TABLE Ofertas (
     Precio DECIMAL(10,2) NOT NULL,
     Descripcion TEXT NOT NULL,
     Foto BLOB NOT NULL,
+    Activa INTEGER NOT NULL CHECK (Activa IN (0, 1)),
     OwnerId CHAR(32) NOT NULL REFERENCES Usuarios(UUID),
     LocalId CHAR(32) NOT NULL REFERENCES Locales(UUID)
 );

@@ -14,7 +14,72 @@ let db = new sqlite3.Database(DB_PATH, () => {
     console.log("Conectado a BBDD");
 });
 
-const UserTableGateway = class UserTableGateway {
+const TableGateway = class TableGateway {
+    /**
+     * Método para ejecutar una sentencia `INSERT`, `UPDATE` o `DELETE`.
+     * 
+     * @param {string} statement Sentencia SQL a ejecutar. Puede ser `INSERT`, `UPDATE` o `DELETE`
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` si todo va bien,
+     * un error en caso contrario 
+     */
+    run(statement, callback) {
+        db.serialize(() => {
+            db.run('BEGIN TRANSACTION;');
+            db.run(statement, function(err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+            db.run('COMMIT;', function(err) {
+                callback(null);
+            });
+        });
+    }
+
+    /**
+     * Función que ejecuta una consulta SQL y devuelve un objeto creado según la `factory` indicada.
+     * 
+     * @param {string} statement Sentencia SQL a ejecutar.
+     * @param {function(Object):Object} factory Función que toma como parámetro las filas individuales (`row`) y crea
+     * un objeto con los campos necesarios.
+     * @param {function(any | null, Object | null)} callback Callback a ejecutar una vez finalizada la sentencia. 
+     * Toma como parámetros el objeto `row` recuperado y el error ocurrido (`null` si no hay).
+     */
+    get(statement, factory, callback) {
+        this.all(statement, factory, function(err, resultList) {
+            const result = resultList[0];
+            callback(err, result);
+        });
+    }
+
+    /**
+     * Función que ejecuta una consulta SQL y devuelve una lista de objetos creados utilizando la `factory` indicada.
+     * 
+     * @param {string} statement Sentencia SQL a ejecutar.
+     * @param {function(Object):Object} factory Función que toma como parámetro las filas individuales (`row`) y crea
+     * un objeto con los campos necesarios.
+     * @param {function(any | null, array<Object> | null)} callback Callback a ejecutar una vez finalizada la sentencia. 
+     * Toma como parámetros la lista de filas ecuperada y el error ocurrido (`null` si no hay).
+     */
+    all(statement, factory, callback) {
+        db.serialize(() => {
+            db.all(statement, function(err, rows) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    let resultList = [];
+                    rows.forEach((row) => {
+                        let obj = factory(row);
+                        resultList.push(obj);
+                    })
+                    callback(null, resultList);
+                }
+            });
+        });
+    }
+}
+
+const UserTableGateway = class UserTableGateway extends TableGateway {
     /**
      * Función que inserta un usuario en la base de datos
      * 
@@ -25,21 +90,8 @@ const UserTableGateway = class UserTableGateway {
      * @param {function} callback Callback ejecutado al finalizar la inserción. Devuelve el usuario insertado
      */
     insertUser(uuid, name, hash, role, callback) {
-        db.serialize(() => {
-            const statement = `INSERT INTO Usuarios (UUID, Nombre, Hash, Rol) VALUES ('${uuid}', '${name}', '${hash}', '${role}');`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `INSERT INTO Usuarios (UUID, Nombre, Hash, Rol) VALUES ('${uuid}', '${name}', '${hash}', '${role}');`;
+        this.run(statement, callback);
     } 
 
     /**
@@ -50,21 +102,15 @@ const UserTableGateway = class UserTableGateway {
      * un usuario y err será null.
      */
     loadUser(name, callback) {
-        db.serialize(() => {
-            const statement = `SELECT UUID, Hash, Rol FROM Usuarios WHERE Nombre = '${name}'`;
-            db.get(statement, function(err, row) {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    let user = userFactory(name, row.Hash, row.Rol, row.UUID);
-                    callback(null, user);
-                }
-            });
-        });
+        const statement = `SELECT UUID, Hash, Rol FROM Usuarios WHERE Nombre = '${name}'`;
+        const factory = function(row) {
+            return userFactory(name, row.Hash, row.Rol, row.UUID);
+        }
+        this.get(statement, factory, callback);
     }
 }
 
-const LocalTableGateway = class LocalTableGateway {
+const LocalTableGateway = class LocalTableGateway extends TableGateway{
     /**
      * Función que inserta un local en la base de datos
      * 
@@ -76,21 +122,8 @@ const LocalTableGateway = class LocalTableGateway {
      * @param {function} callback Callback ejecutado al finalizar la inserción. Devuelve el local insertado
      */
     insertVenue(uuid, name, calle, codigoPostal, logo, ownerUUID, callback) {
-        db.serialize(() => {
-            const statement = `INSERT INTO Locales (UUID, Nombre, Calle, CodigoPostal, Logo, OwnerId) VALUES ('${uuid}', '${name}', '${calle}', ${codigoPostal}, '${logo}', '${ownerUUID}');`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `INSERT INTO Locales (UUID, Nombre, Calle, CodigoPostal, Logo, OwnerId) VALUES ('${uuid}', '${name}', '${calle}', ${codigoPostal}, '${logo}', '${ownerUUID}');`;
+        this.run(statement, callback);
     } 
 
     /**
@@ -101,21 +134,11 @@ const LocalTableGateway = class LocalTableGateway {
      * una lista de locales y err será null.
      */
     loadVenues(ownerId, callback) {
-        db.serialize(() => {
-            const statement = `SELECT UUID, Nombre, Calle, CodigoPostal, Logo FROM Locales WHERE OwnerId = '${ownerId}';`;
-            db.all(statement, function(err, rows) {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    let venueList = [];
-                    rows.forEach((row) => {
-                        let venue = localFactory(row.Nombre, row.Calle, row.CodigoPostal, row.Logo, row.UUID);
-                        venueList.push(venue);
-                    })
-                    callback(null, venueList);
-                }
-            });
-        });
+        const statement = `SELECT UUID, Nombre, Calle, CodigoPostal, Logo FROM Locales WHERE OwnerId = '${ownerId}';`;
+        const factory = function(row) {
+            return localFactory(row.Nombre, row.Calle, row.CodigoPostal, row.Logo, row.UUID);
+        }
+        this.all(statement, factory, callback);
     }
 
     /**
@@ -129,21 +152,8 @@ const LocalTableGateway = class LocalTableGateway {
      * un error en caso contrario 
      */
     updateVenue(uuid, name, calle, codigoPostal, logo, callback) {
-        db.serialize(() => {
-            const statement = `UPDATE Locales SET Nombre='${name}', Calle='${calle}', CodigoPostal=${codigoPostal}, Logo='${logo}' WHERE UUID='${uuid}';`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `UPDATE Locales SET Nombre='${name}', Calle='${calle}', CodigoPostal=${codigoPostal}, Logo='${logo}' WHERE UUID='${uuid}';`;
+        this.run(statement, callback);
     } 
 
     /**
@@ -154,25 +164,12 @@ const LocalTableGateway = class LocalTableGateway {
      * un error en caso contrario 
      */
     deleteVenue(uuid, callback) {
-        db.serialize(() => {
-            const statement = `DELETE FROM Locales WHERE UUID = '${uuid}';`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `DELETE FROM Locales WHERE UUID = '${uuid}';`;
+        this.run(statement, callback);
     } 
 }
 
-const MessageTableGateway = class MessageTableGateway {
+const MessageTableGateway = class MessageTableGateway extends TableGateway {
 
     /**
      * Función que inserta un mensaje en la base de datos
@@ -185,21 +182,8 @@ const MessageTableGateway = class MessageTableGateway {
      * es correcto, o el error correspondiente si hay algún problema
      */
     insertMessage(messageId, text, senderId, chatId, callback) {
-        db.serialize(() => {
-            const statement = `INSERT INTO Mensajes (UUID, Texto, SenderId, ChatId) VALUES ('${messageId}', '${text}', '${senderId}', '${chatId}');`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `INSERT INTO Mensajes (UUID, Texto, SenderId, ChatId) VALUES ('${messageId}', '${text}', '${senderId}', '${chatId}');`;
+        this.run(statement, callback);
     } 
 
     /**
@@ -210,26 +194,17 @@ const MessageTableGateway = class MessageTableGateway {
      * devuelve una lista de mensajes y err será null.
      */
     loadMessages(chatId, callback) {
-        db.serialize(() => {
-            const statement = `SELECT UUID, Texto, Timestamp, SenderId FROM Mensajes WHERE ChatId = '${chatId}';`;
-            db.all(statement, function(err, rows) {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    let messageList = [];
-                    rows.forEach((row) => {
-                        let msg = mensajeFactory(row.SenderId, row.Texto, row.Timestamp, row.UUID);
-                        messageList.push(msg);
-                    })
-                    callback(null, messageList);
-                }
-            });
-        });
+        const statement = `SELECT UUID, Texto, Timestamp, SenderId FROM Mensajes WHERE ChatId = '${chatId}';`;
+        const factory = function(row) {
+            return mensajeFactory(row.SenderId, row.Texto, row.Timestamp, row.UUID);
+        }
+        this.all(statement, factory, callback);
     }
 }
 
-const ChatTableGateway = class MessageTableGateway {
+const ChatTableGateway = class ChatTableGateway extends TableGateway {
     /**
+     * Función que inserta un Chat en la Base de Datos.
      * 
      * @param {string} chatId id del chat a insertar
      * @param {string} ownerId id del Owner asociado al chat
@@ -238,21 +213,8 @@ const ChatTableGateway = class MessageTableGateway {
      * @param {function(any | null)} callback Callback ejecutado al finalizar la inserción. Devuelve el chat insertado
      */
     insertChat(chatId, ownerId, userId, reservaId, callback) {
-        db.serialize(() => {
-            const statement = `INSERT INTO Chats (UUID, UserId, OwnerId, IdReserva) VALUES ('${chatId}', '${ownerId}', '${userId}', '${reservaId}');`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `INSERT INTO Chats (UUID, UserId, OwnerId, IdReserva) VALUES ('${chatId}', '${ownerId}', '${userId}', '${reservaId}');`;
+        this.run(statement, callback);
     } 
 
     /**
@@ -263,21 +225,15 @@ const ChatTableGateway = class MessageTableGateway {
      * un chat y err será null.
      */
     loadChat(reservaId, callback) {
-        db.serialize(() => {
-            const statement = `SELECT UUID FROM Chats WHERE IdReserva = '${reservaId}'`;
-            db.get(statement, function(err, row) {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    let chat = chatFactory(row.UUID);
-                    callback(null, chat);
-                }
-            });
-        });
+        const statement = `SELECT UUID FROM Chats WHERE IdReserva = '${reservaId}'`;
+        const factory = function(row) {
+            return chatFactory(row.UUID);
+        }
+        this.get(statement, factory, callback);
     }
 }
 
-const OfertaTableGateway = class OfertaTableGateway {
+const OfertaTableGateway = class OfertaTableGateway extends TableGateway {
 
     /**
      * Función que inserta una oferta en la base de datos.
@@ -293,21 +249,8 @@ const OfertaTableGateway = class OfertaTableGateway {
      * producido.
      */
     insertOferta(ofertaId, precio, descripcion, foto, activa, ownerId, localId, callback) {
-        db.serialize(() => {
-            const statement = `INSERT INTO Ofertas (UUID, Precio, Descripcion, Foto, Activa, OwnerId, LocalId) VALUES ('${ofertaId}', ${precio}, '${descripcion}', '${foto}', ${activa}, '${ownerId}', '${localId}');`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `INSERT INTO Ofertas (UUID, Precio, Descripcion, Foto, Activa, OwnerId, LocalId) VALUES ('${ofertaId}', ${precio}, '${descripcion}', '${foto}', ${activa}, '${ownerId}', '${localId}');`;
+        this.run(statement, callback);
     } 
 
     /**
@@ -318,21 +261,11 @@ const OfertaTableGateway = class OfertaTableGateway {
      * devuelve una lista de ofertas y err será null.
      */
     loadOfertas(localId, callback) {
-        db.serialize(() => {
-            const statement = `SELECT UUID, Precio, Descripcion, Foto, Activa FROM Ofertas WHERE LocalId = '${localId}';`;
-            db.all(statement, function(err, rows) {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    let ofertasList = [];
-                    rows.forEach((row) => {
-                        let oferta = ofertaFactory(row.Foto, row.Precio, row.Activa, row.Descripcion, row.UUID);
-                        ofertasList.push(oferta);
-                    })
-                    callback(null, ofertasList);
-                }
-            });
-        });
+        const statement = `SELECT UUID, Precio, Descripcion, Foto, Activa FROM Ofertas WHERE LocalId = '${localId}';`;
+        const factory = function(row) {
+            return ofertaFactory(row.Foto, row.Precio, row.Activa, row.Descripcion, row.UUID);
+        }
+        this.all(statement, factory, callback);
     }
 
     /**
@@ -342,21 +275,8 @@ const OfertaTableGateway = class OfertaTableGateway {
      * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
      */
     deleteOferta(idOferta, callback) {
-        db.serialize(() => {
-            const statement = `DELETE FROM Ofertas WHERE UUID = '${idOferta}';`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `DELETE FROM Ofertas WHERE UUID = '${idOferta}';`;
+        this.run(statement, callback);
     }
 
     /**
@@ -372,25 +292,12 @@ const OfertaTableGateway = class OfertaTableGateway {
      * producido.
      */
     updateOferta(ofertaId, precio, descripcion, foto, activa, callback) {
-        db.serialize(() => {
-            const statement = `UPDATE Ofertas SET Precio=${precio}, Descripcion='${descripcion}', Foto='${foto}', Activa=${activa} WHERE UUID='${ofertaId}';`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `UPDATE Ofertas SET Precio=${precio}, Descripcion='${descripcion}', Foto='${foto}', Activa=${activa} WHERE UUID='${ofertaId}';`;
+        this.run(statement, callback);
     } 
 }
 
-const ReservaTableGateway = class ReservaTableGateway {
+const ReservaTableGateway = class ReservaTableGateway extends TableGateway {
 
     /**
      * Función que inserta una reserva en la Base de Datos.
@@ -405,21 +312,8 @@ const ReservaTableGateway = class ReservaTableGateway {
      * producido.
      */
     insertReserva(idReserva, telefono, hora, dia, userId, idOferta, callback) {
-        db.serialize(() => {
-            const statement = `INSERT INTO Reservas (UUID, Telefono, Hora, Dia, UserId, OfertaId) VALUES ('${idReserva}', '${telefono}', '${hora}', '${dia}', '${userId}', '${idOferta}');`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `INSERT INTO Reservas (UUID, Telefono, Hora, Dia, UserId, OfertaId) VALUES ('${idReserva}', '${telefono}', '${hora}', '${dia}', '${userId}', '${idOferta}');`;
+        this.run(statement, callback);
     } 
 
     /**
@@ -430,21 +324,11 @@ const ReservaTableGateway = class ReservaTableGateway {
      * devuelve una lista de reservas y err será null.
      */
     loadReservas(userId, callback) {
-        db.serialize(() => {
-            const statement = `SELECT UUID, Telefono, Hora, Dia, OfertaId FROM Reservas WHERE UserId = '${userId}';`;
-            db.all(statement, function(err, rows) {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    let reservasList = [];
-                    rows.forEach((row) => {
-                        let reserva = reservaFactory(row.Hora, row.Dia, row.Telefono, row.OfertaId, row.UUID);
-                        reservasList.push(reserva);
-                    })
-                    callback(null, reservasList);
-                }
-            });
-        });
+        const statement = `SELECT UUID, Telefono, Hora, Dia, OfertaId FROM Reservas WHERE UserId = '${userId}';`;
+        const factory = function(row) {
+            return reservaFactory(row.Hora, row.Dia, row.Telefono, row.OfertaId, row.UUID);
+        }
+        this.all(statement, factory, callback);
     }
 
     /**
@@ -455,17 +339,11 @@ const ReservaTableGateway = class ReservaTableGateway {
      * devuelve un string y err será null.
      */
     getIdOferta(idReserva, callback) {
-        db.serialize(() => {
-            const statement = `SELECT OfertaId FROM Reservas WHERE UUID = '${idReserva}';`;
-            db.get(statement, function(err, row) {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    const idOferta = row.OfertaId;
-                    callback(null, idOferta);
-                }
-            });
-        });
+        const statement = `SELECT OfertaId FROM Reservas WHERE UUID = '${idReserva}';`;
+        const factory = function(row) {
+            return row.OfertaId;
+        }
+        this.get(statement, factory, callback);
     }
 
     /**
@@ -475,25 +353,12 @@ const ReservaTableGateway = class ReservaTableGateway {
      * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
      */
     deleteReserva(idReserva, callback) {
-        db.serialize(() => {
-            const statement = `DELETE FROM Reservas WHERE UUID = '${idReserva}';`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `DELETE FROM Reservas WHERE UUID = '${idReserva}';`;
+        this.run(statement, callback);
     } 
 }
 
-const ResennaTableGateway = class ResennaTableGateway {
+const ResennaTableGateway = class ResennaTableGateway extends TableGateway {
 
     /**
      * Método qu inserta una reseña en la Base de Datos.
@@ -505,21 +370,8 @@ const ResennaTableGateway = class ResennaTableGateway {
      * @param {function(any | null)} callback Callback ejecutado al finalizar la inserción. Devuelve `null` o el error
      */
     insertResenna(idResenna, descripcion, userId, ofertaId, callback) {
-        db.serialize(() => {
-            const statement = `INSERT INTO Resennas (UUID, descripcion, UserId, OfertaId) VALUES ('${idResenna}', '${descripcion}', '${userId}', '${ofertaId}');`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `INSERT INTO Resennas (UUID, descripcion, UserId, OfertaId) VALUES ('${idResenna}', '${descripcion}', '${userId}', '${ofertaId}');`;
+        this.run(statement, callback);
     } 
 
     /**
@@ -530,21 +382,11 @@ const ResennaTableGateway = class ResennaTableGateway {
      * devuelve una lista de reseñas y err será null.
      */
     loadResennas(ofertaId, callback) {
-        db.serialize(() => {
-            const statement = `SELECT UUID, Descripcion FROM Resennas WHERE OfertaId = '${ofertaId}';`;
-            db.all(statement, function(err, rows) {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    let resennasList = [];
-                    rows.forEach((row) => {
-                        let resenna = resennaFactory(row.Descripcion, row.UUID);
-                        resennasList.push(resenna);
-                    })
-                    callback(null, resennasList);
-                }
-            });
-        });
+        const statement = `SELECT UUID, Descripcion FROM Resennas WHERE OfertaId = '${ofertaId}';`;
+        const factory = function(row) {
+            return resennaFactory(row.Descripcion, row.UUID);
+        }
+        this.all(statement, factory, callback);
     }
 
     /**
@@ -554,21 +396,8 @@ const ResennaTableGateway = class ResennaTableGateway {
      * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
      */
     deleteResenna(idResenna, callback) {
-        db.serialize(() => {
-            const statement = `DELETE FROM Resennas WHERE UUID = '${idResenna}';`;
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION;');
-                db.run(statement, function(err) {
-                    if (err) {
-                        console.log(err);
-                        callback(err);
-                    }
-                });
-                db.run('COMMIT;', function(err) {
-                    callback(null);
-                });
-            });
-        });
+        const statement = `DELETE FROM Resennas WHERE UUID = '${idResenna}';`;
+        this.run(statement, callback);
     } 
 }
 

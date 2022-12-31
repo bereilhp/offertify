@@ -595,4 +595,33 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
+    test('LocalTableGateway tiene operación para actualizar local', done => {
+        const LocalTableGateway = database.LocalTableGateway;
+
+        const ownerUuid = 'afj03j0faj3044567890123456789013';
+        const name = 'Owner Prueba Local Update';
+        const hash = 0x01;
+        const owner = new Owner(ownerUuid, name, hash);
+
+        const venueUuid = '230fj20wmms0404nfw0';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
+        const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
+
+        const ltg = new LocalTableGateway();
+        ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, owner.uuid, function(err) {
+            const newCalle = 'calle mips 43';
+            ltg.updateVenue(local.uuid, local.nombre, newCalle, local.codigoPostal, local.logo, function(err) {
+                ltg.loadVenues(owner.uuid, function(err, listaLocales) {
+                    expect(listaLocales[0].calle).toBe(newCalle);
+
+                    done();
+                    return;
+                });
+            });
+        });
+    });
+
 });

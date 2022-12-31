@@ -117,6 +117,33 @@ const LocalTableGateway = class LocalTableGateway {
             });
         });
     }
+
+    /**
+     * Función que actualiza un local en la base de datos
+     * 
+     * @param {string} venueUUID Id del local
+     * @param {string} name Nuevo nombre del local
+     * @param {string} calle Nueva calle del local
+     * @param {int} codigoPostal Nuevo Código postal
+     * @param {function} callback Callback ejecutado al finalizar la actualización. Devuelve el local insertado
+     */
+    updateVenue(uuid, name, calle, codigoPostal, logo, callback) {
+        db.serialize(() => {
+            const statement = `UPDATE Locales SET Nombre='${name}', Calle='${calle}', CodigoPostal=${codigoPostal}, Logo='${logo}' WHERE UUID='${uuid}';`;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
+            });
+        });
+    } 
 }
 
 const MessageTableGateway = class MessageTableGateway {

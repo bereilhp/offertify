@@ -546,4 +546,26 @@ describe('Tests que requieren base de datos de pruebas', () => {
             });
         });
     });
+    
+    test('ReservaTableGateway tiene operación para borrar una reserva', done => {
+        const ReservaTableGateway = database.ReservaTableGateway;
+
+        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const ofertaId = '9142-247901204567899123h56789012';
+        const reservaId = 'jf0jfwe0gg340jt023jf02j30fj230jt';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+        const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
+
+        const rtg = new ReservaTableGateway();  
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {});
+        rtg.deleteReserva(reserva.uuid, function(err) {
+            // Si todo va bien, err = null
+            expect(err).toBeNull();
+
+            done();
+            return;
+        });
+    });
 });

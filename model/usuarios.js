@@ -73,11 +73,18 @@ const Client = class Client extends User {
             } else {
                 callback(reserva);
             }
-        })
+        });
     }
 
-    cancelarReserva(id) {
-        // TO DO
+    /**
+     * Función que cancela una reserva.
+     * 
+     * @param {string} idReserva Id de la Reserva a cancelar
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
+     */
+    cancelarReserva(idReserva, callback) {
+        const reservaTableGateway = new ReservaTableGateway();
+        reservaTableGateway.deleteReserva(idReserva, callback);
     }
 };
 

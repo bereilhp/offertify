@@ -383,6 +383,30 @@ const ReservaTableGateway = class ReservaTableGateway {
             });
         });
     }
+
+    /**
+     * Función que borra una reserva de la base de datos.
+     * 
+     * @param {string} idReserva Id de la reserva a borrar
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
+     */
+    deleteReserva(idReserva, callback) {
+        db.serialize(() => {
+            const statement = `DELETE FROM Reservas WHERE UUID = '${idReserva}';`;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
+            });
+        });
+    } 
 }
 
 const ResennaTableGateway = class ResennaTableGateway {

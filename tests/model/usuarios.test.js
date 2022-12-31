@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const { Console } = require('console');
 const rewire = require('rewire');
+const { OfertaTableGateway } = require('../../database/database');
 const { Oferta } = require('../../model/ofertas');
 const { Resenna } = require('../../model/resennas');
 const { Reserva } = require('../../model/reservas');
@@ -331,7 +332,6 @@ describe('Tests que requieren Mock de BBDD', () => {
         const dia = '29/12/22';
 
         user.hacerReserva(ofertaId, telefono, hora, dia, function(reserva) {
-            console.log(reserva.uuid)
             user.cancelarReserva(reserva.uuid, function(err) {
                 const reservaGateway = new ReservaTableGateway();
                 reservaGateway.loadReservas(user.uuid, function(err, listaReservas) {
@@ -341,6 +341,76 @@ describe('Tests que requieren Mock de BBDD', () => {
                     return;
                 });
             })
+        });
+    });
+
+    test('Owner -> Dueño puede crear ofertas', done => {
+        const owner = new Owner('if3fjwe0cqw', 'Dueño Prueba para Reservas 1', 0x01);
+
+        const localId = '42c2527790120456789j123456789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba 1';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            expect(oferta.foto).toBe(foto);
+
+            done();
+            return;
+        });
+    });
+
+    test('Owner -> Las ofertas creadas por el dueño se crean activas', done => {
+        const owner = new Owner('jf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = '42c2527790120456789j123456789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba 2';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            expect(oferta.activa).toBeTruthy();
+
+            done();
+            return;
+        });
+    });
+
+    test('Owner -> Las ofertas creadas por el dueño se guardan en Base de Datos', done => {
+        const OfertaTableGateway = database.OfertaTableGateway;
+        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
+        
+        const owner = new Owner('o3fjw0vn34w', 'Dueño Prueba para Ofertas 3', 0x01);
+
+        const localId = '3f0js0v0nv0n40bn034j123456789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba 2';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            const ofertaTableGateway = new OfertaTableGateway();
+            ofertaTableGateway.loadOfertas(localId, function(err, listaOfertas) {
+                expect(listaOfertas[0].uuid).toBe(oferta.uuid);
+
+                done();
+                return;
+            });
+        });
+    });
+
+    test('Owner -> Las ofertas creadas por el dueño se añaden a la lista de ofertas', done => {
+        const owner = new Owner('jf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = '42c2527790120456789j123456789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba 2';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            expect(owner.ofertas).toContain(oferta);
+
+            done();
+            return;
         });
     });
 });

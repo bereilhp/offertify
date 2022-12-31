@@ -16,12 +16,12 @@ const Oferta = class Oferta {
  * @param {int} precio precio de la oferta es de tipo numero
  * @param {BinaryData} activa 0 o 1 si la oferta esa activa o no
  * @param {string} descripcion Pequena descripcion del la oferta 
- * @param {string | null} localId Opcional. UUID del la oferta. Si no se especifica, se genera uno nuevo
+ * @param {string | null} ofertaId Opcional. UUID del la oferta. Si no se especifica, se genera uno nuevo
  * @returns Objeto oferta con los datos proporcionados
  */
-function ofertaFactory(foto, precio, activa, descripcion, localId = null) {
-    localId = localId ?? uuid.v4();
-    return new Oferta(localId, foto, precio, activa,descripcion);
+function ofertaFactory(foto, precio, activa, descripcion, ofertaId = null) {
+    ofertaId = ofertaId ?? uuid.v4();
+    return new Oferta(ofertaId, foto, precio, activa,descripcion);
 }
 
 module.exports = {

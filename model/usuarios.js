@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 
 let { OfertaTableGateway, ResennaTableGateway, UserTableGateway, ReservaTableGateway } = require('../database/database');
+const { ofertaFactory } = require('./ofertas');
 const { resennaFactory } = require('./resennas');
 const { reservaFactory } = require('./reservas');
 
@@ -96,8 +97,30 @@ const Owner = class Owner extends User {
         this.locales = locales;
     }
 
-    hacerOferta(foto, precio, descripcion, local) {
-        // TO DO
+    /**
+     * Método para crear ofertas.
+     * 
+     * @param {string} foto URL de la foto asociada a la oferta
+     * @param {float} precio Precio de la oferta.
+     * @param {string} descripcion Descripción de la oferta
+     * @param {string} idLocal Id del local asociado a la oferta
+     * @param {function(Oferta | null)} callback Callback ejecutado al finalizar la operación. Devuelve la oferta creada
+     * o `null` si hay algún error.
+     */
+    hacerOferta(foto, precio, descripcion, idLocal, callback) {
+        const ofertaTableGateway = new OfertaTableGateway();
+        const oferta = ofertaFactory(foto, precio, 1, descripcion);
+        const ofertas = this.ofertas;
+
+        ofertaTableGateway.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, this.uuid, idLocal, function(err) {
+            if (err) {
+                console.log(err);
+                callback(err, null);
+            } else {
+                ofertas.push(oferta);
+                callback(null, oferta);
+            }
+        });
     }
 
     editarOferta(idOferta, foto = null, precio = null, descripcion = null) {

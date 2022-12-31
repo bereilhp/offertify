@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 
-let { OfertaTableGateway, ResennaTableGateway, UserTableGateway, ReservaTableGateway } = require('../database/database');
+let { OfertaTableGateway, ResennaTableGateway, UserTableGateway, ReservaTableGateway, LocalTableGateway } = require('../database/database');
+const { localFactory } = require('./locales');
 const { ofertaFactory } = require('./ofertas');
 const { resennaFactory } = require('./resennas');
 const { reservaFactory } = require('./reservas');
@@ -171,8 +172,29 @@ const Owner = class Owner extends User {
         ofertaTableGateway.updateOferta(ofertaADesactivar.uuid, ofertaADesactivar.precio, ofertaADesactivar.descripcion, ofertaADesactivar.foto, ofertaADesactivar.activa, callback);
     }
 
-    crearLocal(nombre, calle, codigoPostal, logo) {
-        // TO DO
+    /**
+     * 
+     * @param {string} nombre Nombre del local
+     * @param {string} calle Calle del local
+     * @param {int} codigoPostal Código postal del local
+     * @param {string} logo URL del logo del local.
+     * @param {function(Local | null)} callback Callback ejecutado al finalizar la operación. Devuelve el local creado
+     * o `null` si hay algún error.
+     */
+    crearLocal(nombre, calle, codigoPostal, logo, callback) {
+        const localTableGateway = new LocalTableGateway();
+        const local = localFactory(nombre, calle, codigoPostal, logo);
+        const locales = this.locales;
+
+        localTableGateway.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, this.uuid, function(err) {
+            if (err) {
+                console.log(err);
+                callback(err, null);
+            } else {
+                locales.push(local);
+                callback(null, local);
+            }
+        });
     }
 
     editarLocal(idLocal, nombre = null, calle = null, codigoPostal = null, logo = null) {

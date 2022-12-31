@@ -499,4 +499,144 @@ describe('Tests que requieren Mock de BBDD', () => {
             });
         });
     });
+
+    test('Owner -> Dueño puede crear locales', done => {
+        const owner = new Owner('if3fjwe0cqw', 'Dueño Prueba para Locales 1', 0x01);
+
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
+
+        owner.crearLocal(nombre, calle, codigoPostal, logo, function(err, local) {
+            expect(local.calle).toBe(calle);
+
+            done();
+            return;
+        });
+    });
+
+    test('Owner -> Los locales creados por el dueño se guardan en Base de Datos', done => {
+        const LocalTableGateway = database.LocalTableGateway;
+        usuarios.__set__({ LocalTableGateway: LocalTableGateway });
+        
+        const owner = new Owner('fasdf03jcqw', 'Dueño Prueba para Locales 2', 0x01);
+
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
+
+        owner.crearLocal(nombre, calle, codigoPostal, logo, function(err, local) {
+            const localTableGateway = new LocalTableGateway();
+            localTableGateway.loadVenues(owner.uuid, function(err, listaLocales) {
+                expect(listaLocales[0].uuid).toBe(local.uuid);
+
+                done();
+                return;
+            });
+        });
+    });
+
+    test('Owner -> Los locales creados por el dueño se añaden a la lista de locales', done => {
+        const owner = new Owner('302fj02jg0w', 'Dueño Prueba para Locales 3', 0x01);
+
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
+
+        owner.crearLocal(nombre, calle, codigoPostal, logo, function(err, local) {
+            expect(owner.locales).toContain(local);
+
+            done();
+            return;
+        });
+    });
+
+    test.skip('Owner -> El dueño puede actualizar un local', done => {
+        const owner = new Owner('jf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = '42c2527790120456789j123456789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba para Editar 1';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            const newPrice = 22.1;
+            owner.editarOferta(oferta.uuid, null, newPrice, null, function(err) {
+                expect(oferta.precio).toBe(newPrice);
+
+                done();
+                return;
+            });
+        });
+    });
+
+    test.skip('Owner -> Al editar un local se actualiza la Base de Datos', done => {
+        const OfertaTableGateway = database.OfertaTableGateway;
+        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
+        
+        const owner = new Owner('jf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = 'fasd3080fj0dfj234hn340fm06789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba para Editar 2';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            const newPrice = 22.1;
+            owner.editarOferta(oferta.uuid, null, newPrice, null, function(err) {
+                const ofertaTableGateway = new OfertaTableGateway();
+                ofertaTableGateway.loadOfertas(localId, function(err, listaOfertas) {
+                    expect(listaOfertas[0].precio).toBe(newPrice);
+
+                    done();
+                    return;
+                });
+            });
+        });
+    });
+
+    test.skip('Owner -> El dueño puede borrar un local', done => {
+        const owner = new Owner('f0asdjf034w', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = 'afsdf30j210jv20vm0n402nf023nt012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba para Desactivar 1';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            owner.desactivarOferta(oferta.uuid, function(err) {
+                expect(oferta.activa).toBeFalsy();
+
+                done();
+                return;
+            });
+        });
+    });
+
+    test.skip('Owner -> Al borrar un local se actualiza la Base de Datos', done => {
+        const OfertaTableGateway = database.OfertaTableGateway;
+        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
+        
+        const owner = new Owner('30208fj404w', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = '30920850820480258hn340fm06789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba para Desactivar 2';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            owner.desactivarOferta(oferta.uuid, function(err) {
+                const ofertaTableGateway = new OfertaTableGateway();
+                ofertaTableGateway.loadOfertas(localId, function(err, listaOfertas) {
+                    expect(listaOfertas[0].activa).toBeFalsy();
+
+                    done();
+                    return;
+                });
+            });
+        });
+    });
 });

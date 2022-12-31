@@ -123,8 +123,31 @@ const Owner = class Owner extends User {
         });
     }
 
-    editarOferta(idOferta, foto = null, precio = null, descripcion = null) {
-        // TO DO
+    /**
+     * Función para actualizar una oferta.
+     * 
+     * @param {string} idOferta Id de la oferta a editar
+     * @param {string | null} foto Nueva url de la foto, `null` si no se desea actualizar la url.
+     * @param {float | null} precio Nuevo precio para la oferta, `null` si no se desea cambiar.
+     * @param {string | null} descripcion Nueva descripción para la oferta, `null` si no se desea actualizar.
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` si no hay 
+     * errores o el error en caso de que ocurra.
+     */
+    editarOferta(idOferta, foto = null, precio = null, descripcion = null, callback) {
+        const ofertaTableGateway = new OfertaTableGateway();
+        let ofertaACambiar = null;
+
+        this.ofertas.forEach((oferta) => {
+            if (oferta.uuid === idOferta) {
+                oferta.foto = foto ?? oferta.foto;
+                oferta.precio = precio ?? oferta.precio;
+                oferta.descripcion = descripcion ?? oferta.descripcion;
+
+                ofertaACambiar = oferta;
+            }
+        });
+
+        ofertaTableGateway.updateOferta(ofertaACambiar.uuid, ofertaACambiar.precio, ofertaACambiar.descripcion, ofertaACambiar.foto, callback);
     }
 
     desactivarOferta(idOferta) {

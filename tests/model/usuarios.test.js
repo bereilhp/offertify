@@ -413,4 +413,48 @@ describe('Tests que requieren Mock de BBDD', () => {
             return;
         });
     });
+
+    test('Owner -> El dueño puede actualizar una oferta', done => {
+        const owner = new Owner('jf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = '42c2527790120456789j123456789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba para Editar 1';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            const newPrice = 22.1;
+            owner.editarOferta(oferta.uuid, null, newPrice, null, function(err) {
+                expect(oferta.precio).toBe(newPrice);
+
+                done();
+                return;
+            });
+        });
+    });
+
+    test('Owner -> Al editar una oferta se actualiza la Base de Datos', done => {
+        const OfertaTableGateway = database.OfertaTableGateway;
+        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
+        
+        const owner = new Owner('jf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = 'fasd3080fj0dfj234hn340fm06789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba para Editar 2';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            const newPrice = 22.1;
+            owner.editarOferta(oferta.uuid, null, newPrice, null, function(err) {
+                const ofertaTableGateway = new OfertaTableGateway();
+                ofertaTableGateway.loadOfertas(localId, function(err, listaOfertas) {
+                    expect(listaOfertas[0].precio).toBe(newPrice);
+
+                    done();
+                    return;
+                });
+            });
+        });
+    });
 });

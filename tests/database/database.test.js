@@ -357,7 +357,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
 
         const otg = new OfertaTableGateway();  
         otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
-        otg.loadOfertas(localId, function(err, ofertasList) {
+        otg.loadOfertas(ownerId, function(err, ofertasList) {
             if (err) {
                 done(err);
                 return;
@@ -572,7 +572,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
     test('OfertaTableGateway tiene operación para actualizar oferta', done => {
         const OfertaTableGateway = database.OfertaTableGateway;
 
-        const ownerId = '12325c779012i4567890123456789012';
+        const ownerId = 'f9aefj30jfawnv0n7890123456789012';
         const localId = 'fjowfjoawevno43nbn340qfj0q4j4gn2';
         const ofertaId = 'fjasdfj03jf4n03n0bn0wnvh56789012';
         const foto = 'http://url.foto.com/foto.png';
@@ -586,7 +586,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
 
         const newPrice = 11.9;
         otg.updateOferta(oferta.uuid, newPrice, oferta.descripcion, oferta.foto, oferta.activa, function(err) {
-            otg.loadOfertas(localId, function(err, listaOfertas) {
+            otg.loadOfertas(ownerId, function(err, listaOfertas) {
                 expect(listaOfertas[0].precio).toBe(newPrice);
 
                 done();
@@ -624,7 +624,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
-    test('LocalTableGateway tiene operación para borar Local', done => {
+    test('LocalTableGateway tiene operación para borrar Local', done => {
         const LocalTableGateway = database.LocalTableGateway;
 
         const ownerUuid = '230fjw5868720g0q3n0v3qn456789013';

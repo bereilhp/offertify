@@ -416,7 +416,7 @@ describe('Tests que requieren Mock de BBDD', () => {
 
         owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
             const ofertaTableGateway = new OfertaTableGateway();
-            ofertaTableGateway.loadOfertas(localId, function(err, listaOfertas) {
+            ofertaTableGateway.loadOfertas(owner.uuid, function(err, listaOfertas) {
                 expect(listaOfertas[0].uuid).toBe(oferta.uuid);
 
                 done();
@@ -464,7 +464,7 @@ describe('Tests que requieren Mock de BBDD', () => {
         const OfertaTableGateway = database.OfertaTableGateway;
         usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
         
-        const owner = new Owner('jf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
+        const owner = new Owner('dfevasvf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
 
         const localId = 'fasd3080fj0dfj234hn340fm06789012';
         const foto = 'http://url.foto.com/foto.png';
@@ -475,7 +475,7 @@ describe('Tests que requieren Mock de BBDD', () => {
             const newPrice = 22.1;
             owner.editarOferta(oferta.uuid, null, newPrice, null, function(err) {
                 const ofertaTableGateway = new OfertaTableGateway();
-                ofertaTableGateway.loadOfertas(localId, function(err, listaOfertas) {
+                ofertaTableGateway.loadOfertas(owner.uuid, function(err, listaOfertas) {
                     expect(listaOfertas[0].precio).toBe(newPrice);
 
                     done();
@@ -486,7 +486,7 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Owner -> El dueño puede desactivar una oferta', done => {
-        const owner = new Owner('f0asdjf034w', 'Dueño Prueba para Ofertas 2', 0x01);
+        const owner = new Owner('f0asdjasdv03vnf034w', 'Dueño Prueba para Ofertas 2', 0x01);
 
         const localId = 'afsdf30j210jv20vm0n402nf023nt012';
         const foto = 'http://url.foto.com/foto.png';
@@ -507,7 +507,7 @@ describe('Tests que requieren Mock de BBDD', () => {
         const OfertaTableGateway = database.OfertaTableGateway;
         usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
         
-        const owner = new Owner('30208fj404w', 'Dueño Prueba para Ofertas 2', 0x01);
+        const owner = new Owner('302fsojo3joivjoi8fj404w', 'Dueño Prueba para Ofertas 2', 0x01);
 
         const localId = '30920850820480258hn340fm06789012';
         const foto = 'http://url.foto.com/foto.png';
@@ -517,7 +517,7 @@ describe('Tests que requieren Mock de BBDD', () => {
         owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
             owner.desactivarOferta(oferta.uuid, function(err) {
                 const ofertaTableGateway = new OfertaTableGateway();
-                ofertaTableGateway.loadOfertas(localId, function(err, listaOfertas) {
+                ofertaTableGateway.loadOfertas(owner.uuid, function(err, listaOfertas) {
                     expect(listaOfertas[0].activa).toBeFalsy();
 
                     done();
@@ -528,7 +528,7 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Owner -> Dueño puede crear locales', done => {
-        const owner = new Owner('if3fjwe0cqw', 'Dueño Prueba para Locales 1', 0x01);
+        const owner = new Owner('if3fjwe0asdfoijasocjcqw', 'Dueño Prueba para Locales 1', 0x01);
 
         const nombre = 'Local';
         const calle = 'Calle Ensamblador 15';
@@ -731,28 +731,31 @@ describe('Tests que requieren Mock de BBDD', () => {
         userFactory(name, hash, 'owner', callback, ownerId);
     });
 
-    test.skip('userFactory carga las ofertas de la Base de Datos', done => {
+    test('userFactory carga las ofertas de la Base de Datos', done => {
         const OfertaTableGateway = database.OfertaTableGateway;
-        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
+        const LocalTableGateway = database.LocalTableGateway;
+        usuarios.__set__({ 
+            OfertaTableGateway: OfertaTableGateway,
+            LocalTableGateway: LocalTableGateway
+        });
 
         const ownerId = '3wfj030gn20nv02pvh90123456789012';
         const name = 'Dueño Prueba Builder 1';
         const hash = 'Hashed Password';
 
         // Creamos e insertamos un local de prueba en la base de datos
-        const venueUuid = '230fj20wmms0404nfw0';
+        const localId = '38fj0n40vw0kthsdkfvupai45i2c2012';
         const nombre = 'Local';
         const calle = 'Calle Ensamblador 15';
         const codigoPostal = 29078;
         const logo = 'https://url.logo.com/logo.png'
-        const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
+        const local = new Local(localId, nombre, calle, codigoPostal, logo);
 
         const ltg = new LocalTableGateway();
         ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, ownerId, () => {});
 
         // Creamos e insertamos una oferta de prueba en la base de datos
-        const localId = '42c2527790120456789j123456789012';
-        const ofertaId = '9142-247901204567899123h56789012';
+        const ofertaId = '30fja0sjv0en04567899123h56789012';
         const foto = 'http://url.foto.com/foto.png';
         const precio = 10.4;
         const activa = 1;

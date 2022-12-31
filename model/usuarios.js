@@ -394,6 +394,8 @@ const OwnerBuilder = class OwnerBuilder extends UserBuilder {
      */
     build(callback) {
         const localTableGateway = new LocalTableGateway(); 
+        const ofertaTableGateway = new OfertaTableGateway(); 
+
         let owner = this.owner;
         localTableGateway.loadVenues(owner.uuid, function(err, locales) {
             if (err) {
@@ -401,7 +403,10 @@ const OwnerBuilder = class OwnerBuilder extends UserBuilder {
                 callback(null);
             } else {
                 owner.locales = locales;
-                callback(owner);
+                ofertaTableGateway.loadOfertas(owner.uuid, function(err, ofertas) {
+                    owner.ofertas = ofertas;
+                    callback(owner);
+                });
             }
         });
     }

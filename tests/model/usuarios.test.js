@@ -458,7 +458,7 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
-    test('Owner -> El dueño puede desactiva una oferta', done => {
+    test('Owner -> El dueño puede desactivar una oferta', done => {
         const owner = new Owner('f0asdjf034w', 'Dueño Prueba para Ofertas 2', 0x01);
 
         const localId = 'afsdf30j210jv20vm0n402nf023nt012';
@@ -555,7 +555,7 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Owner -> El dueño puede actualizar un local', done => {
-        const owner = new Owner('330fj00jg0w', 'Dueño Prueba para Locales 3', 0x01);
+        const owner = new Owner('330fj00jg0w', 'Dueño Prueba para Locales 4', 0x01);
 
         const nombre = 'Local';
         const calle = 'Calle Ensamblador 15';
@@ -577,7 +577,7 @@ describe('Tests que requieren Mock de BBDD', () => {
         const LocalTableGateway = database.LocalTableGateway;
         usuarios.__set__({ LocalTableGateway: LocalTableGateway });
         
-        const owner = new Owner('39958020j0w', 'Dueño Prueba para Locales 3', 0x01);
+        const owner = new Owner('39958020j0w', 'Dueño Prueba para Locales 5', 0x01);
 
         const nombre = 'Local';
         const calle = 'Calle Ensamblador 15';
@@ -598,17 +598,17 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
-    test.skip('Owner -> El dueño puede borrar un local', done => {
-        const owner = new Owner('f0asdjf034w', 'Dueño Prueba para Ofertas 2', 0x01);
+    test('Owner -> El dueño puede borrar un local', done => {
+        const owner = new Owner('39958020j0w', 'Dueño Prueba para Locales 6', 0x01);
 
-        const localId = 'afsdf30j210jv20vm0n402nf023nt012';
-        const foto = 'http://url.foto.com/foto.png';
-        const precio = 10.4;
-        const descripcion = 'Oferta de Prueba para Desactivar 1';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
 
-        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
-            owner.desactivarOferta(oferta.uuid, function(err) {
-                expect(oferta.activa).toBeFalsy();
+        owner.crearLocal(nombre, calle, codigoPostal, logo, function(err, local) {
+            owner.borrarLocal(local.uuid, function(err) {
+                expect(owner.locales).not.toContain(local);
 
                 done();
                 return;

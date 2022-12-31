@@ -226,8 +226,25 @@ const Owner = class Owner extends User {
         localTableGateway.updateVenue(localACambiar.uuid, localACambiar.nombre, localACambiar.calle, localACambiar.codigoPostal, localACambiar.local, callback);
     }
 
-    borrarLocal(idLocal) {
-        // TO DO
+    /**
+     * Método para eliminar locales.
+     * 
+     * @param {string} idLocal Id del local a eliminar
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` si no hay 
+     * errores o el error en caso de que ocurra.
+     */
+    borrarLocal(idLocal, callback) {
+        let localABorrar = null; 
+        let found = false;
+
+        for (let i = 0; i < this.locales.length && !found; i++) {
+            if (this.locales[i].uuid === idLocal) {
+                localABorrar = this.locales.splice(i, 1);
+                found = true;
+            }
+        }
+
+        callback(null);
     }
 };
 

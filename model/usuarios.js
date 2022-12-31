@@ -3,6 +3,7 @@ const uuid = require('uuid');
 
 let { OfertaTableGateway, ResennaTableGateway, UserTableGateway, ReservaTableGateway } = require('../database/database');
 const { resennaFactory } = require('./resennas');
+const { reservaFactory } = require('./reservas');
 
 const User = class User {
     constructor(uuid, name, hash) {
@@ -26,7 +27,7 @@ const Client = class Client extends User {
      * 
      * @param {string} descripcion Texto de la reseña
      * @param {string} idReserva Id de la reserva asociada a la reseña
-     * @param {function(Resenna)} callback Callback ejecutado al finalizar la operación. Devuelve la Reseña creada
+     * @param {function(Resenna | null)} callback Callback ejecutado al finalizar la operación. Devuelve la Reseña creada
      * o `null` si hay algún error.
      */
     hacerResenna(descripcion, idReserva, callback) {
@@ -51,8 +52,19 @@ const Client = class Client extends User {
         });
     }
 
-    hacerReserva(telefono, hora, dia) {
-        // TO DO       
+    /**
+     * Método para crear reservas.
+     * 
+     * @param {string} idOferta Id de la oferta asociada a la reserva.
+     * @param {int} telefono Teléfono asociado a la reserva
+     * @param {string} hora String que contiene la hora. Formato HH:MM
+     * @param {string} dia String que contiene el día. Formato DD/MM/AAAA
+     * @param {function(Reserva | null)} callback Callback ejecutado al finalizar la operación. Devuelve la Reserva creada
+     * o `null` si hay algún error.
+     */
+    hacerReserva(idOferta, telefono, hora, dia, callback) {
+        const reserva = reservaFactory(hora, dia, telefono, idOferta);
+        callback(reserva);
     }
 
     cancelarReserva(id) {

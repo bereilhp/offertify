@@ -280,4 +280,23 @@ describe('Tests que requieren Mock de BBDD', () => {
             });
         });
     });
+
+    test('Client -> Cliente puede crear reservas', done => {
+        const ReservaTableGateway = database.ReservaTableGateway;
+        usuarios.__set__({ ReservaTableGateway: ReservaTableGateway });
+        
+        const user = new Client('if3fjwe0cqw', 'Cliente Prueba para Reservas 1', 0x01);
+
+        const ofertaId = '080480fj20f02m30j02802380t82u0fj';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+
+        user.hacerReserva(ofertaId, telefono, hora, dia, function(reserva) {
+            expect(reserva.idOferta).toBe(ofertaId);
+
+            done();
+            return;
+        });
+    });
 });

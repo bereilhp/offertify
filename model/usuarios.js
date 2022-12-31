@@ -147,7 +147,7 @@ const Owner = class Owner extends User {
             }
         });
 
-        ofertaTableGateway.updateOferta(ofertaACambiar.uuid, ofertaACambiar.precio, ofertaACambiar.descripcion, ofertaACambiar.foto, callback);
+        ofertaTableGateway.updateOferta(ofertaACambiar.uuid, ofertaACambiar.precio, ofertaACambiar.descripcion, ofertaACambiar.foto, ofertaACambiar.activa, callback);
     }
 
     desactivarOferta(idOferta) {

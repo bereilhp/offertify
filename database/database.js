@@ -241,7 +241,7 @@ const OfertaTableGateway = class OfertaTableGateway {
      */
     insertOferta(ofertaId, precio, descripcion, foto, activa, ownerId, localId, callback) {
         db.serialize(() => {
-            const statement = `INSERT INTO Ofertas (UUID, Precio, Descripcion, Foto, Activa, OwnerId, LocalId) VALUES ('${ofertaId}', ${precio}, '${descripcion}', '${foto}', '${activa}', '${ownerId}', '${localId}');`;
+            const statement = `INSERT INTO Ofertas (UUID, Precio, Descripcion, Foto, Activa, OwnerId, LocalId) VALUES ('${ofertaId}', ${precio}, '${descripcion}', '${foto}', ${activa}, '${ownerId}', '${localId}');`;
             db.serialize(() => {
                 db.run('BEGIN TRANSACTION;');
                 db.run(statement, function(err) {
@@ -313,12 +313,14 @@ const OfertaTableGateway = class OfertaTableGateway {
      * @param {float} precio Nuevo precio de la oferta
      * @param {string} descripcion Nueva descripción de la oferta
      * @param {string} foto Nueva URL de la imagen asociada a la oferta
+     * @param {int} activa Nuevo valor para el parámetro 'activa'. Debe ser `0` (para desactivar la oferta) o `1` para 
+     * activarla.
      * @param {function(any | null)} callback Callback ejecutado al finalizar la actualización. Devuelve `null` o el error
      * producido.
      */
-    updateOferta(ofertaId, precio, descripcion, foto, callback) {
+    updateOferta(ofertaId, precio, descripcion, foto, activa, callback) {
         db.serialize(() => {
-            const statement = `UPDATE Ofertas SET Precio=${precio}, Descripcion='${descripcion}', Foto='${foto}' WHERE UUID='${ofertaId}';`;
+            const statement = `UPDATE Ofertas SET Precio=${precio}, Descripcion='${descripcion}', Foto='${foto}', Activa=${activa} WHERE UUID='${ofertaId}';`;
             db.serialize(() => {
                 db.run('BEGIN TRANSACTION;');
                 db.run(statement, function(err) {

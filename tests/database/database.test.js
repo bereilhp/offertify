@@ -585,7 +585,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
 
         const newPrice = 11.9;
-        otg.updateOferta(oferta.uuid, newPrice, oferta.descripcion, oferta.foto, function(err) {
+        otg.updateOferta(oferta.uuid, newPrice, oferta.descripcion, oferta.foto, oferta.activa, function(err) {
             otg.loadOfertas(localId, function(err, listaOfertas) {
                 expect(listaOfertas[0].precio).toBe(newPrice);
 

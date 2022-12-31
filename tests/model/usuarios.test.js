@@ -639,4 +639,10 @@ describe('Tests que requieren Mock de BBDD', () => {
             });
         });
     });
+
+    test('Módulo usuarios tiene clase Builder privada al módulo', () => {
+        const UserBuilder = usuarios.__get__('UserBuilder');
+        const builder = new UserBuilder();
+        expect(builder.build).toThrow('Not Implemented Error');
+    });
 });

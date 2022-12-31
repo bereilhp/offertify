@@ -331,6 +331,17 @@ function registerUser(name, password, rol, callback) {
     });
 }
 
+const UserBuilder = class UserBuilder {
+    /**
+     * Método abstracto usado para construir usuarios. Deberá ser sobreescito por las subclases
+     * 
+     * @throws Not Implemented Error
+     */
+    build() {
+        throw Error('Not Implemented Error');
+    }
+}
+
 module.exports = {
     User,
     Client,

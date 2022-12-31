@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 
-let { UserTableGateway, OfertaTableGateway, ResennaTableGateway } = require('../database/database');
+let { OfertaTableGateway, ResennaTableGateway, UserTableGateway, ReservaTableGateway } = require('../database/database');
+const { resennaFactory } = require('./resennas');
 
 const User = class User {
     constructor(uuid, name, hash) {
@@ -20,8 +21,34 @@ const Client = class Client extends User {
         this.resennas = resennas;
     }
 
-    hacerResenna(descripcion) {
-        // TO DO
+    /**
+     * Método para crear Reseñas
+     * 
+     * @param {string} descripcion Texto de la reseña
+     * @param {string} idReserva Id de la reserva asociada a la reseña
+     * @param {function(Resenna)} callback Callback ejecutado al finalizar la operación. Devuelve la Reseña creada
+     * o `null` si hay algún error.
+     */
+    hacerResenna(descripcion, idReserva, callback) {
+        const reservaTableGateway = new ReservaTableGateway();
+        const resennaTableGateway = new ResennaTableGateway();
+
+        const resenna = resennaFactory(descripcion);
+        const userId = this.uuid;
+        reservaTableGateway.getIdOferta(idReserva, function(err, idOferta) {
+            if(err) {
+                console.log(err);
+            } else {
+                resennaTableGateway.insertResenna(resenna.uuid, resenna.descripcion, userId, idOferta, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(null);
+                    } else {
+                        callback(resenna);
+                    }
+                });
+            }
+        });
     }
 
     hacerReserva(telefono, hora, dia) {
@@ -79,8 +106,8 @@ const Admin = class Admin extends User {
      * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
      */
     borrarOferta(idOferta, callback) {
-        const otg = new OfertaTableGateway();
-        otg.deleteOferta(idOferta, callback);
+        const ofertaTableGateway = new OfertaTableGateway();
+        ofertaTableGateway.deleteOferta(idOferta, callback);
     }
 
     /**
@@ -90,8 +117,8 @@ const Admin = class Admin extends User {
      * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` o el error producido.
      */
     borrarResenna(idResenna, callback) {
-        const rtg = new ResennaTableGateway();
-        rtg.deleteResenna(idResenna, callback);
+        const resennaTableGateway = new ResennaTableGateway();
+        resennaTableGateway.deleteResenna(idResenna, callback);
     }   
 };
 
@@ -135,8 +162,8 @@ function registerUser(name, password, rol, callback) {
             callback(err, null);
        } else {
             let user = userFactory(name, hash, rol);
-            const utg = new UserTableGateway();
-            utg.insertUser(user.uuid, user.name, user.hash, user.rol, function(err) {
+            const userTableGateway = new UserTableGateway();
+            userTableGateway.insertUser(user.uuid, user.name, user.hash, user.rol, function(err) {
                 if(err) {
                     callback(err, user);
                 } else {

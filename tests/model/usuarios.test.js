@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt');
+const { Console } = require('console');
 const rewire = require('rewire');
 const { Oferta } = require('../../model/ofertas');
 const { Resenna } = require('../../model/resennas');
+const { Reserva } = require('../../model/reservas');
 
 const usuarios = rewire('../../model/usuarios');
 const User = usuarios.User;
@@ -201,6 +203,7 @@ describe('Tests que requieren Mock de BBDD', () => {
 
     test('Admin -> Método para borrar ofertas de la Base de Datos', done => {
         const OfertaTableGateway = database.OfertaTableGateway;
+        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
         const admin = new Admin('uuid-prueba', 'Admin Prueba', 0x01);
         
         const ownerId = '12325c779012i4567890123456789012';
@@ -227,6 +230,8 @@ describe('Tests que requieren Mock de BBDD', () => {
 
     test('Admin -> Método para borrar Reseñas de la Base de Datos', done => {
         const ResennaTableGateway = database.ResennaTableGateway;
+        usuarios.__set__({ ResennaTableGateway: ResennaTableGateway });
+
         const admin = new Admin('uuid-prueba', 'Admin Prueba', 0x01);
 
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
@@ -243,6 +248,36 @@ describe('Tests que requieren Mock de BBDD', () => {
 
             done();
             return;
+        });
+    });
+
+    test('Client -> Cliente puede crear reseñas que se guardan en la base de datos', done => {
+        const ResennaTableGateway = database.ResennaTableGateway;
+        const ReservaTableGateway = database.ReservaTableGateway;
+        usuarios.__set__({
+            ResennaTableGateway: ResennaTableGateway,
+            ReservaTableGateway: ReservaTableGateway
+        });
+        
+        const user = new Client('0fj20fj203n', 'Cliente Prueba para Reseñas 1', 0x01);
+
+        const ofertaId = '080480fj20f02m30j02802380t82u0fj';
+        const reservaId = 'fjw0fj023jf040gj0j30tfq302823fa2';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+        const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
+        const reservaGateway = new ReservaTableGateway();
+        reservaGateway.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, user.uuid, reserva.idOferta, function(err) {
+            user.hacerResenna('Me han estafado', reserva.uuid, function(resenna) {
+                const rtg = new ResennaTableGateway();  
+                rtg.loadResennas(ofertaId, function(err, listaResennas) {
+                    expect(listaResennas[0].uuid).toBe(resenna.uuid);
+
+                    done();
+                    return;
+                });
+            });
         });
     });
 });

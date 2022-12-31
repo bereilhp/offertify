@@ -438,6 +438,31 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
+    test('ReservaTableGateway tiene operación para recuperar el ID de la Oferta Asociada', done => {
+        const ReservaTableGateway = database.ReservaTableGateway;
+
+        const userId = '1R23fdsdcasv23n233r0fjwfnce0fn12';
+        const ofertaId = 'fj20jf023fj02jf02jf03j0gn320gn12';
+        const reservaId = '038fj02nv02m040hm20f0hnj32823fa2';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+        const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
+
+        const rtg = new ReservaTableGateway();  
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {});
+        rtg.getIdOferta(reserva.uuid, function(err, idOferta) {
+            if (err) {
+                done(err);
+                return;
+            } else {
+                expect(idOferta).toBe(ofertaId);
+                done();
+                return;
+            }
+        });
+    });
+
     test('ResennaTableGateway tiene operación para insertar Reseña', done => {
         const ResennaTableGateway = database.ResennaTableGateway;
 

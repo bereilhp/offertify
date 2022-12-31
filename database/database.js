@@ -362,6 +362,27 @@ const ReservaTableGateway = class ReservaTableGateway {
             });
         });
     }
+
+    /**
+     * Función que recupera el Id de la oferta asociada a la reserva.
+     *  
+     * @param {string} idReserva Id de la oferta.
+     * @param {function(any | null, array<Reserva>| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve un string y err será null.
+     */
+    getIdOferta(idReserva, callback) {
+        db.serialize(() => {
+            const statement = `SELECT OfertaId FROM Reservas WHERE UUID = '${idReserva}';`;
+            db.get(statement, function(err, row) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    const idOferta = row.OfertaId;
+                    callback(null, idOferta);
+                }
+            });
+        });
+    }
 }
 
 const ResennaTableGateway = class ResennaTableGateway {

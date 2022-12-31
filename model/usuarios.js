@@ -150,8 +150,25 @@ const Owner = class Owner extends User {
         ofertaTableGateway.updateOferta(ofertaACambiar.uuid, ofertaACambiar.precio, ofertaACambiar.descripcion, ofertaACambiar.foto, ofertaACambiar.activa, callback);
     }
 
-    desactivarOferta(idOferta) {
-        // TO DO
+    /**
+     * Método para desactivar una oferta.
+     * 
+     * @param {string} idOferta Id de la oferta a desactivar
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` si no hay 
+     * errores o el error en caso de que ocurra.
+     */
+    desactivarOferta(idOferta, callback) {
+        const ofertaTableGateway = new OfertaTableGateway();
+        let ofertaADesactivar = null;
+
+        this.ofertas.forEach((oferta) => {
+            if (oferta.uuid === idOferta) {
+                oferta.activa = 0;
+                ofertaADesactivar = oferta;
+            }
+        });
+
+        ofertaTableGateway.updateOferta(ofertaADesactivar.uuid, ofertaADesactivar.precio, ofertaADesactivar.descripcion, ofertaADesactivar.foto, ofertaADesactivar.activa, callback);
     }
 
     crearLocal(nombre, calle, codigoPostal, logo) {

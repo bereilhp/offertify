@@ -197,8 +197,33 @@ const Owner = class Owner extends User {
         });
     }
 
-    editarLocal(idLocal, nombre = null, calle = null, codigoPostal = null, logo = null) {
-        // TO DO
+    /**
+     * Método para editar un local existente.
+     * 
+     * @param {string} idLocal Id del local a actualizar
+     * @param {string | null} nombre Nuevo nombre para el local, `null` si no se debe cambiar
+     * @param {string | null} calle Nueva calle para el local, `null` si no se debe cambiar
+     * @param {int | null} codigoPostal Nuevo código postal para el local, `null` si no se debe cambiar
+     * @param {string | null} logo Nuevo logo para el locall, `null` si no se debe cambiar
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` si no hay 
+     * errores o el error en caso de que ocurra.
+     */
+    editarLocal(idLocal, nombre = null, calle = null, codigoPostal = null, logo = null, callback) {
+        const localTableGateway = new LocalTableGateway();
+        let localACambiar = null;
+
+        this.locales.forEach((local) => {
+            if (local.uuid === idLocal) {
+                local.nombre = nombre ?? local.nombre;
+                local.calle = calle ?? local.calle;
+                local.codigoPostal = codigoPostal ?? local.codigoPostal;
+                local.logo = logo ?? local.logo;
+
+                localACambiar = local;
+            }
+        });
+
+        localTableGateway.updateVenue(localACambiar.uuid, localACambiar.nombre, localACambiar.calle, localACambiar.codigoPostal, localACambiar.local, callback);
     }
 
     borrarLocal(idLocal) {

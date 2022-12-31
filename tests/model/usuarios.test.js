@@ -554,18 +554,18 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
-    test.skip('Owner -> El dueño puede actualizar un local', done => {
-        const owner = new Owner('jf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
+    test('Owner -> El dueño puede actualizar un local', done => {
+        const owner = new Owner('330fj00jg0w', 'Dueño Prueba para Locales 3', 0x01);
 
-        const localId = '42c2527790120456789j123456789012';
-        const foto = 'http://url.foto.com/foto.png';
-        const precio = 10.4;
-        const descripcion = 'Oferta de Prueba para Editar 1';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
 
-        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
-            const newPrice = 22.1;
-            owner.editarOferta(oferta.uuid, null, newPrice, null, function(err) {
-                expect(oferta.precio).toBe(newPrice);
+        owner.crearLocal(nombre, calle, codigoPostal, logo, function(err, local) {
+            const newCalle = 'Calle MIPS 42'
+            owner.editarLocal(local.uuid, local.nombre, newCalle, local.codigoPostal, local.logo, function(err) {
+                expect(local.calle).toBe(newCalle);
 
                 done();
                 return;
@@ -573,23 +573,23 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
-    test.skip('Owner -> Al editar un local se actualiza la Base de Datos', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
-        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
+    test('Owner -> Al editar un local se actualiza la Base de Datos', done => {
+        const LocalTableGateway = database.LocalTableGateway;
+        usuarios.__set__({ LocalTableGateway: LocalTableGateway });
         
-        const owner = new Owner('jf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
+        const owner = new Owner('39958020j0w', 'Dueño Prueba para Locales 3', 0x01);
 
-        const localId = 'fasd3080fj0dfj234hn340fm06789012';
-        const foto = 'http://url.foto.com/foto.png';
-        const precio = 10.4;
-        const descripcion = 'Oferta de Prueba para Editar 2';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
 
-        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
-            const newPrice = 22.1;
-            owner.editarOferta(oferta.uuid, null, newPrice, null, function(err) {
-                const ofertaTableGateway = new OfertaTableGateway();
-                ofertaTableGateway.loadOfertas(localId, function(err, listaOfertas) {
-                    expect(listaOfertas[0].precio).toBe(newPrice);
+        owner.crearLocal(nombre, calle, codigoPostal, logo, function(err, local) {
+            const newCalle = 'Calle MIPS 42'
+            owner.editarLocal(local.uuid, local.nombre, newCalle, local.codigoPostal, local.logo, function(err) {
+                const localTableGateway = new LocalTableGateway();
+                localTableGateway.loadVenues(owner.uuid, function(err, listaLocales){
+                    expect(listaLocales[0].calle).toBe(newCalle);
 
                     done();
                     return;

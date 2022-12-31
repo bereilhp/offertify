@@ -63,8 +63,17 @@ const Client = class Client extends User {
      * o `null` si hay algún error.
      */
     hacerReserva(idOferta, telefono, hora, dia, callback) {
+        const reservaTableGateway = new ReservaTableGateway();
         const reserva = reservaFactory(hora, dia, telefono, idOferta);
-        callback(reserva);
+
+        reservaTableGateway.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, this.uuid, reserva.idOferta, function(err) {
+            if (err) {
+                console.log(err);
+                callback(null)
+            } else {
+                callback(reserva);
+            }
+        })
     }
 
     cancelarReserva(id) {

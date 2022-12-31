@@ -624,4 +624,31 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
+    test('LocalTableGateway tiene operación para borar Local', done => {
+        const LocalTableGateway = database.LocalTableGateway;
+
+        const ownerUuid = '230fjw5868720g0q3n0v3qn456789013';
+        const name = 'Owner 1';
+        const hash = 0x01;
+        const owner = new Owner(ownerUuid, name, hash);
+
+        const venueUuid = '20fj0w0';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
+        const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
+
+        const ltg = new LocalTableGateway();  
+        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, local.logo, owner.uuid, function(err) {
+            ltg.deleteVenue(local.uuid, function(err) {
+                ltg.loadVenues(owner.uuid, function(err, venueList) {
+                   expect(venueList).toEqual([]);
+                   
+                   done();
+                   return;
+                });
+            });
+        });
+    });
 });

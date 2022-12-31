@@ -125,11 +125,37 @@ const LocalTableGateway = class LocalTableGateway {
      * @param {string} name Nuevo nombre del local
      * @param {string} calle Nueva calle del local
      * @param {int} codigoPostal Nuevo Código postal
-     * @param {function} callback Callback ejecutado al finalizar la actualización. Devuelve el local insertado
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la actualización. Devuelve `null` si todo va bien,
+     * un error en caso contrario 
      */
     updateVenue(uuid, name, calle, codigoPostal, logo, callback) {
         db.serialize(() => {
             const statement = `UPDATE Locales SET Nombre='${name}', Calle='${calle}', CodigoPostal=${codigoPostal}, Logo='${logo}' WHERE UUID='${uuid}';`;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
+            });
+        });
+    } 
+
+    /**
+     * Función que borra un local de la base de datos
+     * 
+     * @param {string} venueUUID Id del local
+     * @param {function(any | null)} callback Callback ejecutado al finalizar el borrado. Devuelve `null` si todo va bien,
+     * un error en caso contrario 
+     */
+    deleteVenue(uuid, callback) {
+        db.serialize(() => {
+            const statement = `DELETE FROM Locales WHERE UUID = '${uuid}';`;
             db.serialize(() => {
                 db.run('BEGIN TRANSACTION;');
                 db.run(statement, function(err) {

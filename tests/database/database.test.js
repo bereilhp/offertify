@@ -640,7 +640,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
 
         const ltg = new LocalTableGateway();  
-        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, local.logo, owner.uuid, function(err) {
+        ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, owner.uuid, function(err) {
             ltg.deleteVenue(local.uuid, function(err) {
                 ltg.loadVenues(owner.uuid, function(err, venueList) {
                    expect(venueList).toEqual([]);

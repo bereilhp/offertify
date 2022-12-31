@@ -234,17 +234,19 @@ const Owner = class Owner extends User {
      * errores o el error en caso de que ocurra.
      */
     borrarLocal(idLocal, callback) {
+        const localTableGateway = new LocalTableGateway();
+
         let localABorrar = null; 
         let found = false;
 
         for (let i = 0; i < this.locales.length && !found; i++) {
             if (this.locales[i].uuid === idLocal) {
-                localABorrar = this.locales.splice(i, 1);
+                localABorrar = this.locales.splice(i, 1)[0];
                 found = true;
             }
         }
 
-        callback(null);
+        localTableGateway.deleteVenue(localABorrar.uuid, callback);
     }
 };
 

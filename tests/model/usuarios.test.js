@@ -616,22 +616,22 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
-    test.skip('Owner -> Al borrar un local se actualiza la Base de Datos', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
-        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
+    test('Owner -> Al borrar un local se actualiza la Base de Datos', done => {
+        const LocalTableGateway = database.LocalTableGateway;
+        usuarios.__set__({ LocalTableGateway: LocalTableGateway });
         
-        const owner = new Owner('30208fj404w', 'Dueño Prueba para Ofertas 2', 0x01);
+        const owner = new Owner('09876152739', 'Dueño Prueba para Locales 7', 0x01);
 
-        const localId = '30920850820480258hn340fm06789012';
-        const foto = 'http://url.foto.com/foto.png';
-        const precio = 10.4;
-        const descripcion = 'Oferta de Prueba para Desactivar 2';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
 
-        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
-            owner.desactivarOferta(oferta.uuid, function(err) {
-                const ofertaTableGateway = new OfertaTableGateway();
-                ofertaTableGateway.loadOfertas(localId, function(err, listaOfertas) {
-                    expect(listaOfertas[0].activa).toBeFalsy();
+        owner.crearLocal(nombre, calle, codigoPostal, logo, function(err, local) {
+            owner.borrarLocal(local.uuid, function(err) {
+                const localTableGateway = new LocalTableGateway();
+                localTableGateway.loadVenues(owner.uuid, function(err, listaLocales) {
+                    expect(listaLocales).toEqual([]);
 
                     done();
                     return;

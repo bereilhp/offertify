@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const { Console } = require('console');
 const rewire = require('rewire');
 const { OfertaTableGateway } = require('../../database/database');
+const { Local } = require('../../model/locales');
 const { Oferta } = require('../../model/ofertas');
 const { Resenna } = require('../../model/resennas');
 const { Reserva } = require('../../model/reservas');
@@ -699,5 +700,75 @@ describe('Tests que requieren Mock de BBDD', () => {
         }
 
         userFactory(name, hash, 'user', callback, userId);
+    });
+
+    test('userFactory carga los locales de la Base de Datos', done => {
+        const LocalTableGateway = database.LocalTableGateway;
+        usuarios.__set__({ LocalTableGateway: LocalTableGateway });
+
+        const ownerId = '3wfj030gn20nv02pvh90123456789012';
+        const name = 'Dueño Prueba Builder 1';
+        const hash = 'Hashed Password';
+
+        // Creamos e insertamos un local de prueba en la base de datos
+        const venueUuid = '230fj20wmms0404nfw0';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
+        const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
+
+        const ltg = new LocalTableGateway();
+        ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, ownerId, () => {});
+
+        const callback = function(owner) {
+            expect(owner.locales).toEqual([local]);
+            
+            done();
+            return;
+        }
+
+        userFactory(name, hash, 'owner', callback, ownerId);
+    });
+
+    test.skip('userFactory carga las ofertas de la Base de Datos', done => {
+        const OfertaTableGateway = database.OfertaTableGateway;
+        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
+
+        const ownerId = '3wfj030gn20nv02pvh90123456789012';
+        const name = 'Dueño Prueba Builder 1';
+        const hash = 'Hashed Password';
+
+        // Creamos e insertamos un local de prueba en la base de datos
+        const venueUuid = '230fj20wmms0404nfw0';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
+        const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
+
+        const ltg = new LocalTableGateway();
+        ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, ownerId, () => {});
+
+        // Creamos e insertamos una oferta de prueba en la base de datos
+        const localId = '42c2527790120456789j123456789012';
+        const ofertaId = '9142-247901204567899123h56789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const activa = 1;
+        const descripcion = 'Oferta de Prueba 1';
+        const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
+
+        const otg = new OfertaTableGateway();  
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
+
+        const callback = function(owner) {
+            expect(owner.ofertas).toEqual([oferta]);
+            
+            done();
+            return;
+        }
+
+        userFactory(name, hash, 'owner', callback, ownerId);
     });
 });

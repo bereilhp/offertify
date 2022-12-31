@@ -290,7 +290,7 @@ const Admin = class Admin extends User {
  * (o `null` si ha habido un error)
  * @param {string | null} userId UUID del usuario, null si se debe generar uno nuevo
  */
-async function userFactory(name, hash, rol, callback, userId = null) {
+function userFactory(name, hash, rol, callback, userId = null) {
     userId = userId ?? uuid.v4();
     let builder = null;
     switch(rol) {
@@ -298,8 +298,8 @@ async function userFactory(name, hash, rol, callback, userId = null) {
             builder = new ClientBuilder(name, hash, userId);
             break;
         case 'owner':
-            callback(new Owner(userId, name, hash));
-            return;
+            builder = new OwnerBuilder(name, hash, userId);
+            break;
         case 'admin':
             callback(new Admin(userId, name, hash));
             return;
@@ -364,7 +364,6 @@ const ClientBuilder = class ClientBuilder extends UserBuilder {
      * 
      * @param {function(User | null)} callback Función a ejecutar al finalizar la creación. Devuelve el usuario
      * construido o `null` si ha habido algún error.
-     * @returns Una promesa que, cuando se complete, devolverá un Cliente
      */
     build(callback) {
         const reservaTableGateway = new ReservaTableGateway(); 
@@ -376,6 +375,33 @@ const ClientBuilder = class ClientBuilder extends UserBuilder {
             } else {
                 user.reservas = reservas;
                 callback(user);
+            }
+        });
+    }
+}
+
+const OwnerBuilder = class OwnerBuilder extends UserBuilder {
+    constructor(name, hash, uuid) {
+        super();
+        this.owner = new Owner(uuid, name, hash);
+    }
+
+    /**
+     * Método para construir Dueños.
+     * 
+     * @param {function(User | null)} callback Función a ejecutar al finalizar la creación. Devuelve el usuario
+     * construido o `null` si ha habido algún error.
+     */
+    build(callback) {
+        const localTableGateway = new LocalTableGateway(); 
+        let owner = this.owner;
+        localTableGateway.loadVenues(owner.uuid, function(err, locales) {
+            if (err) {
+                console.log(err);
+                callback(null);
+            } else {
+                owner.locales = locales;
+                callback(owner);
             }
         });
     }

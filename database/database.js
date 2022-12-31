@@ -103,10 +103,19 @@ const UserTableGateway = class UserTableGateway extends TableGateway {
      */
     loadUser(name, callback) {
         const statement = `SELECT UUID, Hash, Rol FROM Usuarios WHERE Nombre = '${name}'`;
-        const factory = function(row) {
-            return userFactory(name, row.Hash, row.Rol, row.UUID);
-        }
-        this.get(statement, factory, callback);
+        db.serialize(() => {
+            db.get(statement, function(err, row) {
+                if (err) {
+                    console.log(err);
+                    callback(err, null);
+                } else {
+                    const userCreatedCallback = function(user) {
+                        callback(null, user);
+                    }
+                    userFactory(row.Nombre, row.Hash, row.Rol, userCreatedCallback, row.UUID);
+                }
+            });
+        });
     }
 }
 

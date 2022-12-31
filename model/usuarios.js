@@ -286,21 +286,29 @@ const Admin = class Admin extends User {
  * @param {string} name Nombre del usuario
  * @param {string} hash Hash de la contraseña del usuario
  * @param {string} rol Rol del usuario
+ * @param {function(User | null)} callback Función a ejecutar una vez registrado el usuario. Toma como parámetro el usuario creado:
+ * (o `null` si ha habido un error)
  * @param {string | null} userId UUID del usuario, null si se debe generar uno nuevo
- * @returns 
  */
-function userFactory(name, hash, rol, userId = null) {
+async function userFactory(name, hash, rol, callback, userId = null) {
     userId = userId ?? uuid.v4();
+    let builder = null;
     switch(rol) {
         case 'user':
-            return new Client(userId, name, hash);
+            builder = new ClientBuilder(name, hash, userId);
+            break;
         case 'owner':
-            return new Owner(userId, name, hash);
+            callback(new Owner(userId, name, hash));
+            return;
         case 'admin':
-            return new Admin(userId, name, hash);
+            callback(new Admin(userId, name, hash));
+            return;
         default:
-            return null;
+            callback(null);
+            return;
     }
+
+    builder.build(callback);
 }
 
 /**
@@ -318,15 +326,16 @@ function registerUser(name, password, rol, callback) {
        if (err) {
             callback(err, null);
        } else {
-            let user = userFactory(name, hash, rol);
-            const userTableGateway = new UserTableGateway();
-            userTableGateway.insertUser(user.uuid, user.name, user.hash, user.rol, function(err) {
-                if(err) {
-                    callback(err, user);
-                } else {
-                    callback(null, user);
-                }
-            })
+            userFactory(name, hash, rol, function(user) {
+                const userTableGateway = new UserTableGateway();
+                userTableGateway.insertUser(user.uuid, user.name, user.hash, user.rol, function(err) {
+                    if(err) {
+                        callback(err, user);
+                    } else {
+                        callback(null, user);
+                    }
+                });
+            });
        }
     });
 }
@@ -335,10 +344,40 @@ const UserBuilder = class UserBuilder {
     /**
      * Método abstracto usado para construir usuarios. Deberá ser sobreescito por las subclases
      * 
+     * @param {function(User | null)} callback Función a ejecutar al finalizar la creación. Devuelve el usuario
+     * construido o `null` si ha habido algún error.
      * @throws Not Implemented Error
      */
-    build() {
+    build(callback) {
         throw Error('Not Implemented Error');
+    }
+}
+
+const ClientBuilder = class ClientBuilder extends UserBuilder {
+    constructor(name, hash, userId) {
+        super();
+        this.user = new Client(userId, name, hash);
+    }
+
+    /**
+     * Método para construir Clientes.
+     * 
+     * @param {function(User | null)} callback Función a ejecutar al finalizar la creación. Devuelve el usuario
+     * construido o `null` si ha habido algún error.
+     * @returns Una promesa que, cuando se complete, devolverá un Cliente
+     */
+    build(callback) {
+        const reservaTableGateway = new ReservaTableGateway(); 
+        let user = this.user;
+        reservaTableGateway.loadReservas(user.uuid, function(err, reservas) {
+            if (err) {
+                console.log(err);
+                callback(null);
+            } else {
+                user.reservas = reservas;
+                callback(user);
+            }
+        });
     }
 }
 

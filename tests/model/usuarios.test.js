@@ -138,36 +138,62 @@ describe('Tests que requieren Mock de BBDD', () => {
         database.__get__('db').close();
     });
 
-    test('userFactory() crea Clientes para Rol = user', () => {
-        const cliente = userFactory('Nombre', 0x01, 'user');
-        expect(cliente).toBeInstanceOf(Client);
+    test('userFactory() crea Clientes para Rol = user', done => {
+        userFactory('Nombre', 0x01, 'user', function(cliente) {
+            expect(cliente).toBeInstanceOf(Client);
+
+            done();
+            return;
+        });
     });
 
-    test('userFactory() crea uuids diferentes para cada usuario', () => {
-        const user_1 = userFactory('Usuario 1', 0x01, 'user');
-        const user_2 = userFactory('Usuario 2', 0x02, 'admin');
-        expect(user_1.uuid).not.toEqual(user_2.uuid);
+    test('userFactory() crea uuids diferentes para cada usuario', done => {
+        userFactory('Usuario 1', 0x01, 'user', function(user_1) {
+            userFactory('Usuario 2', 0x02, 'admin', function(user_2) {
+                expect(user_1.uuid).not.toEqual(user_2.uuid);
+                
+                done();
+                return;
+            });
+        });
     });
 
-    test('userFactory() crea Dueños para Rol = owner', () => {
-        const owner = userFactory('Nombre', 0x01, 'owner');
-        expect(owner).toBeInstanceOf(Owner);
+    test('userFactory() crea Dueños para Rol = owner', done => {
+        userFactory('Nombre', 0x01, 'owner', function(owner) {
+            expect(owner).toBeInstanceOf(Owner);
+
+            done();
+            return;
+        });
     });
 
-    test('userFactory() crea Admins para Rol = admin', () => {
-        const owner = userFactory('Nombre', 0x01, 'owner');
-        expect(owner).toBeInstanceOf(Owner);
+    test('userFactory() crea Admins para Rol = admin', done => {
+        userFactory('Nombre', 0x01, 'admin', function(admin) {
+            expect(admin).toBeInstanceOf(Admin);
+
+            done();
+            return;
+        });
     });
 
-    test('userFactory() devuelve null si el rol no es válido', () => {
-        const user = userFactory('Nombre', 0x01, 'Infiltrado');
-        expect(user).toBeNull();
+    test('userFactory() devuelve null si el rol no es válido', done => {
+        userFactory('Nombre', 0x01, 'Infiltrado', function(user) {
+            expect(user).toBeNull();
+
+            done();
+            return;
+        });
     });
 
-    test('userFactory() crea uuid sólo si no se especifica', () => {
+    test('userFactory() crea uuid sólo si no se especifica', done => {
+        const callback = function(user) {
+            expect(user.uuid).toBe('id');
+
+            done();
+            return;
+        }
         const uuid = 'id';
-        const user = userFactory('Nombre', 0x01, 'user', uuid);
-        expect(user.uuid).toBe('id');
+        userFactory('Nombre', 0x01, 'user', callback, uuid);
     });
 
     test('registerUser() haseha la contraseña y crea un usuario', () => {
@@ -644,5 +670,34 @@ describe('Tests que requieren Mock de BBDD', () => {
         const UserBuilder = usuarios.__get__('UserBuilder');
         const builder = new UserBuilder();
         expect(builder.build).toThrow('Not Implemented Error');
+    });
+
+    test('userFactory carga las reservas de la Base de Datos', done => {
+        const ReservaTableGateway = database.ReservaTableGateway;
+        usuarios.__set__({ ReservaTableGateway: ReservaTableGateway });
+
+        const userId = '580gl3ngr0fjwe23nj9nvtqn3cn0fn12';
+        const name = 'Cliente Prueba Builder 1';
+        const hash = 'asdfsadfq3fda';
+
+        // Creamos e insertamos una reserva de prueba en la base de datos
+        const ofertaId = '9142-247901204567899123h56789012';
+        const reservaId = '38fji328fjio3208jfiojfnj32823fa2';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+        const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
+
+        const rtg = new ReservaTableGateway();  
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, ofertaId, () => {});
+
+        const callback = function(user) {
+            expect(user.reservas).toEqual([reserva]);
+            
+            done();
+            return;
+        }
+
+        userFactory(name, hash, 'user', callback, userId);
     });
 });

@@ -319,11 +319,11 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
-    test.skip('Client -> Cliente tiene operación para cancelar reservas', done => {
+    test('Client -> Cliente tiene operación para cancelar reservas', done => {
         const ReservaTableGateway = database.ReservaTableGateway;
         usuarios.__set__({ ReservaTableGateway: ReservaTableGateway });
         
-        const user = new Client('23fj0scneno', 'Cliente Prueba para Reservas 2', 0x01);
+        const user = new Client('3ffjwvw3eno', 'Cliente Prueba para Reservas 2', 0x01);
 
         const ofertaId = '080480fj20f02m30j02802380t82u0fj';
         const telefono = 660800902;
@@ -331,7 +331,8 @@ describe('Tests que requieren Mock de BBDD', () => {
         const dia = '29/12/22';
 
         user.hacerReserva(ofertaId, telefono, hora, dia, function(reserva) {
-            user.cancelarResreva(reserva.uuid, function(err) {
+            console.log(reserva.uuid)
+            user.cancelarReserva(reserva.uuid, function(err) {
                 const reservaGateway = new ReservaTableGateway();
                 reservaGateway.loadReservas(user.uuid, function(err, listaReservas) {
                     expect(listaReservas).toEqual([]);

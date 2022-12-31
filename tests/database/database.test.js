@@ -468,7 +468,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
 
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
         const ofertaId = '9142-247901r04567899123h56789012';
-        const resennaId = '32feor230j0en32800fi30g4n40g02n0';
+        const resennaId = 'f23fj023fj0nb2f000fi30g4n40g02n0';
         const descripcion = 'Reseña de Prueba';
         const resenna = new Resenna(resennaId, descripcion);
 
@@ -510,7 +510,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
 
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
         const ofertaId = '9142-247901204567899123h56789012';
-        const resennaId = '30feor230jfen32800fi30g4n40g02n0';
+        const resennaId = 'fasfae230jfen32800fi30g4n40g02n0';
         const descripcion = 'Reseña de Prueba 3';
         const resenna = new Resenna(resennaId, descripcion);
 
@@ -529,8 +529,8 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const ResennaTableGateway = database.ResennaTableGateway;
 
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
-        const ofertaId = '9142-247901204567899123h56789012';
-        const resennaId = 'f3f22bnb02m30032m0fmwcyc0c9t0ux5';
+        const ofertaId = 'fajsd0f0ng03f0m30gn9123h56789012';
+        const resennaId = '3fja0f03ng043nh034m0wcyc0c9t0ux5';
         const descripcion = 'Reseña de Prueba 4';
         const resenna = new Resenna(resennaId, descripcion);
 
@@ -568,4 +568,31 @@ describe('Tests que requieren base de datos de pruebas', () => {
             return;
         });
     });
+
+    test('OfertaTableGateway tiene operación para actualizar oferta', done => {
+        const OfertaTableGateway = database.OfertaTableGateway;
+
+        const ownerId = '12325c779012i4567890123456789012';
+        const localId = 'fjowfjoawevno43nbn340qfj0q4j4gn2';
+        const ofertaId = 'fjasdfj03jf4n03n0bn0wnvh56789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const activa = 1;
+        const descripcion = 'Oferta de Prueba 1';
+        const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
+
+        const otg = new OfertaTableGateway();  
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
+
+        const newPrice = 11.9;
+        otg.updateOferta(oferta.uuid, newPrice, oferta.descripcion, oferta.foto, function(err) {
+            otg.loadOfertas(localId, function(err, listaOfertas) {
+                expect(listaOfertas[0].precio).toBe(newPrice);
+
+                done();
+                return;
+            });
+        });
+    });
+
 });

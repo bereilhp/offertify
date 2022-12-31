@@ -227,9 +227,10 @@ const ChatTableGateway = class MessageTableGateway {
 const OfertaTableGateway = class OfertaTableGateway {
 
     /**
+     * Función que inserta una oferta en la base de datos.
      * 
      * @param {string} ofertaId Id de la oferta
-     * @param {string} precio Precio de la oferta
+     * @param {float} precio Precio de la oferta
      * @param {string} descripcion Descripción de la oferta
      * @param {string} foto URL de la imagen asociada a la oferta
      * @param {int} activa `1` si la oferta está activa, `0` si no
@@ -240,7 +241,7 @@ const OfertaTableGateway = class OfertaTableGateway {
      */
     insertOferta(ofertaId, precio, descripcion, foto, activa, ownerId, localId, callback) {
         db.serialize(() => {
-            const statement = `INSERT INTO Ofertas (UUID, Precio, Descripcion, Foto, Activa, OwnerId, LocalId) VALUES ('${ofertaId}', '${precio}', '${descripcion}', '${foto}', '${activa}', '${ownerId}', '${localId}');`;
+            const statement = `INSERT INTO Ofertas (UUID, Precio, Descripcion, Foto, Activa, OwnerId, LocalId) VALUES ('${ofertaId}', ${precio}, '${descripcion}', '${foto}', '${activa}', '${ownerId}', '${localId}');`;
             db.serialize(() => {
                 db.run('BEGIN TRANSACTION;');
                 db.run(statement, function(err) {
@@ -304,6 +305,34 @@ const OfertaTableGateway = class OfertaTableGateway {
             });
         });
     }
+
+    /**
+     * Función que actualiza una oferta de la base de datos.
+     * 
+     * @param {string} ofertaId Id de la oferta
+     * @param {float} precio Nuevo precio de la oferta
+     * @param {string} descripcion Nueva descripción de la oferta
+     * @param {string} foto Nueva URL de la imagen asociada a la oferta
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la actualización. Devuelve `null` o el error
+     * producido.
+     */
+    updateOferta(ofertaId, precio, descripcion, foto, callback) {
+        db.serialize(() => {
+            const statement = `UPDATE Ofertas SET Precio=${precio}, Descripcion='${descripcion}', Foto='${foto}' WHERE UUID='${ofertaId}';`;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
+            });
+        });
+    } 
 }
 
 const ReservaTableGateway = class ReservaTableGateway {

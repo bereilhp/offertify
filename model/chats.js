@@ -1,3 +1,5 @@
+const uuid = require('uuid');
+
 const Chat = class Chat {
     constructor(uuid,mensajes = []) {
         this.uuid = uuid;
@@ -9,9 +11,15 @@ const Chat = class Chat {
     }
 };
 
-function chatFactory(localId = null) {
-    localId = localId ?? uuid.v4();
-    return new Chat(localId, /*mensajes*/);
+/**
+ * 
+ * @param {string} mensajes 
+ * @param {string | null} chatId Opcional. UUID del chat. Si no se especifica, se genera uno nuevo
+ * @returns 
+ */
+function chatFactory(mensajes, chatId = null) {
+    chatId = chatId ?? uuid.v4();
+    return new Chat(chatId, /*mensajes*/);
 }
 
 

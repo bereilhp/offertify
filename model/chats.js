@@ -7,7 +7,7 @@ const Chat = class Chat {
     }
 
     escribirMensaje(texto, nombreUsuario) {
-        // TO DO
+
     }
 };
 
@@ -19,7 +19,7 @@ const Chat = class Chat {
  */
 function chatFactory(mensajes, chatId = null) {
     chatId = chatId ?? uuid.v4();
-    return new Chat(chatId, /*mensajes*/);
+    return new Chat(chatId, mensajes);
 }
 
 

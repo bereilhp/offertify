@@ -1,5 +1,6 @@
 const uuid = require('uuid');
 let { MessageTableGateway } = require('../database/database');
+const { mensajeFactory } = require('./mensajes');
 
 const Chat = class Chat {
     constructor(uuid,mensajes = []) {
@@ -7,8 +8,19 @@ const Chat = class Chat {
         this.mensajes = mensajes;
     }
 
-    escribirMensaje(texto, nombreUsuario) {
-
+    escribirMensaje(texto, idUsuario, callback) {
+        const msg = mensajeFactory(idUsuario, texto, null);
+        const messageTableGateway = new MessageTableGateway();
+        const chat = this;
+        messageTableGateway.insertMessage(msg.uuid, msg.texto, msg.nombreUsuario, this.uuid, function(err) {
+            if (err) {
+                console.log(err);
+                callback(err);
+            } else {
+                chat.mensajes.push(msg);
+                callback(null);
+            }
+        });
     }
 };
 

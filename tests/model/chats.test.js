@@ -115,29 +115,39 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
-    test('chatFactory recupera los mensajes del chat', done => {
+    test('escribirChat añade mensaje a lista de mensajes', done => {
         // Creamos mensaje de prueba
+        const senderUuid = '0asj0efjq0en023ng03wnb03n6789013';
+
+        const chatId = '30fjw0jf0340gnq0ecmwe0ng043gnhfn';
+
+        const chat = new Chat(chatId);
+        chat.escribirMensaje("XD", senderUuid, function(err) {
+            expect(chat.mensajes[0].nombreUsuario).toBe(senderUuid);
+
+            done();
+            return;
+        });
+    });
+
+    test('escribirChat guarda mensaje en BBDD', done => {
         const MessageTableGateway = database.MessageTableGateway;
         chats.__set__({ MessageTableGateway: MessageTableGateway });
 
-        const senderUuid = '12345678234234567890123456789013';
+        // Creamos mensaje de prueba
+        const senderUuid = 'affj30vn20nv0amev0rnb003n6789013';
 
-        const chatId = '30fjw0jf0340gnq0ecmwe0ng043gnhfn';
-        const messageId = 'f0ajc03ng0mv03nb034nb0335w789-12';
-        const texto = 'Mensaje de Prueba';
-        const timestamp = null
-        const message = new Mensaje(messageId, sender, texto, timestamp);
+        const chatId = '0asdfj03nv0amdc0sdjfq3gnsdonvnfn';
 
-        const mtg = new MessageTableGateway();  
-        mtg.insertMessage(message.uuid, message.texto, sender.uuid, chatId, function(err) {
-            // Creamos el chat
-            const callback = function(chat) {
-                expect(chat.mensajes[0].uuid).toBe(message.uuid);
+        const chat = new Chat(chatId);
+        chat.escribirMensaje("XD", senderUuid, function(err) {
+            const mtg = new MessageTableGateway();
+            mtg.loadMessages(chat.uuid, function(err, mensajes) {
+                expect(chat.mensajes[0].uuid).toBe(mensajes[0].uuid);
 
                 done();
                 return;
-            }
-            chatFactory(callback, chatId);
+            });
         });
     });
 });

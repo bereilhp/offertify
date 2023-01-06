@@ -15,11 +15,13 @@ const Chat = class Chat {
  * 
  * @param {string} mensajes 
  * @param {string | null} chatId Opcional. UUID del chat. Si no se especifica, se genera uno nuevo
- * @returns 
+ * @param {function(Chat | null)} callback Función a ejecutar una vez creado el chat. Toma como parámetro el chat creado:
+ * (o `null` si ha habido un error)
  */
-function chatFactory(mensajes, chatId = null) {
+function chatFactory(mensajes, callback, chatId = null) {
     chatId = chatId ?? uuid.v4();
-    return new Chat(chatId, mensajes);
+    let chat = new Chat(chatId, mensajes);
+    callback(chat);
 }
 
 

@@ -251,7 +251,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
 
         const ownerId = '12338677901224867893123359789012';
         const userId = '12325677931224562893123336789012';
-        const reservaId = '203858f0f2j0j40j20fj04jt05jf0201';
+        const reservaId = 'fqwje0fj0wwjg043ng0qn30cn03f0201';
         const chatId = '30f84jf0nvn0n40wmfme0gm40hn20384';
         const chat = new Chat(chatId);
 

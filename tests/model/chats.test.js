@@ -114,4 +114,30 @@ describe('Tests que requieren Mock de BBDD', () => {
             chatFactory(callback, chatId);
         });
     });
+
+    test('chatFactory recupera los mensajes del chat', done => {
+        // Creamos mensaje de prueba
+        const MessageTableGateway = database.MessageTableGateway;
+        chats.__set__({ MessageTableGateway: MessageTableGateway });
+
+        const senderUuid = '12345678234234567890123456789013';
+
+        const chatId = '30fjw0jf0340gnq0ecmwe0ng043gnhfn';
+        const messageId = 'f0ajc03ng0mv03nb034nb0335w789-12';
+        const texto = 'Mensaje de Prueba';
+        const timestamp = null
+        const message = new Mensaje(messageId, sender, texto, timestamp);
+
+        const mtg = new MessageTableGateway();  
+        mtg.insertMessage(message.uuid, message.texto, sender.uuid, chatId, function(err) {
+            // Creamos el chat
+            const callback = function(chat) {
+                expect(chat.mensajes[0].uuid).toBe(message.uuid);
+
+                done();
+                return;
+            }
+            chatFactory(callback, chatId);
+        });
+    });
 });

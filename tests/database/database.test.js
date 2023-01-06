@@ -35,7 +35,7 @@ test('Módulo database se conecta a la base de datos adecuada', done => {
 
 describe('Tests que requieren base de datos de pruebas', () => {
     // Antes de todos los tests, se sustituye la BBDD original por una BBDD en memoria
-    beforeAll(() => {
+    beforeAll(done => {
         const db = new sqlite3.Database(':memory:', function(err) {
             const sqlCreationScript = fs.readFileSync(
                 path.join(__dirname, '..', '..', 'database', 'creation_script.sql')
@@ -52,9 +52,12 @@ describe('Tests que requieren base de datos de pruebas', () => {
                     }
                 });
             });
+
+            database.__set__({ db: db });
+            
+            done();
+            return;
         });
-        
-        database.__set__({ db: db });
     });
 
     afterAll(() => {
@@ -248,6 +251,12 @@ describe('Tests que requieren base de datos de pruebas', () => {
     test('ChatTableGateway tiene operación para recuperar Chat', done => {
         const db = database.__get__('db');
         const ChatTableGateway = database.ChatTableGateway;
+
+        const mockChatFactory = function(callback, uuid) {
+            let chat = new Chat(uuid);
+            callback(chat);
+        }
+        database.__set__({ chatFactory: mockChatFactory });
 
         const ownerId = '12338677901224867893123359789012';
         const userId = '12325677931224562893123336789012';

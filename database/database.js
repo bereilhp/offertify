@@ -4,7 +4,7 @@ const { userFactory } = require('../model/usuarios');
 const { localFactory } = require('../model/locales');
 const { mensajeFactory } = require('../model/mensajes');
 const { ofertaFactory } = require('../model/ofertas');
-const { chatFactory } = require('../model/chats');
+let { chatFactory } = require('../model/chats');
 const { reservaFactory } = require('../model/reservas');
 const { resennaFactory } = require('../model/resennas');
 

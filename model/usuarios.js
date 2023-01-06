@@ -1,7 +1,13 @@
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
+const sqlite3 = require('sqlite3');
 
-let { OfertaTableGateway, ResennaTableGateway, UserTableGateway, ReservaTableGateway, LocalTableGateway } = require('../database/database');
+// let { OfertaTableGateway, ResennaTableGateway, /* UserTableGateway, */ ReservaTableGateway, LocalTableGateway } = require('../database/database');
+const OfertaTableGateway = require('../database/ofertaTableGateway');
+const ResennaTableGateway = require('../database/resennaTableGateway');
+const LocalTableGateway = require('../database/localTableGateway');
+const ReservaTableGateway = require('../database/reservaTableGateway');
+const TableGateway = require('../database/tableGateway');
 const { localFactory } = require('./locales');
 const { ofertaFactory } = require('./ofertas');
 const { resennaFactory } = require('./resennas');
@@ -293,6 +299,7 @@ const Admin = class Admin extends User {
 function userFactory(name, hash, rol, callback, userId = null) {
     userId = userId ?? uuid.v4();
     let builder = null;
+    console.log(rol)
     switch(rol) {
         case 'user':
             builder = new ClientBuilder(name, hash, userId);
@@ -412,11 +419,67 @@ const OwnerBuilder = class OwnerBuilder extends UserBuilder {
     }
 }
 
+let DB_PATH = '../database/database.db';
+let db = new sqlite3.Database(DB_PATH, () => {});
+const UserTableGateway = class UserTableGateway extends TableGateway {
+    /**
+     * Función que inserta un usuario en la base de datos
+     * 
+     * @param {string} uuid
+     * @param {string} name 
+     * @param {string} hash 
+     * @param {string} role 
+     * @param {function} callback Callback ejecutado al finalizar la inserción. Devuelve el usuario insertado
+     */
+    insertUser(uuid, name, hash, role, callback) {
+        const statement = `INSERT INTO Usuarios (UUID, Nombre, Hash, Rol) VALUES ('${uuid}', '${name}', '${hash}', '${role}');`;
+        this.run(statement, callback);
+    } 
+
+    /**
+     * Función que carga un usuario de la base de datos.
+     *  
+     * @param {string} name Nombre del usuario
+     * @param {function(err, user)} callback Callback ejecutado al cargar el usuario. Si todo va bien, devuelve 
+     * un usuario y err será null.
+     */
+    loadUser(name, callback) {
+        const statement = `SELECT UUID, Hash, Rol FROM Usuarios WHERE Nombre = '${name}'`;
+        db.serialize(() => {
+            db.get(statement, function(err, row) {
+                if (err) {
+                    console.log(err);
+                    callback(err, null);
+                } else {
+                    const userCreatedCallback = function(user) {
+                        callback(null, user);
+                    }
+                    userFactory(row.Nombre, row.Hash, row.Rol, userCreatedCallback, row.UUID);
+                }
+            });
+        });
+    }
+
+    userExists(name, callback) {
+        const statement = `SELECT COUNT(*) AS Usuario FROM Usuarios WHERE Nombre = '${name}'`;
+        const userChecker = function(row) {
+            return row.Usuario !== 0;
+        }
+        this.get(statement, userChecker, callback);
+    }
+}
+
+function userExists(email, callback) {
+    const utg = new UserTableGateway();
+    utg.userExists(email, callback);
+}
+
 module.exports = {
     User,
     Client,
     Owner,
     Admin,
     userFactory,
-    registerUser
+    registerUser,
+    userExists
 }

@@ -1,6 +1,14 @@
+const path = require('path');
+const sqlite3 = require('sqlite3');
 const TableGateway = require('./tableGateway');
 const { userFactory } = require('../model/usuarios');
-let db = require('./database');
+//let db = require('./database');
+
+const DB_PATH = path.join(__dirname, 'database.db');
+
+let db = new sqlite3.Database(DB_PATH, () => {
+    console.log("Conectado a BBDD");
+});
 
 const UserTableGateway = class UserTableGateway extends TableGateway {
     /**

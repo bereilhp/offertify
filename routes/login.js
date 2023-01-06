@@ -12,23 +12,27 @@ router.get('/', function(req, res, next) {
 
 /* POST -> Comprueba si existe el usuario y lo redirige a la página adecuada */
 router.post('/', function(req, res, next) {
-  email = JSON.stringify(req.body.email); 
+  email = req.body.email; 
   password = req.body.password;
 
   userTableGateway.userExists(email, function(err, existe) {
     if (!existe) {
       req.session.error = 'Usuario y/o constraseña incorrecto';
       res.redirect('/login');
+      console.log("userExists")
     } else {
       userTableGateway.loadUser(email, function(err, user) {
         if (err) {
+          console.log("loadUser")
           req.session.error = 'Usuario y/o constraseña incorrecto';
           res.redirect('/login');
         } else {
-          bcrypt.compare(password, user.password, function(err, iguales) {
+          console.log(password)
+          bcrypt.compare(password, user.hash, function(err, iguales) {
             if (iguales) {
+              console.log("Todo Correcto")
               req.session.user = user;
-              switch(rol) {
+              switch(user.rol) {
                 case 'user':
                   res.redirect('/explorador_ofertas');
                   break;

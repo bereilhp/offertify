@@ -12,9 +12,9 @@ router.get('/', function(req, res, next) {
 
 /* POST Registra al usuario */
 router.post('/', function(req, res, next) {
-  const email = JSON.stringify(req.body.email);
-  const password = JSON.stringify(req.body.password);
-  const repeatPassword = JSON.stringify(req.body.repeatPassword);
+  const email = req.body.email;
+  const password = req.body.password;
+  const repeatPassword = req.body.repeatPassword;
   const rol = req.body.rol;
 
   // Comprobamos que los datos cumplen las restricciones

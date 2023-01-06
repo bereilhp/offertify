@@ -15,32 +15,39 @@ router.post('/', function(req, res, next) {
   email = JSON.stringify(req.body.email); 
   password = req.body.password;
 
-  userTableGateway.loadUser(email, function(err, user) {
-    if (err) {
+  userTableGateway.userExists(email, function(err, existe) {
+    if (!existe) {
       req.session.error = 'Usuario y/o constraseña incorrecto';
       res.redirect('/login');
     } else {
-      bcrypt.compare(password, user.password, function(err, iguales) {
-        if (iguales) {
-          req.session.user = user;
-          switch(rol) {
-            case 'user':
-              res.redirect('/explorador_ofertas');
-              break;
-            case 'owner':
-              res.redirect('/ofertasActivas');
-              break;
-            case 'admin':
-              res.redirect('/interfaz_admin');
-              break;
-          }
-        } else {
+      userTableGateway.loadUser(email, function(err, user) {
+        if (err) {
           req.session.error = 'Usuario y/o constraseña incorrecto';
           res.redirect('/login');
+        } else {
+          bcrypt.compare(password, user.password, function(err, iguales) {
+            if (iguales) {
+              req.session.user = user;
+              switch(rol) {
+                case 'user':
+                  res.redirect('/explorador_ofertas');
+                  break;
+                case 'owner':
+                  res.redirect('/ofertasActivas');
+                  break;
+                case 'admin':
+                  res.redirect('/interfaz_admin');
+                  break;
+              }
+            } else {
+              req.session.error = 'Usuario y/o constraseña incorrecto';
+              res.redirect('/login');
+            }
+          });
         }
-      });
+      }); 
     }
-  }); 
+  });
 });
 
 module.exports = router;

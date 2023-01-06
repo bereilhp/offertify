@@ -1,9 +1,9 @@
 const usuarios = require('../model/usuarios');
-const { UserTableGateway } = require('../database/database');
 const express = require('express');
+const { UserTableGateway } = require('../database/database');
+const userTableGateway = new UserTableGateway();
 
 const router = express.Router();
-const userTableGateway = new UserTableGateway();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -20,8 +20,8 @@ router.post('/', function(req, res, next) {
   // Comprobamos que los datos cumplen las restricciones
   if (validateInput(email, password, repeatPassword)) {
     // Comprobamos si existe el usuario
-    userTableGateway.loadUser(email, function(err, user) {
-      if (user) {
+    userTableGateway.userExists(email, function(err, existe) {
+      if (existe) {
         req.session.error = 'Error: El usuario ya existe';
         res.redirect('/registro');
       } else {

@@ -1,5 +1,5 @@
 const uuid = require('uuid');
-let { MessageTableGateway } = require('../database/database');
+let MessageTableGateway = require('../database/messageTableGateway');
 const { mensajeFactory } = require('./mensajes');
 
 const Chat = class Chat {
@@ -36,6 +36,7 @@ function chatFactory(callback, chatId = null) {
     
     const messageTableGateway = new MessageTableGateway();
     messageTableGateway.loadMessages(chat.uuid, function(err, mensajes) {
+        console.log();
         if (err) {
             console.log(err);
             callback(null);

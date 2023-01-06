@@ -1,4 +1,5 @@
 const rewire = require('rewire');
+const MessageTableGateway = rewire('../../database/messageTableGateway');
 const chats = rewire('../../model/chats');
 const { Mensaje } = require('../../model/mensajes');
 const { Owner } = require('../../model/usuarios');
@@ -25,10 +26,11 @@ describe('Tests que requieren Mock de BBDD', () => {
     const fs = require('fs');
     const path = require('path');
     const database = rewire('../../database/database');
+    const DB_PATH = './test_chats_database.db';
 
     // Antes de todos los tests, se sustituye la BBDD original por una BBDD en memoria
     beforeAll(done => {
-        const db = new sqlite3.Database(':memory:', function(err) {
+        const db = new sqlite3.Database(DB_PATH, function(err) {
             const sqlCreationScript = fs.readFileSync(
                 path.join(__dirname, '..', '..', 'database', 'creation_script.sql')
             );
@@ -44,15 +46,18 @@ describe('Tests que requieren Mock de BBDD', () => {
                     }
                 });
             });
+            
             database.__set__({ db: db });
-
+                   
             done();
             return;
         });
+        
+        MessageTableGateway.__set__({ DB_PATH: DB_PATH });
     });
 
     afterAll(() => {
-        database.__get__('db').close();
+        fs.unlinkSync(DB_PATH);
     });
     
     test('chatFactory() crea Chats', done => {
@@ -88,7 +93,6 @@ describe('Tests que requieren Mock de BBDD', () => {
 
     test('chatFactory recupera los mensajes del chat', done => {
        // Creamos mensaje de prueba
-        const MessageTableGateway = database.MessageTableGateway;
         chats.__set__({ MessageTableGateway: MessageTableGateway });
 
         const senderUuid = '12345678234234567890123456789013';
@@ -131,7 +135,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('escribirChat guarda mensaje en BBDD', done => {
-        const MessageTableGateway = database.MessageTableGateway;
         chats.__set__({ MessageTableGateway: MessageTableGateway });
 
         // Creamos mensaje de prueba

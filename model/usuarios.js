@@ -3,11 +3,11 @@ const uuid = require('uuid');
 const sqlite3 = require('sqlite3');
 
 // let { OfertaTableGateway, ResennaTableGateway, /* UserTableGateway, */ ReservaTableGateway, LocalTableGateway } = require('../database/database');
-const OfertaTableGateway = require('../database/ofertaTableGateway');
-const ResennaTableGateway = require('../database/resennaTableGateway');
-const LocalTableGateway = require('../database/localTableGateway');
-const ReservaTableGateway = require('../database/reservaTableGateway');
-const UserTableGateway = require('../database/userTableGateway');
+let OfertaTableGateway = require('../database/ofertaTableGateway');
+let ResennaTableGateway = require('../database/resennaTableGateway');
+let LocalTableGateway = require('../database/localTableGateway');
+let ReservaTableGateway = require('../database/reservaTableGateway');
+let UserTableGateway = require('../database/userTableGateway');
 console.log('imported')
 
 const { localFactory } = require('./locales');
@@ -336,8 +336,8 @@ function registerUser(name, password, rol, callback) {
             callback(err, null);
        } else {
             userFactory(name, hash, rol, function(user) {
-                const UserTableGateway = require('../database/userTableGateway');
-                const userTableGateway = new UserTableGateway();
+                const UTG = (UserTableGateway) ? UserTableGateway : require('../database/userTableGateway');
+                const userTableGateway = new UTG();
                 userTableGateway.insertUser(user.uuid, user.name, user.hash, user.rol, function(err) {
                     if(err) {
                         callback(err, user);
@@ -423,8 +423,8 @@ const OwnerBuilder = class OwnerBuilder extends UserBuilder {
 }
 
 function userExists(email, callback) {
-    const UserTableGateway = require('../database/userTableGateway');
-    const utg = new UserTableGateway();
+    const UTG = (UserTableGateway) ? UserTableGateway : require('../database/userTableGateway');
+    const utg = new UTG();
     utg.userExists(email, callback);
 }
 

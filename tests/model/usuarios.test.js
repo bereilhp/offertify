@@ -1,11 +1,15 @@
 const bcrypt = require('bcrypt');
-const { Console } = require('console');
 const rewire = require('rewire');
-const { OfertaTableGateway } = require('../../database/database');
 const { Local } = require('../../model/locales');
 const { Oferta } = require('../../model/ofertas');
 const { Resenna } = require('../../model/resennas');
 const { Reserva } = require('../../model/reservas');
+
+const UserTableGateway = rewire('../../database/userTableGateway');
+const LocalTableGateway = rewire('../../database/localTableGateway');
+const OfertaTableGateway = rewire('../../database/ofertaTableGateway');
+const ResennaTableGateway = rewire('../../database/resennaTableGateway');
+const ReservaTableGateway = rewire('../../database/reservaTableGateway');
 
 const usuarios = rewire('../../model/usuarios');
 const User = usuarios.User;
@@ -14,7 +18,7 @@ const Owner = usuarios.Owner;
 const Admin = usuarios.Admin;
 const userFactory = usuarios.userFactory;
 const registerUser = usuarios.registerUser;
-
+        
 test('Clase User almacena UUID', () => {
     const user = new User('uuid-prueba', 'Nombre', 0x01);
     expect(user.uuid).toEqual('uuid-prueba');
@@ -112,9 +116,11 @@ describe('Tests que requieren Mock de BBDD', () => {
     const path = require('path');
     const database = rewire('../../database/database');
 
+    const DB_PATH = './test_usuarios_database.db';
+
     // Antes de todos los tests, se sustituye la BBDD original por una BBDD en memoria
-    beforeAll(() => {
-        const db = new sqlite3.Database(':memory:', function(err) {
+    beforeAll(done => {
+        const db = new sqlite3.Database(DB_PATH, function(err) {
             const sqlCreationScript = fs.readFileSync(
                 path.join(__dirname, '..', '..', 'database', 'creation_script.sql')
             );
@@ -130,13 +136,22 @@ describe('Tests que requieren Mock de BBDD', () => {
                     }
                 });
             });
+            
+            database.__set__({ db: db });
+                   
+            done();
+            return;
         });
         
-        database.__set__({ db: db });
+        UserTableGateway.__set__({ DB_PATH: DB_PATH });
+        ReservaTableGateway.__set__({ DB_PATH: DB_PATH });
+        ResennaTableGateway.__set__({ DB_PATH: DB_PATH });
+        OfertaTableGateway.__set__({ DB_PATH: DB_PATH });
+        LocalTableGateway.__set__({ DB_PATH: DB_PATH });
     });
 
     afterAll(() => {
-        database.__get__('db').close();
+        fs.unlinkSync(DB_PATH);
     });
 
     test('userFactory() crea Clientes para Rol = user', done => {
@@ -198,7 +213,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('registerUser() haseha la contraseña y crea un usuario', () => {
-        const UserTableGateway = database.UserTableGateway;
         usuarios.__set__({ UserTableGateway: UserTableGateway });
         const name = 'Usuario';
         const password = '1234';
@@ -212,7 +226,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('registerUser() guarda el usuario en la BBDD', done => {
-        const UserTableGateway = database.UserTableGateway;
         usuarios.__set__({ UserTableGateway: UserTableGateway });
         const name = 'Usuario Nuevo';
         const password = '1234';
@@ -230,7 +243,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Admin -> Método para borrar ofertas de la Base de Datos', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
         usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
         const admin = new Admin('uuid-prueba', 'Admin Prueba', 0x01);
         
@@ -257,7 +269,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Admin -> Método para borrar Reseñas de la Base de Datos', done => {
-        const ResennaTableGateway = database.ResennaTableGateway;
         usuarios.__set__({ ResennaTableGateway: ResennaTableGateway });
 
         const admin = new Admin('uuid-prueba', 'Admin Prueba', 0x01);
@@ -280,8 +291,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Client -> Cliente puede crear reseñas que se guardan en la base de datos', done => {
-        const ResennaTableGateway = database.ResennaTableGateway;
-        const ReservaTableGateway = database.ReservaTableGateway;
         usuarios.__set__({
             ResennaTableGateway: ResennaTableGateway,
             ReservaTableGateway: ReservaTableGateway
@@ -326,7 +335,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Client -> Las reservas creadas por el cliente se guardan en Base de Datos', done => {
-        const ReservaTableGateway = database.ReservaTableGateway;
         usuarios.__set__({ ReservaTableGateway: ReservaTableGateway });
         
         const user = new Client('23fj0scneno', 'Cliente Prueba para Reservas 2', 0x01);
@@ -348,7 +356,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Client -> Cliente tiene operación para cancelar reservas', done => {
-        const ReservaTableGateway = database.ReservaTableGateway;
         usuarios.__set__({ ReservaTableGateway: ReservaTableGateway });
         
         const user = new Client('3ffjwvw3eno', 'Cliente Prueba para Reservas 2', 0x01);
@@ -404,7 +411,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Owner -> Las ofertas creadas por el dueño se guardan en Base de Datos', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
         usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
         
         const owner = new Owner('o3fjw0vn34w', 'Dueño Prueba para Ofertas 3', 0x01);
@@ -461,7 +467,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Owner -> Al editar una oferta se actualiza la Base de Datos', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
         usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
         
         const owner = new Owner('dfevasvf0f3n4nh4w', 'Dueño Prueba para Ofertas 2', 0x01);
@@ -504,7 +509,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Owner -> Al desactivar una oferta se actualiza la Base de Datos', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
         usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
         
         const owner = new Owner('302fsojo3joivjoi8fj404w', 'Dueño Prueba para Ofertas 2', 0x01);
@@ -544,7 +548,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Owner -> Los locales creados por el dueño se guardan en Base de Datos', done => {
-        const LocalTableGateway = database.LocalTableGateway;
         usuarios.__set__({ LocalTableGateway: LocalTableGateway });
         
         const owner = new Owner('fasdf03jcqw', 'Dueño Prueba para Locales 2', 0x01);
@@ -601,7 +604,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Owner -> Al editar un local se actualiza la Base de Datos', done => {
-        const LocalTableGateway = database.LocalTableGateway;
         usuarios.__set__({ LocalTableGateway: LocalTableGateway });
         
         const owner = new Owner('39958020j0w', 'Dueño Prueba para Locales 5', 0x01);
@@ -644,7 +646,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Owner -> Al borrar un local se actualiza la Base de Datos', done => {
-        const LocalTableGateway = database.LocalTableGateway;
         usuarios.__set__({ LocalTableGateway: LocalTableGateway });
         
         const owner = new Owner('09876152739', 'Dueño Prueba para Locales 7', 0x01);
@@ -674,7 +675,6 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('userFactory carga las reservas de la Base de Datos', done => {
-        const ReservaTableGateway = database.ReservaTableGateway;
         usuarios.__set__({ ReservaTableGateway: ReservaTableGateway });
 
         const userId = '580gl3ngr0fjwe23nj9nvtqn3cn0fn12';
@@ -690,20 +690,20 @@ describe('Tests que requieren Mock de BBDD', () => {
         const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
 
         const rtg = new ReservaTableGateway();  
-        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, ofertaId, () => {});
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, ofertaId, () => {
+            const callback = function(user) {
+                expect(user.reservas).toEqual([reserva]);
+                
+                done();
+                return;
+            }
 
-        const callback = function(user) {
-            expect(user.reservas).toEqual([reserva]);
-            
-            done();
-            return;
-        }
+            userFactory(name, hash, 'user', callback, userId);
+        });
 
-        userFactory(name, hash, 'user', callback, userId);
     });
 
     test('userFactory carga los locales de la Base de Datos', done => {
-        const LocalTableGateway = database.LocalTableGateway;
         usuarios.__set__({ LocalTableGateway: LocalTableGateway });
 
         const ownerId = '3wfj030gn20nv02pvh90123456789012';
@@ -712,28 +712,27 @@ describe('Tests que requieren Mock de BBDD', () => {
 
         // Creamos e insertamos un local de prueba en la base de datos
         const venueUuid = '230fj20wmms0404nfw0';
-        const nombre = 'Local';
+        const nombre = 'Local Carga';
         const calle = 'Calle Ensamblador 15';
         const codigoPostal = 29078;
         const logo = 'https://url.logo.com/logo.png'
         const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
 
         const ltg = new LocalTableGateway();
-        ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, ownerId, () => {});
+        ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, ownerId, () => {
+            const callback = function(owner) {
+                expect(owner.locales).toEqual([local]);
+                
+                done();
+                return;
+            }
 
-        const callback = function(owner) {
-            expect(owner.locales).toEqual([local]);
-            
-            done();
-            return;
-        }
+            userFactory(name, hash, 'owner', callback, ownerId);
+        });
 
-        userFactory(name, hash, 'owner', callback, ownerId);
     });
 
     test('userFactory carga las ofertas de la Base de Datos', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
-        const LocalTableGateway = database.LocalTableGateway;
         usuarios.__set__({ 
             OfertaTableGateway: OfertaTableGateway,
             LocalTableGateway: LocalTableGateway

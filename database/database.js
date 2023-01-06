@@ -244,7 +244,7 @@ const ChatTableGateway = class ChatTableGateway extends TableGateway {
                     const chatCreatedCallback = function(chat) {
                         callback(null, chat);
                     }
-                    chatFactory(row.UUID);
+                    chatFactory(chatCreatedCallback, row.UUID);
                 }
             });
         });

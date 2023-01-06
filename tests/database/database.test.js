@@ -174,6 +174,41 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
+    test('UserTableGateway tiene operación para ver si existe el usuario', done => {
+        const db = database.__get__('db');
+        const UserTableGateway = database.UserTableGateway;
+
+        const uuid = 'a0sdjv0nvoasdvenbkno123456789012';
+        const name = 'Usuario 3';
+        const hash = 0x01;
+        const user = new Client(uuid, name, hash);
+
+        const utg = new UserTableGateway();
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
+        utg.userExists(user.name, function(err, exists) {
+            expect(exists).toBeTruthy();
+            done();
+            return;
+        });
+    });
+
+    test('UserTableGateway tiene operación para ver si existe el usuario (cuando no existe)', done => {
+        const db = database.__get__('db');
+        const UserTableGateway = database.UserTableGateway;
+
+        const uuid = 'klkadnvi3egn0awg0340fjwejf089012';
+        const name = 'Usuario 4';
+        const hash = 0x01;
+        const user = new Client(uuid, name, hash);
+
+        const utg = new UserTableGateway();
+        utg.userExists(user.name, function(err, exists) {
+            expect(exists).not.toBeTruthy();
+            done();
+            return;
+        });
+    });
+
     test('LocalTableGateway tiene operación para insertar Local', done => {
         const LocalTableGateway = database.LocalTableGateway;
 

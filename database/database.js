@@ -71,7 +71,7 @@ const TableGateway = class TableGateway {
                     rows.forEach((row) => {
                         let obj = factory(row);
                         resultList.push(obj);
-                    })
+                    });
                     callback(null, resultList);
                 }
             });
@@ -116,6 +116,14 @@ const UserTableGateway = class UserTableGateway extends TableGateway {
                 }
             });
         });
+    }
+
+    userExists(name, callback) {
+        const statement = `SELECT COUNT(*) AS Usuario FROM Usuarios WHERE Nombre = '${name}'`;
+        const userChecker = function(row) {
+            return row.Usuario !== 0;
+        }
+        this.get(statement, userChecker, callback);
     }
 }
 

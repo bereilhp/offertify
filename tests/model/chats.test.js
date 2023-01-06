@@ -1,5 +1,7 @@
 const rewire = require('rewire');
-const chats = require('../../model/chats');
+const chats = rewire('../../model/chats');
+const { Mensaje } = require('../../model/mensajes');
+const { Owner } = require('../../model/usuarios');
 const Chat = chats.Chat;
 const chatFactory = chats.chatFactory;
 
@@ -25,7 +27,7 @@ describe('Tests que requieren Mock de BBDD', () => {
     const database = rewire('../../database/database');
 
     // Antes de todos los tests, se sustituye la BBDD original por una BBDD en memoria
-    beforeAll(() => {
+    beforeAll(done => {
         const db = new sqlite3.Database(':memory:', function(err) {
             const sqlCreationScript = fs.readFileSync(
                 path.join(__dirname, '..', '..', 'database', 'creation_script.sql')
@@ -42,9 +44,15 @@ describe('Tests que requieren Mock de BBDD', () => {
                     }
                 });
             });
+            database.__set__({ db: db });
+
+            done();
+            return;
         });
-        
-        database.__set__({ db: db });
+    });
+
+    afterAll(() => {
+        database.__get__('db').close();
     });
     
     test('chatFactory() crea Chats', done => {
@@ -76,5 +84,34 @@ describe('Tests que requieren Mock de BBDD', () => {
             return;
         }
         chatFactory(callback, 'id');
+    });
+
+    test('chatFactory recupera los mensajes del chat', done => {
+       // Creamos mensaje de prueba
+        const MessageTableGateway = database.MessageTableGateway;
+        chats.__set__({ MessageTableGateway: MessageTableGateway });
+
+        const senderUuid = '12345678234234567890123456789013';
+        const senderName = 'Message Sender 1';
+        const senderHash = 0x02;
+        const sender = new Owner(senderUuid, senderName, senderHash);
+
+        const chatId = '30fjw0jf0340gnq0ecmwe0ng043gnhfn';
+        const messageId = 'f0ajc03ng0mv03nb034nb0335w789-12';
+        const texto = 'Mensaje de Prueba';
+        const timestamp = null
+        const message = new Mensaje(messageId, sender, texto, timestamp);
+
+        const mtg = new MessageTableGateway();  
+        mtg.insertMessage(message.uuid, message.texto, sender.uuid, chatId, function(err) {
+            // Creamos el chat
+            const callback = function(chat) {
+                expect(chat.mensajes[0].uuid).toBe(message.uuid);
+
+                done();
+                return;
+            }
+            chatFactory(callback, chatId);
+        });
     });
 });

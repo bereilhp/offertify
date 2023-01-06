@@ -1,4 +1,5 @@
 const uuid = require('uuid');
+let { MessageTableGateway } = require('../database/database');
 
 const Chat = class Chat {
     constructor(uuid,mensajes = []) {
@@ -19,9 +20,18 @@ const Chat = class Chat {
  */
 function chatFactory(callback, chatId = null) {
     chatId = chatId ?? uuid.v4();
-    mensajes = [];
-    let chat = new Chat(chatId, mensajes);
-    callback(chat);
+    let chat = new Chat(chatId);
+    
+    const messageTableGateway = new MessageTableGateway();
+    messageTableGateway.loadMessages(chat.uuid, function(err, mensajes) {
+        if (err) {
+            console.log(err);
+            callback(null);
+        } else {
+            chat.mensajes = mensajes;
+            callback(chat);
+        }
+    });
 }
 
 

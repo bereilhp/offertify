@@ -50,4 +50,4 @@ const UserTableGateway = class UserTableGateway extends TableGateway {
     }
 }
 
-module.exports = { UserTableGateway };
+module.exports = UserTableGateway;

@@ -1,4 +1,4 @@
-const { UserTableGateway } = require('../database/userTableGateway');
+const UserTableGateway = require('../database/userTableGateway');
 const express = require('express');
 const bcrypt = require('bcrypt');
 

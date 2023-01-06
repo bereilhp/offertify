@@ -235,10 +235,19 @@ const ChatTableGateway = class ChatTableGateway extends TableGateway {
      */
     loadChat(reservaId, callback) {
         const statement = `SELECT UUID FROM Chats WHERE IdReserva = '${reservaId}'`;
-        const factory = function(row) {
-            return chatFactory(row.UUID);
-        }
-        this.get(statement, factory, callback);
+        db.serialize(() => {
+            db.get(statement, function(err, row) {
+                if (err) {
+                    console.log(err);
+                    callback(err, null);
+                } else {
+                    const chatCreatedCallback = function(chat) {
+                        callback(null, chat);
+                    }
+                    chatFactory(row.UUID);
+                }
+            });
+        });
     }
 }
 

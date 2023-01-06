@@ -3,7 +3,7 @@ const uuid = require('uuid');
 const Chat = class Chat {
     constructor(uuid,mensajes = []) {
         this.uuid = uuid;
-        this.mensajes = mensajes
+        this.mensajes = mensajes;
     }
 
     escribirMensaje(texto, nombreUsuario) {
@@ -13,13 +13,13 @@ const Chat = class Chat {
 
 /**
  * 
- * @param {string} mensajes 
  * @param {string | null} chatId Opcional. UUID del chat. Si no se especifica, se genera uno nuevo
  * @param {function(Chat | null)} callback Función a ejecutar una vez creado el chat. Toma como parámetro el chat creado:
  * (o `null` si ha habido un error)
  */
-function chatFactory(mensajes, callback, chatId = null) {
+function chatFactory(callback, chatId = null) {
     chatId = chatId ?? uuid.v4();
+    mensajes = [];
     let chat = new Chat(chatId, mensajes);
     callback(chat);
 }

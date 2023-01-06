@@ -54,12 +54,12 @@ describe('Tests que requieren Mock de BBDD', () => {
             done();
             return;
         }
-        chatFactory("Soy un Mensaje", callback);
+        chatFactory(callback);
     });
 
     test('chatFactory() crea uuids diferentes para cada chat', done => {
-        chatFactory("Soy un Chat", function(chat_1) {
-            chatFactory("Soy un Chat", function(chat_2) {
+        chatFactory(function(chat_1) {
+            chatFactory(function(chat_2) {
                 expect(chat_1.uuid).not.toEqual(chat_2.uuid);
 
                 done();
@@ -75,6 +75,6 @@ describe('Tests que requieren Mock de BBDD', () => {
             done();
             return;
         }
-        chatFactory("Soy un Mensaje", callback, 'id');
+        chatFactory(callback, 'id');
     });
 });

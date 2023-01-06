@@ -4,13 +4,13 @@ const TableGateway = require('./tableGateway');
 const { userFactory } = require('../model/usuarios');
 //let db = require('./database');
 
-const DB_PATH = path.join(__dirname, 'database.db');
-
-let db = new sqlite3.Database(DB_PATH, () => {
-    console.log("Conectado a BBDD");
-});
+let DB_PATH = path.join(__dirname, 'database.db');
 
 const UserTableGateway = class UserTableGateway extends TableGateway {
+    constructor() {
+        super(DB_PATH);
+    }
+
     /**
      * Función que inserta un usuario en la base de datos
      * 
@@ -34,18 +34,21 @@ const UserTableGateway = class UserTableGateway extends TableGateway {
      */
     loadUser(name, callback) {
         const statement = `SELECT UUID, Hash, Rol FROM Usuarios WHERE Nombre = '${name}'`;
-        db.serialize(() => {
-            db.get(statement, function(err, row) {
-                if (err) {
-                    console.log(err);
-                    callback(err, null);
-                } else {
-                    const userCreatedCallback = function(user) {
-                        callback(null, user);
+        let db = new sqlite3.Database(DB_PATH, () => {
+            db.serialize(() => {
+                db.get(statement, function(err, row) {
+                    if (err) {
+                        console.log(err);
+                        callback(err, null);
+                    } else {
+                        const userCreatedCallback = function(user) {
+                            callback(null, user);
+                        }
+                        userFactory(row.Nombre, row.Hash, row.Rol, userCreatedCallback, row.UUID);
                     }
-                    userFactory(row.Nombre, row.Hash, row.Rol, userCreatedCallback, row.UUID);
-                }
+                });
             });
+            db.close();
         });
     }
 

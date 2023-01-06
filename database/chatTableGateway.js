@@ -1,6 +1,13 @@
+const path = require('path');
+const sqlite3 = require('sqlite3');
 const TableGateway = require("./tableGateway");
 
+let DB_PATH = path.join(__dirname, 'database.db');
+
 const ChatTableGateway = class ChatTableGateway extends TableGateway {
+    constructor() {
+        super(DB_PATH);
+    }
     /**
      * Función que inserta un Chat en la Base de Datos.
      * 
@@ -24,19 +31,22 @@ const ChatTableGateway = class ChatTableGateway extends TableGateway {
      */
     loadChat(reservaId, callback) {
         const statement = `SELECT UUID FROM Chats WHERE IdReserva = '${reservaId}'`;
-        db.serialize(() => {
-            db.get(statement, function(err, row) {
-                if (err) {
-                    console.log(err);
-                    callback(err, null);
-                } else {
-                    const chatCreatedCallback = function(chat) {
-                        callback(null, chat);
+        let db = new sqlite3.Database(this.db_path, () => {
+            db.serialize(() => {
+                db.get(statement, function(err, row) {
+                    if (err) {
+                        console.log(err);
+                        callback(err, null);
+                    } else {
+                        const chatCreatedCallback = function(chat) {
+                            callback(null, chat);
+                        }
+                        chatFactory(chatCreatedCallback, row.UUID);
                     }
-                    chatFactory(chatCreatedCallback, row.UUID);
-                }
+                });
             });
         });
+        db.close();
     }
 }
 

@@ -9,8 +9,18 @@ const { Mensaje } = require('../../model/mensajes');
 const { Oferta } = require('../../model/ofertas');
 const { Reserva } = require('../../model/reservas');
 const { Resenna } = require('../../model/resennas');
+const { db } = require('../../database/database');
+const TableGateway = rewire('../../database/tableGateway');
+const UserTableGateway = rewire('../../database/userTableGateway');
+const ChatTableGateway = rewire('../../database/chatTableGateway');
+const LocalTableGateway = rewire('../../database/localTableGateway');
+const MessageTableGateway = rewire('../../database/messageTableGateway');
+const OfertaTableGateway = rewire('../../database/ofertaTableGateway');
+const ResennaTableGateway = rewire('../../database/resennaTableGateway');
+const ReservaTableGateway = rewire('../../database/reservaTableGateway');
 
 const database = rewire('../../database/database');
+
 
 test('Módulo database se conecta a base de datos', () => {
     const db = database.__get__('db');
@@ -36,7 +46,8 @@ test('Módulo database se conecta a la base de datos adecuada', done => {
 describe('Tests que requieren base de datos de pruebas', () => {
     // Antes de todos los tests, se sustituye la BBDD original por una BBDD en memoria
     beforeAll(done => {
-        const db = new sqlite3.Database(':memory:', function(err) {
+        const DB_PATH = './test_database.db';
+        const db = new sqlite3.Database(DB_PATH, function(err) {
             const sqlCreationScript = fs.readFileSync(
                 path.join(__dirname, '..', '..', 'database', 'creation_script.sql')
             );
@@ -52,21 +63,27 @@ describe('Tests que requieren base de datos de pruebas', () => {
                     }
                 });
             });
-
-            database.__set__({ db: db });
             
+            database.__set__({ db: db });
+                   
             done();
             return;
         });
+        
+        UserTableGateway.__set__({ DB_PATH: DB_PATH });
+        ReservaTableGateway.__set__({ DB_PATH: DB_PATH });
+        ResennaTableGateway.__set__({ DB_PATH: DB_PATH });
+        OfertaTableGateway.__set__({ DB_PATH: DB_PATH });
+        MessageTableGateway.__set__({ DB_PATH: DB_PATH });
+        LocalTableGateway.__set__({ DB_PATH: DB_PATH });
+        ChatTableGateway.__set__({ DB_PATH: DB_PATH });
     });
 
     afterAll(() => {
-        database.__get__('db').close();
+        fs.unlinkSync('./test_database.db');
     });
 
     test('UserTableGateway tiene operación para insertar usuario', done => {
-        const UserTableGateway = database.UserTableGateway;
-
         const uuid = '12325677901234567890123456789012';
         const name = 'Usuario 1';
         const hash = 0x01;
@@ -83,119 +100,106 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('UserTableGateway tiene operación para recuperar Usuario', done => {
-        const db = database.__get__('db');
-        const UserTableGateway = database.UserTableGateway;
-
         const uuid = '12345678901334567890123456789012';
         const name = 'Usuario 2';
         const hash = 0x01;
         const user = new Client(uuid, name, hash);
 
         const utg = new UserTableGateway();
-        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
-        utg.loadUser(user.name, function(err, user) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(user.uuid).toBe(uuid);
-                done();
-                return;
-            }
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {
+            utg.loadUser(user.name, function(err, user) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(user.uuid).toBe(uuid);
+                    done();
+                    return;
+                }
+            });
         });
     });
     
     test('UserTableGateway recupera Clientes para rol user', done => {
-        const db = database.__get__('db');
-        const UserTableGateway = database.UserTableGateway;
-
         const uuid = '12345678901234567890123456789016';
         const name = 'Cliente 1';
         const hash = 0x01;
         const user = new Client(uuid, name, hash);
 
         const utg = new UserTableGateway();
-        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
-        utg.loadUser(user.name, function(err, user) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(user.rol).toBe('user');
-                done();
-                return;
-            }
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {
+            utg.loadUser(user.name, function(err, user) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(user.rol).toBe('user');
+                    done();
+                    return;
+                }
+            });
         });
     });
     
     test('UserTableGateway recupera Admins para rol admin', done => {
-        const db = database.__get__('db');
-        const UserTableGateway = database.UserTableGateway;
-
         const uuid = '12345678901234567890123456789014';
         const name = 'Admin 1';
         const hash = 0x01;
         const user = new Admin(uuid, name, hash);
 
         const utg = new UserTableGateway();
-        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
-        utg.loadUser(user.name, function(err, user) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(user.rol).toBe('admin');
-                done();
-                return;
-            }
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {
+            utg.loadUser(user.name, function(err, user) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(user.rol).toBe('admin');
+                    done();
+                    return;
+                }
+            });
         });
     });
     
     test('UserTableGateway recupera Dueños para rol owner', done => {
-        const db = database.__get__('db');
-        const UserTableGateway = database.UserTableGateway;
-
         const uuid = '12345678901234567890123456789013';
         const name = 'Owner 1';
         const hash = 0x01;
         const user = new Owner(uuid, name, hash);
 
         const utg = new UserTableGateway();
-        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
-        utg.loadUser(user.name, function(err, user) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(user.rol).toBe('owner');
-                done();
-                return;
-            }
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {
+            utg.loadUser(user.name, function(err, user) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(user.rol).toBe('owner');
+                    done();
+                    return;
+                }
+            });
         });
     });
 
     test('UserTableGateway tiene operación para ver si existe el usuario', done => {
-        const db = database.__get__('db');
-        const UserTableGateway = database.UserTableGateway;
-
         const uuid = 'a0sdjv0nvoasdvenbkno123456789012';
         const name = 'Usuario 3';
         const hash = 0x01;
         const user = new Client(uuid, name, hash);
 
         const utg = new UserTableGateway();
-        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {});
-        utg.userExists(user.name, function(err, exists) {
-            expect(exists).toBeTruthy();
-            done();
-            return;
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {
+            utg.userExists(user.name, function(err, exists) {
+                expect(exists).toBeTruthy();
+                done();
+                return;
+            });
         });
     });
 
     test('UserTableGateway tiene operación para ver si existe el usuario (cuando no existe)', done => {
-        const db = database.__get__('db');
-        const UserTableGateway = database.UserTableGateway;
-
         const uuid = 'klkadnvi3egn0awg0340fjwejf089012';
         const name = 'Usuario 4';
         const hash = 0x01;
@@ -210,8 +214,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('LocalTableGateway tiene operación para insertar Local', done => {
-        const LocalTableGateway = database.LocalTableGateway;
-
         const ownerUuid = '12345678901234567890123456789013';
         const name = 'Owner 1';
         const hash = 0x01;
@@ -235,9 +237,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('LocalTableGateway tiene operación para cargar todos los Locales', done => {
-        const db = database.__get__('db');
-        const LocalTableGateway = database.LocalTableGateway;
-
         const ownerUuid = '12345678234234567890123456789013';
         const name = 'Owner 1';
         const hash = 0x02;
@@ -251,22 +250,21 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
 
         const ltg = new LocalTableGateway();  
-        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, local.logo, owner.uuid, () => {});
-        ltg.loadVenues(owner.uuid, function(err, venueList) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(venueList[0].uuid).toBe(local.uuid);
-                done();
-                return;
-            }
+        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, local.logo, owner.uuid, () => {
+            ltg.loadVenues(owner.uuid, function(err, venueList) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(venueList[0].uuid).toBe(local.uuid);
+                    done();
+                    return;
+                }
+            });
         });
     });
 
     test('ChatTableGateway tiene operación para insertar chat', done => {
-        const ChatTableGateway = database.ChatTableGateway;
-
         const ownerId = '12338677901224867893123359789012';
         const userId = '12325677931224562893123336789012';
         const reservaId = '12325277902224587493129356489010';
@@ -284,9 +282,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('ChatTableGateway tiene operación para recuperar Chat', done => {
-        const db = database.__get__('db');
-        const ChatTableGateway = database.ChatTableGateway;
-
         const mockChatFactory = function(callback, uuid) {
             let chat = new Chat(uuid);
             callback(chat);
@@ -295,28 +290,27 @@ describe('Tests que requieren base de datos de pruebas', () => {
 
         const ownerId = '12338677901224867893123359789012';
         const userId = '12325677931224562893123336789012';
-        const reservaId = 'qwe0fj94jg20023jf0jdw0ncn03f0201';
-        const chatId = '30f84jf0nvn0n40wmfme0gm40hn20384';
+        const reservaId = 'asjodfjeojo20fj0wv3jojncn03f0201';
+        const chatId = '3309f9asdjio3ogiwfme0gm40hn20384';
         const chat = new Chat(chatId);
 
         const ctg = new ChatTableGateway();
-        ctg.insertChat(chat.uuid, ownerId, userId, reservaId, () => {});
-        ctg.loadChat(reservaId, function(err, loadedChat) {
-            console.log(loadedChat)
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(loadedChat.uuid).toBe(chat.uuid);
-                done();
-                return;
-            }
+        ctg.insertChat(chat.uuid, ownerId, userId, reservaId, () => {
+            ctg.loadChat(reservaId, function(err, loadedChat) {
+                console.log(loadedChat)
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(loadedChat.uuid).toBe(chat.uuid);
+                    done();
+                    return;
+                }
+            });
         });
     });
 
     test('MessageTableGateway tiene operación para insertar mensaje', done => {
-        const MessageTableGateway = database.MessageTableGateway;
-
         const senderUuid = '12345678234234567890123456789013';
         const senderName = 'Message Sender 1';
         const senderHash = 0x02;
@@ -339,8 +333,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('MessageTableGateway tiene operación para cargar todos los Mensajes', done => {
-        const MessageTableGateway = database.MessageTableGateway;
-
         const senderUuid = '12345678234234567890123456789013';
         const senderName = 'Message Sender 1';
         const senderHash = 0x02;
@@ -353,22 +345,21 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const message = new Mensaje(messageId, sender, texto, timestamp);
 
         const mtg = new MessageTableGateway();  
-        mtg.insertMessage(message.uuid, message.texto, sender.uuid, chatId, () => {});
-        mtg.loadMessages(chatId, function(err, messageList) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(messageList[0].uuid).toBe(message.uuid);
-                done();
-                return;
-            }
+        mtg.insertMessage(message.uuid, message.texto, sender.uuid, chatId, () => {
+            mtg.loadMessages(chatId, function(err, messageList) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(messageList[0].uuid).toBe(message.uuid);
+                    done();
+                    return;
+                }
+            });
         });
     });
     
     test('OfertaTableGateway tiene operación para insertar oferta', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
-
         const ownerId = '12325c779012i4567890123456789012';
         const localId = '42c2527790120456789j123456789012';
         const ofertaId = '9142-247901204567899123h56789012';
@@ -389,8 +380,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('OfertaTableGateway tiene operación para recuperar lista de ofertas', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
-
         const ownerId = '1232asdf2308f003fwefj03rewe0fjqf';
         const localId = '3asdfj30w02jfjs030ja0dfj30fjae0f';
         const ofertaId = '4ql3kekf039fjw03jt04j0ejf03j0402';
@@ -401,22 +390,21 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
 
         const otg = new OfertaTableGateway();  
-        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
-        otg.loadOfertas(ownerId, function(err, ofertasList) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(ofertasList[0].uuid).toBe(oferta.uuid);
-                done();
-                return;
-            }
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {
+            otg.loadOfertas(ownerId, function(err, ofertasList) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(ofertasList[0].uuid).toBe(oferta.uuid);
+                    done();
+                    return;
+                }
+            });
         });
     });
 
     test('OfertaTableGateway tiene operación para borrar una Oferta', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
-
         const ownerId = '1232asdf2308f003fwefj03rewe0fjqf';
         const localId = '3asdfj30w02jfjs030ja0dfj30fjae0f';
         const ofertaId = '4q3fjf302fj0vn20ng04j0ejf03j0402';
@@ -427,19 +415,18 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
 
         const otg = new OfertaTableGateway();  
-        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
-        otg.deleteOferta(oferta.uuid, function(err) {
-            // Si todo va bien, err = null
-            expect(err).toBeNull();
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {
+            otg.deleteOferta(oferta.uuid, function(err) {
+                // Si todo va bien, err = null
+                expect(err).toBeNull();
 
-            done();
-            return;
+                done();
+                return;
+            });
         });
     });
 
     test('ReservaTableGateway tiene operación para insertar reserva', done => {
-        const ReservaTableGateway = database.ReservaTableGateway;
-
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
         const ofertaId = '9142-247901204567899123h56789012';
         const reservaId = '38fji328fjio3208jfiojfnj32823fa2';
@@ -459,8 +446,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('ReservaTableGateway tiene operación para recuperar lista de reservas', done => {
-        const ReservaTableGateway = database.ReservaTableGateway;
-
         const userId = '1R23fdsdcasv23n233r0fjwfnce0fn12';
         const ofertaId = '9142-247901204567899123h56789012';
         const reservaId = '38fji328f0ir3208jfiojfnj32823fa2';
@@ -470,22 +455,21 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
 
         const rtg = new ReservaTableGateway();  
-        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {});
-        rtg.loadReservas(userId, function(err, reservasList) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(reservasList[0].uuid).toBe(reserva.uuid);
-                done();
-                return;
-            }
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {
+            rtg.loadReservas(userId, function(err, reservasList) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(reservasList[0].uuid).toBe(reserva.uuid);
+                    done();
+                    return;
+                }
+            });
         });
     });
 
     test('ReservaTableGateway tiene operación para recuperar el ID de la Oferta Asociada', done => {
-        const ReservaTableGateway = database.ReservaTableGateway;
-
         const userId = '1R23fdsdcasv23n233r0fjwfnce0fn12';
         const ofertaId = 'fj20jf023fj02jf02jf03j0gn320gn12';
         const reservaId = '038fj02nv02m040hm20f0hnj32823fa2';
@@ -495,22 +479,21 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
 
         const rtg = new ReservaTableGateway();  
-        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {});
-        rtg.getIdOferta(reserva.uuid, function(err, idOferta) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(idOferta).toBe(ofertaId);
-                done();
-                return;
-            }
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {
+            rtg.getIdOferta(reserva.uuid, function(err, idOferta) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(idOferta).toBe(ofertaId);
+                    done();
+                    return;
+                }
+            });
         });
     });
 
     test('ResennaTableGateway tiene operación para insertar Reseña', done => {
-        const ResennaTableGateway = database.ResennaTableGateway;
-
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
         const ofertaId = '9142-247901r04567899123h56789012';
         const resennaId = 'f23fj023fj0nb2f000fi30g4n40g02n0';
@@ -528,8 +511,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('ResennaTableGateway tiene operación para recuperar lista de Reseñas', done => {
-        const ResennaTableGateway = database.ResennaTableGateway;
-
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
         const ofertaId = '9142-247901204567899123h56789012';
         const resennaId = '30feor230jfen32800fi30g4n40g02n0';
@@ -537,22 +518,21 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const resenna = new Resenna(resennaId, descripcion);
 
         const rtg = new ResennaTableGateway();  
-        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {});
-        rtg.loadResennas(ofertaId, function(err, resennasList) {
-            if (err) {
-                done(err);
-                return;
-            } else {
-                expect(resennasList[0].uuid).toBe(resenna.uuid);
-                done();
-                return;
-            }
+        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {
+            rtg.loadResennas(ofertaId, function(err, resennasList) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(resennasList[0].uuid).toBe(resenna.uuid);
+                    done();
+                    return;
+                }
+            });
         });
     });
 
     test('ResennaTableGateway tiene operación para borrar una reseña', done => {
-        const ResennaTableGateway = database.ResennaTableGateway;
-
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
         const ofertaId = '9142-247901204567899123h56789012';
         const resennaId = 'fasfae230jfen32800fi30g4n40g02n0';
@@ -560,31 +540,10 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const resenna = new Resenna(resennaId, descripcion);
 
         const rtg = new ResennaTableGateway();  
-        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {});
-        rtg.deleteResenna(resenna.uuid, function(err) {
-            // Si todo va bien, err = null
-            expect(err).toBeNull();
-
-            done();
-            return;
-        });
-    });
-    
-    test('ResennaTableGateway borra las reseñas', done => {
-        const ResennaTableGateway = database.ResennaTableGateway;
-
-        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
-        const ofertaId = 'fajsd0f0ng03f0m30gn9123h56789012';
-        const resennaId = '3fja0f03ng043nh034m0wcyc0c9t0ux5';
-        const descripcion = 'Reseña de Prueba 4';
-        const resenna = new Resenna(resennaId, descripcion);
-
-        const rtg = new ResennaTableGateway();  
-        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {});
-        rtg.deleteResenna(resenna.uuid, function(err) {
-            // Si todo va bien, err = null
-            rtg.loadResennas(ofertaId, function(err, listaResennas) {
-                expect(listaResennas).toEqual([]);
+        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {
+            rtg.deleteResenna(resenna.uuid, function(err) {
+                // Si todo va bien, err = null
+                expect(err).toBeNull();
 
                 done();
                 return;
@@ -592,9 +551,28 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
     
-    test('ReservaTableGateway tiene operación para borrar una reserva', done => {
-        const ReservaTableGateway = database.ReservaTableGateway;
+    test('ResennaTableGateway borra las reseñas', done => {
+        const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
+        const ofertaId = 'fajsd0f0ng03f0m30gn9123h56789012';
+        const resennaId = '3fja0f03ng043nh034m0wcyc0c9t0ux5';
+        const descripcion = 'Reseña de Prueba 4';
+        const resenna = new Resenna(resennaId, descripcion);
 
+        const rtg = new ResennaTableGateway();  
+        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {
+            rtg.deleteResenna(resenna.uuid, function(err) {
+                // Si todo va bien, err = null
+                rtg.loadResennas(ofertaId, function(err, listaResennas) {
+                    expect(listaResennas).toEqual([]);
+
+                    done();
+                    return;
+                });
+            });
+        });
+    });
+    
+    test('ReservaTableGateway tiene operación para borrar una reserva', done => {
         const userId = '1R23fdsdcasvenn233r0fjwfnce0fn12';
         const ofertaId = '9142-247901204567899123h56789012';
         const reservaId = 'jf0jfwe0gg340jt023jf02j30fj230jt';
@@ -604,19 +582,18 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
 
         const rtg = new ReservaTableGateway();  
-        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {});
-        rtg.deleteReserva(reserva.uuid, function(err) {
-            // Si todo va bien, err = null
-            expect(err).toBeNull();
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {
+            rtg.deleteReserva(reserva.uuid, function(err) {
+                // Si todo va bien, err = null
+                expect(err).toBeNull();
 
-            done();
-            return;
+                done();
+                return;
+            });
         });
     });
 
     test('OfertaTableGateway tiene operación para actualizar oferta', done => {
-        const OfertaTableGateway = database.OfertaTableGateway;
-
         const ownerId = 'f9aefj30jfawnv0n7890123456789012';
         const localId = 'fjowfjoawevno43nbn340qfj0q4j4gn2';
         const ofertaId = 'fjasdfj03jf4n03n0bn0wnvh56789012';
@@ -641,8 +618,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('LocalTableGateway tiene operación para actualizar local', done => {
-        const LocalTableGateway = database.LocalTableGateway;
-
         const ownerUuid = 'afj03j0faj3044567890123456789013';
         const name = 'Owner Prueba Local Update';
         const hash = 0x01;
@@ -670,8 +645,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('LocalTableGateway tiene operación para borrar Local', done => {
-        const LocalTableGateway = database.LocalTableGateway;
-
         const ownerUuid = '230fjw5868720g0q3n0v3qn456789013';
         const name = 'Owner 1';
         const hash = 0x01;

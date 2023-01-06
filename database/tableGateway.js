@@ -1,6 +1,11 @@
-const { db } = require('./database');
+const sqlite3 = require('sqlite3');
+const path = require('path');
 
 const TableGateway = class TableGateway {
+    constructor(db_path) {
+        this.db_path = db_path;
+    }
+
     /**
      * Método para ejecutar una sentencia `INSERT`, `UPDATE` o `DELETE`.
      * 
@@ -9,16 +14,19 @@ const TableGateway = class TableGateway {
      * un error en caso contrario 
      */
     run(statement, callback) {
-        db.serialize(() => {
-            db.run('BEGIN TRANSACTION;');
-            db.run(statement, function(err) {
-                if (err) {
-                    console.log(err);
-                }
+        let db = new sqlite3.Database(this.db_path, () => {
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION;');
+                db.run(statement, function(err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+                db.run('COMMIT;', function(err) {
+                    callback(null);
+                });
             });
-            db.run('COMMIT;', function(err) {
-                callback(null);
-            });
+            db.close();
         });
     }
 
@@ -48,19 +56,22 @@ const TableGateway = class TableGateway {
      * Toma como parámetros la lista de filas ecuperada y el error ocurrido (`null` si no hay).
      */
     all(statement, factory, callback) {
-        db.serialize(() => {
-            db.all(statement, function(err, rows) {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    let resultList = [];
-                    rows.forEach((row) => {
-                        let obj = factory(row);
-                        resultList.push(obj);
-                    });
-                    callback(null, resultList);
-                }
+        let db = new sqlite3.Database(this.db_path, () => {
+            db.serialize(() => {
+                db.all(statement, function(err, rows) {
+                    if (err) {
+                        callback(err, null);
+                    } else {
+                        let resultList = [];
+                        rows.forEach((row) => {
+                            let obj = factory(row);
+                            resultList.push(obj);
+                        });
+                        callback(null, resultList);
+                    }
+                });
             });
+            db.close();
         });
     }
 }

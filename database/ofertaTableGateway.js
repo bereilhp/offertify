@@ -1,7 +1,13 @@
+const path = require('path');
 const { ofertaFactory } = require("../model/ofertas");
 const TableGateway = require("./tableGateway");
 
+let DB_PATH = path.join(__dirname, 'database.db');
+
 const OfertaTableGateway = class OfertaTableGateway extends TableGateway {
+    constructor() {
+        super(DB_PATH);
+    }
 
     /**
      * Función que inserta una oferta en la base de datos.

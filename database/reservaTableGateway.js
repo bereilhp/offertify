@@ -1,7 +1,13 @@
+const path = require('path');
 const { reservaFactory } = require("../model/reservas");
 const TableGateway = require("./tableGateway");
 
+let DB_PATH = path.join(__dirname, 'database.db');
+
 const ReservaTableGateway = class ReservaTableGateway extends TableGateway {
+    constructor() {
+        super(DB_PATH);
+    }
 
     /**
      * Función que inserta una reserva en la Base de Datos.

@@ -1,7 +1,13 @@
+const path = require('path');
 const { mensajeFactory } = require("../model/mensajes");
 const TableGateway = require("./tableGateway");
 
+let DB_PATH = path.join(__dirname, 'database.db');
+
 const MessageTableGateway = class MessageTableGateway extends TableGateway {
+    constructor() {
+        super(DB_PATH);
+    }
 
     /**
      * Función que inserta un mensaje en la base de datos

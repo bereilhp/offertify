@@ -1,7 +1,14 @@
+const path = require('path');
 const { localFactory } = require('../model/locales');
 const TableGateway = require('./tableGateway');
 
+let DB_PATH = path.join(__dirname, 'database.db');
+
 const LocalTableGateway = class LocalTableGateway extends TableGateway {
+    constructor() {
+        super(DB_PATH);
+    }
+
     /**
      * Función que inserta un local en la base de datos
      * 

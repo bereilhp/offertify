@@ -1,7 +1,13 @@
+const path = require('path');
 const { resennaFactory } = require("../model/resennas");
 const TableGateway = require("./tableGateway");
 
+let DB_PATH = path.join(__dirname, 'database.db');
+
 const ResennaTableGateway = class ResennaTableGateway extends TableGateway {
+    constructor() {
+        super(DB_PATH);
+    }
 
     /**
      * Método qu inserta una reseña en la Base de Datos.

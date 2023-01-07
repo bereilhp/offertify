@@ -297,7 +297,6 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const ctg = new ChatTableGateway();
         ctg.insertChat(chat.uuid, ownerId, userId, reservaId, () => {
             ctg.loadChat(reservaId, function(err, loadedChat) {
-                console.log(loadedChat)
                 if (err) {
                     done(err);
                     return;
@@ -688,6 +687,34 @@ describe('Tests que requieren base de datos de pruebas', () => {
                     return;
                 } else {
                     expect(ofertasList).toContainEqual(oferta);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
+    
+    test('LocalTableGateway tiene operación para cargar un local específico', done => {
+        const ownerUuid = '30jfjanlen3o3ios7890123456789013';
+        const name = 'Owner 1';
+        const hash = 0x02;
+        const owner = new Owner(ownerUuid, name, hash);
+
+        const venueUuid = 'fj0asdj03';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
+        const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
+
+        const ltg = new LocalTableGateway();  
+        ltg.insertVenue(local.uuid, local.name, local.hash, local.codigoPostal, local.logo, owner.uuid, () => {
+            ltg.loadVenue(local.uuid, function(err, venue) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(venue.uuid).toBe(local.uuid);
                     done();
                     return;
                 }

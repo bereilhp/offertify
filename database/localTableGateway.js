@@ -8,7 +8,6 @@ const LocalTableGateway = class LocalTableGateway extends TableGateway {
     constructor() {
         super(DB_PATH);
     }
-
     /**
      * Función que inserta un local en la base de datos
      * 
@@ -65,6 +64,21 @@ const LocalTableGateway = class LocalTableGateway extends TableGateway {
         const statement = `DELETE FROM Locales WHERE UUID = '${uuid}';`;
         this.run(statement, callback);
     } 
+
+    /**
+     * Función que carga el local especificado.
+     *  
+     * @param {string} venueId Id del local
+     * @param {function(any | null, Local | null)} callback Callback ejecutado al cargar el local. Si todo va bien, devuelve 
+     * una lista de locales y err será null.
+     */
+    loadVenue(venueId, callback) {
+        const statement = `SELECT UUID, Nombre, Calle, CodigoPostal, Logo FROM Locales WHERE UUID = '${venueId}';`;
+        const factory = function(row) {
+            return localFactory(row.Nombre, row.Calle, row.CodigoPostal, row.Logo, row.UUID);
+        }
+        this.get(statement, factory, callback);
+    }
 }
 
 module.exports = LocalTableGateway;

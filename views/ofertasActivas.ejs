@@ -7,12 +7,15 @@
     <div>
         <div class="row2">
             <div class="column2">
-                <div class="ofertas d-flex flex-column align-items-center justify-content-center">
-                    <div class="mt-2"></div>
-                    <h5 class="pl-2">BAR MANOLO</h5>
-                    <p>Ofertas destacadas: <span style="color: red;"> cerveza 3€</span></p>
-                    <button class="btn btn-dark">Editar</button>
-                </div>
+                <% ofertas.forEach((oferta) => { %>
+                    <div class="ofertas d-flex flex-column align-items-center justify-content-center">
+                        <div class="mt-2"></div>
+                        <h5 class="pl-2">BAR MANOLO</h5>
+                        <p>Descripción: <%= oferta.descripcion %></p>
+                        <p>Precio: <%= oferta.precio %></p>
+                        <button class="btn btn-dark">Editar</button>
+                    </div>
+                <% }); %>
             </div>
 
             <div id="editar_local" class="column2">

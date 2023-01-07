@@ -44,7 +44,7 @@ const UserTableGateway = class UserTableGateway extends TableGateway {
                         const userCreatedCallback = function(user) {
                             callback(null, user);
                         }
-                        userFactory(row.Nombre, row.Hash, row.Rol, userCreatedCallback, row.UUID);
+                        userFactory(name, row.Hash, row.Rol, userCreatedCallback, row.UUID);
                     }
                 });
             });

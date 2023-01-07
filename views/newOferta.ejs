@@ -10,7 +10,7 @@
     <div class="container w-50 p-5 rounded">
         <h1 class="text-center"><%= title %></h1>
         <hr>
-        <form id="formulario" method="post" action="" class="row mb-3">
+        <form id="formulario" method="post" action="/NuevaOferta" class="row mb-3">
             <div class="mb-3">
                 <label class="form-label" for="local-input">Local</label>
                 <input id="local-input" class="form-control" type="text" name="local" placeholder="Bar Manolo" required>
@@ -18,7 +18,7 @@
             <div class="mb-4 row">
                 <div class="col">
                   <label class="form-label" for="descripcion">Descripción</label>
-                  <textarea id="descripcion" class="form-control" name="text" placeholder="Cubo de Cerveza"></textarea>
+                  <textarea id="descripcion" class="form-control" name="text" name="descripcion" placeholder="Cubo de Cerveza"></textarea>
                 </div>
                 <div class="col">
                   <label class="form-label" for="precioOferta">Precio €</label>
@@ -32,12 +32,12 @@
                 
             </div>
             <div id="offerBts" class="mt-5">
-                <button type="button" class="btn btn-success">Guardar</button>
-                <button type="button" class="btn btn-danger">Borrar</button>
+                <button id="guardar" type="submit" class="btn btn-success">Guardar</button>
+                <button id="cancelar" type="submit" class="btn btn-danger">Borrar</button>
             </div>
         </form>
     </div>
   </body>
   <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-  <script type="text/javascript" src="javascripts/registro.js"></script>
+  <script type="text/javascript" src="javascripts/newOferta.js"></script>
 </html>

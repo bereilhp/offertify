@@ -25,8 +25,15 @@ router.get('/', function(req, res, next) {
     if (exists) {
       // Cargamos el chat
       chatTableGateway.loadChat(idReserva, function(err, chat) {
-        // Registramos el chat
-        openChats.add(chat);
+        // Registramos el chat si no está ya registrado
+        let found = false;
+        openChats.forEach((savedChat) => {
+          if (savedChat.uuid === chat.uuid) {
+            found = true;
+          }
+        })
+        
+        if (!found) openChats.add(chat);
 
         // Se crea una página para el chat seleccionado
         res.render('chat', { title: `Chat: ${chat.uuid}`, chat, chatForScript: JSON.stringify(chat) });

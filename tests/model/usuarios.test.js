@@ -572,6 +572,51 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
+    test('Owner -> El dueño puede reactivar una oferta', done => {
+        const owner = new Owner('f0asdjasdv1829q8f9q', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = 'afsdf30j210jv20v7894111189jnt012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba para Desactivar 1';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            owner.desactivarOferta(oferta.uuid, function(err) {
+                    owner.activarOferta(oferta.uuid, function(err) {
+                    expect(oferta.activa).toBeTruthy();
+
+                    done();
+                    return;
+                });
+            });
+        });
+    });
+
+    test('Owner -> Al reactivar una oferta se actualiza la Base de Datos', done => {
+        usuarios.__set__({ OfertaTableGateway: OfertaTableGateway });
+        
+        const owner = new Owner('302fsojo3joivjo7894914w', 'Dueño Prueba para Ofertas 2', 0x01);
+
+        const localId = '30920850820480a0sfj0ajv006789012';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const descripcion = 'Oferta de Prueba para Desactivar 2';
+
+        owner.hacerOferta(foto, precio, descripcion, localId, function(err, oferta) {
+            owner.desactivarOferta(oferta.uuid, function(err) {
+                owner.activarOferta(oferta.uuid, function(err) {
+                    const ofertaTableGateway = new OfertaTableGateway();
+                    ofertaTableGateway.loadOfertas(owner.uuid, function(err, listaOfertas) {
+                        expect(listaOfertas[0].activa).toBeTruthy();
+
+                        done();
+                        return;
+                    });
+                });
+            });
+        });
+    });
+
     test('Owner -> Dueño puede crear locales', done => {
         const owner = new Owner('if3fjwe0asdfoijasocjcqw', 'Dueño Prueba para Locales 1', 0x01);
 

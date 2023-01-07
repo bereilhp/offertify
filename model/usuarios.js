@@ -192,6 +192,27 @@ const Owner = class Owner extends User {
     }
 
     /**
+     * Método para activar una oferta.
+     * 
+     * @param {string} idOferta Id de la oferta a activar
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación. Devuelve `null` si no hay 
+     * errores o el error en caso de que ocurra.
+     */
+    activarOferta(idOferta, callback) {
+        const ofertaTableGateway = new OfertaTableGateway();
+        let ofertaAActivar = null;
+
+        this.ofertas.forEach((oferta) => {
+            if (oferta.uuid === idOferta) {
+                oferta.activa = 1;
+                ofertaAActivar = oferta;
+            }
+        });
+
+        ofertaTableGateway.updateOferta(ofertaAActivar.uuid, ofertaAActivar.precio, ofertaAActivar.descripcion, ofertaAActivar.foto, ofertaAActivar.activa, callback);
+    }
+
+    /**
      * 
      * @param {string} nombre Nombre del local
      * @param {string} calle Calle del local

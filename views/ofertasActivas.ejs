@@ -10,20 +10,20 @@
                 <% ofertas.forEach((oferta) => { %>
                     <div class="ofertas d-flex flex-column align-items-center justify-content-center">
                         <div class="mt-2"></div>
-                        <h5 class="pl-2">BAR MANOLO</h5>
+                        <h5 class="pl-2"><%= oferta.local.nombre %></h5>
                         <p>Descripción: <%= oferta.descripcion %></p>
-                        <p>Precio: <%= oferta.precio %></p>
-                        <button id="<%= oferta.uuid %>" class="btn btn-dark editar-btn">Editar</button>
+                        <p>Precio: <%= oferta.precio %> €</p>
+                        <button id="<%= oferta.uuid %>" class="btn btn-primary editar-btn">Editar</button>
                     </div>
                 <% }); %>
             </div>
 
-            <div id="editar_local" class="column2 d-hidden">
+            <div id="editar_local" class="column2 d-none">
                 <div class="mt-3"></div>
-                <form id="formulario2" method="post" action="/ofertasActivas">
+                <form id="formulario" method="post" action="/ofertasActivas">
                     <div>
                         <label class="form-label espaciadoHistoric" for="local-input"><strong>Local</strong></label>
-                        <input id="local" class="form-control espaciadoHistoric" type="text" name="local" placeholder="Bar Manolo"
+                        <input id="local" class="form-control espaciadoHistoric" readonly type="text" name="local" placeholder="Bar Manolo"
                             required>
                     </div>
                     <div class="mt-3"></div>
@@ -35,7 +35,7 @@
                         </div>
                         <div class="col">
                             <label class="form-label espaciadoHistoric" for="precioOferta"><strong>Precio</strong></label>
-                            <input id="precioOferta espaciadoHistoric" class="form-control espaciadoHistoric" type="number" name="precio"
+                            <input id="precioOferta" class="form-control espaciadoHistoric" type="number" name="precio"
                                 placeholder="3 €" required>
                         </div>
                     </div>
@@ -45,8 +45,8 @@
                         <input type="file" name="imagen" id="imagen" class="espaciadoHistoric">
                     </div>
                     <div id="offerBts" class="mt-5">
-                        <button type="button" class="btn btn-success">Guardar</button>
-                        <button type="button" class="btn btn-danger">Desactivar</button>
+                        <button id="guardar-btn" type="submit" name="oferta" class="btn btn-success">Guardar</button>
+                        <button id="desactivar-btn" type="submit" name="oferta" class="btn btn-danger">Desactivar</button>
                     </div>
                     <div class="mb-3"></div>
                 </form>
@@ -57,5 +57,42 @@
     </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="javascripts/ofertasActivas.js"></script>
+    <script text="text/javascript">
+        const ofertas = JSON.parse('<%- ofertasForScript %>');
+
+        // Añadimos un listener a los botones de editar
+        $('.editar-btn').on('click', function(e) {
+            // Obtenemos la oferta
+            let oferta = null;
+            const ofertaId = $(this).attr('id');
+            ofertas.forEach((o) => {
+                if (o.uuid = ofertaId) {
+                    oferta = o;
+                }
+            })
+
+            // Rellenamos los campos del formulario
+            $('#local').val(oferta.local.nombre);
+            $('#descripcion').val(oferta.descripcion);
+            $('#precioOferta').val(oferta.precio);
+            $('#imagen').val(oferta.foto);
+
+            // Modificamos el valor de los botones del formulario
+            $('#guardar-btn').val(oferta.uuid);
+            $('#desactivar-btn').val(oferta.uuid);
+
+            // Hacemos visible el formulario
+            $('#editar_local').removeClass('d-none');
+        });
+
+        // Listener para guardar
+        $('#guardar-btn').on('click', function(e) {
+            $('#formulario').attr('action', '/ofertasActivas/editar');
+        });
+
+        // Listener para desactivar
+        $('#desactivar-btn').on('click', function(e) {
+            $('#formulario').attr('action', '/ofertasActivas/desactivar');
+        });
+    </script>
     <%- include("footer", {}) %>

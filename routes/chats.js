@@ -30,14 +30,21 @@ router.get('/', function(req, res, next) {
         pendingCallbacks++;
         reservaTableGateway.loadReserva(idReserva, function(err, reserva) {
           let chat = {};
-          chat.reserva.descripcion;
-
+          chat.reserva = reserva.uuid;
+          
           // Cargamos el nombre del usuario asociado a la reserva
           pendingCallbacks++;
           reservaTableGateway.getIdUsuario(idReserva, function(err, idUsuario) {
             pendingCallbacks++;
-            userTableGateway
-            
+            userTableGateway.loadUserFromId(idUsuario, function(err, user) {
+              // Guardamos el nombre del usuario
+              chat.usuario = user.name;
+
+              // Añadimos el chat a la lista
+              ownerChats.push(chat);
+
+              pendingCallbacks--;
+            });
 
             pendingCallbacks--;
           });
@@ -51,8 +58,33 @@ router.get('/', function(req, res, next) {
     
     pendingCallbacks--;
   });
+
+  // Esperamos a que finalicen los callbacks
+  waitForPendingCallbacks(req, res, next);
+});
+
+// Función que carga la página al finalizar todos los callbacks
+function waitForPendingCallbacks(req, res, next) {
+  // Mientras haya callbacks pendientes, se espera
+  if (pendingCallbacks > 0) {
+    setTimeout(function() {
+      waitForPendingCallbacks(req, res, next); 
+      return;
+    }, 0.1);
+  } else {
+    console.log(ownerChats)
+    res.render('chats', { title: 'Chats', chats: ownerChats });
+  }
+}
+
+/* POST: Carga el chat asociado a la reserva */
+router.post('/', function(req, res, next) {
+  // Obtenemos el Id de la reserva
+  const idReserva = req.body.idReserva; 
   
-  res.render('chats', { title: 'Chats' });
+  // Cargamos el chat adecuado
+  req.session.idReserva = idReserva;
+  res.redirect('/chat');
 });
 
 module.exports = router;

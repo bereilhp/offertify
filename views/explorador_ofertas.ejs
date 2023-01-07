@@ -8,24 +8,25 @@
         </script>
 
 
-    <div class="content row w-100">
-        <div id="formularioReserva" class="d-none container w-50 p-5 fixed-top mt-10 dialogo rounded">
-            <form method="post" action="explorador_ofertas">
-                <div id="div-hora" class="mb-3">
-                    <label class="form-label" for="hora-input">Hora</label>
-                    <input id="hora-input" class="form-control" type="text" name="hora" required>
-                </div>
-                <div id="div-dia" class="mb-3">
-                    <label class="form-label" for="dia-input">Dia</label>
-                    <input id="dia-input" class="form-control" type="text" name="dia" required>
-                </div>
-                <div id="div-telefono" class="mb-3">
-                    <label class="form-label" for="telefono-input">Teléfono</label>
-                    <input id="telefono-input" class="form-control" type="text" name="telefono" required>
-                </div>
-                <button id="submit" type="submit" class="btn btn-primary" name="oferta" value="">reservar</button>
-            </form>
-        </div>
+    <div id="formularioReserva" class="d-none container w-50 p-5 fixed-top mt-10 dialogo rounded">
+        <form method="post" action="explorador_ofertas">
+            <div id="div-hora" class="mb-3">
+                <label class="form-label" for="hora-input">Hora</label>
+                <input id="hora-input" class="form-control" type="text" name="hora" required>
+            </div>
+            <div id="div-dia" class="mb-3">
+                <label class="form-label" for="dia-input">Dia</label>
+                <input id="dia-input" class="form-control" type="text" name="dia" required>
+            </div>
+            <div id="div-telefono" class="mb-3">
+                <label class="form-label" for="telefono-input">Teléfono</label>
+                <input id="telefono-input" class="form-control" type="text" name="telefono" required>
+            </div>
+            <button id="submit" type="submit" class="btn btn-primary" name="oferta" value="">reservar</button>
+        </form>
+    </div>
+    <div id="cortina" class="d-none w-100 h-100 fixed-top"></div>
+    <div id="main" class="content row w-100">
         <div id="div-ofertas" class="col-4">
             <div class="title d-flex flex-column align-items-center justify-content-center">
                 OFERTAS CERCANAS

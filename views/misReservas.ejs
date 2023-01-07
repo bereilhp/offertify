@@ -16,9 +16,9 @@
             <% reservas.forEach((reserva) => { %>
                 <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
                     <div class="mb-2">
-                        <h3><%= reserva.oferta.local %></h3>
-                        <p>Descripción: <%= oferta.descripcion %></p>
-                        <p>Precio: <%= oferta.precio%></p>
+                        <h3><%= reserva.oferta.local.nombre %></h3>
+                        <p>Descripción: <%= reserva.oferta.descripcion %></p>
+                        <p>Precio: <%= reserva.oferta.precio%></p>
                     </div>
                     <div class="mb-2">
                         <h3>DETALLE DE RESERVA</h3>
@@ -28,8 +28,8 @@
                     </div>
                     <div class="mb-2 d-flex flex-column align-items-center justify-content-center">
                         <form method="post" action="">
-                            <button id="chat" type="submit" name="reserva" value="<%= reserva.uuid %>">Chat</button>
-                            <button id="cancelar" type="submit">">Cancelar</button>
+                            <button id="chat" type="submit" class="btn btn-primary" name="reserva" value="<%= reserva.uuid %>">Chat</button>
+                            <button id="cancelar" class="btn btn-primary" type="submit">Cancelar</button>
                         </form> 
                     </div>
                 </div>

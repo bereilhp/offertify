@@ -41,13 +41,12 @@ router.get('/', function(req, res, next) {
   });
 });
 
-// Función que devuelve true al finalizar los callbacks
+// Función que carga la página al finalizar todos los callbacks
 function waitForPendingCallbacks(req, res, next) {
   // Mientras haya callbacks pendientes, se espera
   if (pendingCallbacks > 0) {
     setTimeout(function() {
       waitForPendingCallbacks(req, res, next); 
-      console.log("waiting");
       return;
     }, 0.1);
   } else {

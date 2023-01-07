@@ -64,7 +64,8 @@ a {
   text-align: center;
 
   width: 100%;
-  height: 15vh;
+  /*height: 15vh;*/
+  padding: 1vh;
 
   border-style: solid;
   border-width: 2px;
@@ -145,7 +146,14 @@ a {
 }
 
 .dialogo {
-  background-color: #cc9600;
+  background-color: white;
   margin-top: 15%; 
+}
+
+#cortina {
+  background-color: rgba(227, 223, 108, 0.76);
+  z-index: 1;
+  width: 100%;
+  height: 100%;
 }
 

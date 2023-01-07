@@ -28,8 +28,8 @@
                     </div>
                     <div class="mb-2 d-flex flex-column align-items-center justify-content-center">
                         <form method="post" action="">
-                            <button id="chat" type="submit" class="btn btn-primary" name="reserva" value="<%= reserva.uuid %>">Chat</button>
-                            <button id="cancelar" class="btn btn-primary" type="submit">Cancelar</button>
+                            <button id="chat-btn" type="submit" class="btn btn-primary" name="reserva" value="<%= reserva.uuid %>">Chat</button>
+                            <button id="cancelar-btn" class="btn btn-primary" name="reserva" value="<%= reserva.uuid %>" type="submit">Cancelar</button>
                         </form> 
                     </div>
                 </div>
@@ -39,6 +39,8 @@
             <div id="map" style="height: 85vh"></div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/javascripts/misReservas.js"></script>
 
     <script>
         //Añadir mapa 

@@ -336,6 +336,22 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
     });
 
+    test('Client -> Las reservas creadas se añaden a la lista', done => {
+        const user = new Client('402j0n020qw', 'Cliente Prueba para Reservas 4', 0x01);
+
+        const ofertaId = 'R3asvja0sj0j080480fj400j0wn0bn0nvw0n0t82u0fj';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+
+        user.hacerReserva(ofertaId, telefono, hora, dia, function(reserva) {
+            expect(user.reservas[0].telefono).toBe(telefono);
+
+            done();
+            return;
+        });
+    });
+
     test('Client -> Las reservas creadas por el cliente se guardan en Base de Datos', done => {
         usuarios.__set__({ ReservaTableGateway: ReservaTableGateway });
         
@@ -377,6 +393,26 @@ describe('Tests que requieren Mock de BBDD', () => {
                     return;
                 });
             })
+        });
+    });
+
+    test('Client -> Al cancelar reserva se elimina de la lista', done => {
+        usuarios.__set__({ ReservaTableGateway: ReservaTableGateway });
+        
+        const user = new Client('3ffj0wj0nno', 'Cliente Prueba para Reservas 2', 0x01);
+
+        const ofertaId = '080480fj20f02m330ja0fn0b0t82u0fj';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+
+        user.hacerReserva(ofertaId, telefono, hora, dia, function(reserva) {
+            user.cancelarReserva(reserva.uuid, function(err) {
+                expect(user.reservas).toEqual([]);
+
+                done();
+                return;
+            });
         });
     });
 
@@ -740,12 +776,12 @@ describe('Tests que requieren Mock de BBDD', () => {
             LocalTableGateway: LocalTableGateway
         });
 
-        const ownerId = '3wfj030gn20nv02pvh90123456789012';
-        const name = 'Dueño Prueba Builder 1';
+        const ownerId = '30aj0fj0sc0n03n0vh90123456789012';
+        const name = 'Dueño Prueba Carga Ofertas';
         const hash = 'Hashed Password';
 
         // Creamos e insertamos un local de prueba en la base de datos
-        const localId = '38fj0n40vw0kthsdkfvupai45i2c2012';
+        const localId = '300jd0asn0n0wnf0n0vupai45i2c2012';
         const nombre = 'Local';
         const calle = 'Calle Ensamblador 15';
         const codigoPostal = 29078;
@@ -756,7 +792,7 @@ describe('Tests que requieren Mock de BBDD', () => {
         ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, ownerId, () => {});
 
         // Creamos e insertamos una oferta de prueba en la base de datos
-        const ofertaId = '30fja0sjv0en04567899123h56789012';
+        const ofertaId = '3020jf0qdm03ng0nv0nv02nh56789012';
         const foto = 'http://url.foto.com/foto.png';
         const precio = 10.4;
         const activa = 1;

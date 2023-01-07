@@ -10,6 +10,9 @@ const reservaTableGateway = new ReservaTableGateway();
 const LocalTableGateway = require('../database/localTableGateway');
 const localTableGateway = new LocalTableGateway();
 
+const UserTableGateway = require('../database/userTableGateway');
+const userTableGateway = new UserTableGateway();
+
 let pendingCallbacks = 0;
 let reservasCargadas = [];
 
@@ -65,5 +68,19 @@ function waitForPendingCallbacks(req, res, next) {
     res.render('misReservas', { title: 'Mis Reservas', reservas: reservasCargadas })
   }
 }
+
+/* POST /Reservas/cancelar: Cancela una reserva */
+router.post('/cancelar', function(req, res, next) {
+  // Obtenemos el Id de la reserva
+  const idReserva = req.body.reserva; 
+
+  // Obtenemos el usuario y cancelamos la reserva
+  userTableGateway.loadUser(req.session.user.name, function(err, user) {
+    user.cancelarReserva(idReserva, function(err) {
+      req.session.user = user;
+      res.redirect('/Reservas');
+    });
+  });  
+});
 
 module.exports = router;

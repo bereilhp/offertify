@@ -77,12 +77,14 @@ const Client = class Client extends User {
     hacerReserva(idOferta, telefono, hora, dia, callback) {
         const reservaTableGateway = new ReservaTableGateway();
         const reserva = reservaFactory(hora, dia, telefono, idOferta);
+        const user = this;
 
         reservaTableGateway.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, this.uuid, reserva.idOferta, function(err) {
             if (err) {
                 console.log(err);
                 callback(null)
             } else {
+                user.reservas.push(reserva);
                 callback(reserva);
             }
         });
@@ -96,6 +98,11 @@ const Client = class Client extends User {
      */
     cancelarReserva(idReserva, callback) {
         const reservaTableGateway = new ReservaTableGateway();
+        this.reservas.forEach((reserva) => {
+            if (reserva.uuid === idReserva) {
+                this.reservas.splice(this.reservas.indexOf(reserva), 1);
+            }
+        });
         reservaTableGateway.deleteReserva(idReserva, callback);
     }
 };

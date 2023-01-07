@@ -16,6 +16,8 @@ router.post('/', function(req, res, next) {
   const precio = req.body.precio;
   const imagen = req.body.imagen;
 
+  console.log("Descripcion ", descripcion)
+
   // Obtenemos el id del local a partir de su nombre
   let idLocal = null;
   req.session.user.locales.forEach((local) => {
@@ -29,6 +31,7 @@ router.post('/', function(req, res, next) {
 
   userTableGateway.loadUser(req.session.user.name, function(err, owner) {
     owner.hacerOferta(imagen, precio, descripcion, idLocal, function(err) {
+      req.session.user = owner;
       res.redirect('/ofertasActivas');
     });
   });

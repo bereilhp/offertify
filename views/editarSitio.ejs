@@ -14,19 +14,15 @@
         <div class="row2">
             <div class="column2">
 
-
-              <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
-                <h3>BAR MANOLO</h3>
-                <p>Ofertas destacadas: cerveza 3€</p>
-                <button class="btn btn-dark">ver</button>
-                
-             
-             </div>
+              <% locales.forEach((local) => { %>
+                <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
+                  <h3><%= local.nombre %></h3>
+                  <button id="<%= local.uuid %>" class="btn btn-dark ver-btn">ver</button>
+                </div>
+              <% }) %>
              <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
               
-              <button class="btn btn-success">Añadir sitio</button>
-              
-           
+              <button id="annadir-btn" class="btn btn-success">Añadir sitio</button>
            </div>
 
 
@@ -34,7 +30,7 @@
             <div id="editar_local" class="column2">
 
 
-              <form id="formulario2" method="post" action="/editarSitio" class="row mb-3">
+              <form id="formulario" method="post" action="/editarSitio" class="row mb-3 d-none">
                 <div class="mb-3">
                   <br>
                   <br>
@@ -45,12 +41,12 @@
                 </div>
                 <div class="mb-4 row">
                     <div class="col">
-                      <label class="form-label" for="descripcion"><strong>Calle</strong></label>
-                      <textarea id="descripcion" class="form-control" name="calle" placeholder="Calle de Álvarez de Baena"></textarea>
+                      <label class="form-label" for="calle-textarea"><strong>Calle</strong></label>
+                      <textarea id="calle-textarea" class="form-control" name="calle" placeholder="Calle de Álvarez de Baena"></textarea>
                     </div>
                     <div class="col">
-                      <label class="form-label" for="precioOferta"><strong>Código Postal</strong></label>
-                      <input id="precioOferta" class="form-control" type="number" name="codigoPostal" placeholder="28000" required>
+                      <label class="form-label" for="codigoPostal"><strong>Código Postal</strong></label>
+                      <input id="codigoPostal" class="form-control" type="number" name="codigoPostal" placeholder="28000" required>
                     </div>
                 </div>
                 <div>
@@ -60,8 +56,8 @@
                     
                 </div>
                 <div id="offerBts" class="mt-5">
-                    <button type="button" class="btn btn-success">Activar</button>
-                    <button type="button" class="btn btn-danger">Borrar</button>
+                    <button id="enviar-btn" type="submit" class="btn btn-success">Activar</button>
+                    <button id="cancelar-btn" type="button" class="btn btn-danger">Borrar</button>
                 </div>
             </form>
 
@@ -70,4 +66,38 @@
           </div> 
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="javascripts/editarSitio.js"></script>
+    <script type="text/javascript">
+      const locales = JSON.parse('<%- localesParaScript %>');
+      console.log(locales)
+
+      // Manejador para los botones de ver
+      $('.ver-btn').on('click', function(e) {
+          // Establecemos el id del boton en el formulario
+          const idLocal = $(this).attr('id');
+          $('#enviar-btn').attr('name', 'idLocal');
+          $('#enviar-btn').attr('value', idLocal);
+
+          // Establecemos la ruta del POST
+          $('#formulario').attr('action', '/editarSitio/editar');
+
+          // Hacemos visible el formulario
+          $('#formulario').removeClass('d-none');
+          
+          // Rellenamos los campos con los valores adecuados
+          let local = null;
+          locales.forEach((l) => {
+              if (l.uuid === idLocal) {
+                  local = l;
+              }
+          });
+          console.log(local)
+
+          $('#local-input').val(local.nombre);
+          $('#calle-textarea').val(local.calle);
+          $('#codigoPostal').val(local.codigoPostal);
+          $('#imagen').val(local.logo);
+      });
+    </script>
     <%- include("footer", {}) %>

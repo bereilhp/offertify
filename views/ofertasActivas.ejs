@@ -13,17 +13,17 @@
                         <h5 class="pl-2">BAR MANOLO</h5>
                         <p>Descripción: <%= oferta.descripcion %></p>
                         <p>Precio: <%= oferta.precio %></p>
-                        <button class="btn btn-dark">Editar</button>
+                        <button id="<%= oferta.uuid %>" class="btn btn-dark editar-btn">Editar</button>
                     </div>
                 <% }); %>
             </div>
 
-            <div id="editar_local" class="column2">
+            <div id="editar_local" class="column2 d-hidden">
                 <div class="mt-3"></div>
                 <form id="formulario2" method="post" action="/ofertasActivas">
                     <div>
                         <label class="form-label espaciadoHistoric" for="local-input"><strong>Local</strong></label>
-                        <input id="historicLocal" class="form-control espaciadoHistoric" type="text" name="local" placeholder="Bar Manolo"
+                        <input id="local" class="form-control espaciadoHistoric" type="text" name="local" placeholder="Bar Manolo"
                             required>
                     </div>
                     <div class="mt-3"></div>
@@ -56,4 +56,6 @@
         </div>
     </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="javascripts/ofertasActivas.js"></script>
     <%- include("footer", {}) %>

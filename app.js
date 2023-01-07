@@ -42,20 +42,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Antes de cargar los manejadores, guardamos las variables
 app.use(function(req, res, next) {
   // Hacemos la sesión accesible para las vistas
-  res.locals.user = {
-    name: "Pablito",
-    group: "user"   // User, admin, owner
+  let error = req.session.error;
+  delete req.session.error;
+  res.locals.error = req.session.error;  
+
+  if (req.session.user) {
+    res.locals.user = req.session.user;
   }
+
   // Continuamos gestionando la petición
   next();
 });
-app.use(function(req,res, next){
-  res.locals.user = {
-    name: "Pepe",
-    group: "admin"
-  }
-  next();
-});
+//app.use(function(req,res, next){
+//  res.locals.user = {
+//    name: "Pepe",
+//    group: "admin"
+//  }
+//  next();
+//  });
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

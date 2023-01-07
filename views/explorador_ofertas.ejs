@@ -13,23 +13,18 @@
             <div class="title d-flex flex-column align-items-center justify-content-center">
                 OFERTAS CERCANAS
             </div>
-
-            <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
-               <h3>BAR MANOLO</h3>
-               <p>Ofertas destacadas: cerveza 3€</p>
-               <button>reservar</button>
-               <img id="img_ofertas" src="/images/CERVEZAS.png"  width="1%">
             
-            </div>
-
-            <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
-                <h3>BAR ESTRELLA</h3>
-                <p>Ofertas destacadas: cerveza 4€</p>
-                <button>reservar</button>
-                <img id="img_ofertas" src="/images/CERVEZAS.png"  width="1%">
-             
-             </div>
-             
+            <% ofertas.forEach((oferta) -> { %>
+                <form method="post" action="explorador_ofertas">
+                    <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
+                        <h3><%= oferta.local %></h3>
+                        <p>Descripción: <%= oferta.descripcion %></p>
+                        <p>Precio: <%= oferta.precio %></p>
+                        <button class="btn btn-primary" name="<%= oferta.uuid %>">reservar</button>
+                        <img id="img_ofertas" src="<%= oferta.foto %>"  width="1%">
+                    </div>
+                </form>
+            <%}); %>
         </div>
         <div id="div-mapa" class="col"><button onclick="generar_bar()">
         Buscar en esta zona

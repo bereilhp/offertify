@@ -669,4 +669,29 @@ describe('Tests que requieren base de datos de pruebas', () => {
             });
         });
     });
+
+    test('OfertaTableGateway tiene operación para recuperar todas las ofertas Activas', done => {
+        const ownerId = '30jf0sj03n0vsn0n0gn0j03rewe0fjqf';
+        const localId = '3asdfj30w02jfjs030ja0dfj30fjae0f';
+        const ofertaId = '3020d0jjanvn00n0nw0n30ejf03j0402';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const activa = 1;
+        const descripcion = 'Oferta de Prueba 2';
+        const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
+
+        const otg = new OfertaTableGateway();  
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {
+            otg.loadAllActiveOfertas(function(err, ofertasList) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(ofertasList).toContainEqual(oferta);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
 });

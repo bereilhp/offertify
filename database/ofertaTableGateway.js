@@ -28,7 +28,7 @@ const OfertaTableGateway = class OfertaTableGateway extends TableGateway {
     } 
 
     /**
-     * Función que carga todas las ofertas asociadas a un local.
+     * Función que carga todas las ofertas asociadas a un dueño.
      *  
      * @param {string} ownerId Id del dueño al que pertenece la oferta
      * @param {function(any | null, array<Oferta>| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
@@ -69,6 +69,20 @@ const OfertaTableGateway = class OfertaTableGateway extends TableGateway {
         const statement = `UPDATE Ofertas SET Precio=${precio}, Descripcion='${descripcion}', Foto='${foto}', Activa=${activa} WHERE UUID='${ofertaId}';`;
         this.run(statement, callback);
     } 
+
+    /**
+     * Función que carga todas las ofertas activas de la Base de Datos.
+     *  
+     * @param {function(any | null, array<Oferta>| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve una lista de ofertas y err será null.
+     */
+    loadAllActiveOfertas(callback) {
+        const statement = `SELECT UUID, Precio, Descripcion, Foto, Activa FROM Ofertas WHERE Activa = 1;`;
+        const factory = function(row) {
+            return ofertaFactory(row.Foto, row.Precio, row.Activa, row.Descripcion, row.UUID);
+        }
+        this.all(statement, factory, callback);
+    }
 }
 
 module.exports = OfertaTableGateway;

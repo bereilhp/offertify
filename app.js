@@ -67,7 +67,7 @@ app.use(function(req, res, next) {
   // Hacemos la sesión accesible para las vistas
   let error = req.session.error;
   delete req.session.error;
-  res.locals.error = req.session.error;  
+  res.locals.error = error;  
 
   if (req.session.user) {
     res.locals.user = req.session.user;

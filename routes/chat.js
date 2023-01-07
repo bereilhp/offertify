@@ -21,10 +21,18 @@ router.get('/', function(req, res, next) {
 
   // Verificamos si existe un chat asociado a la reserva
   chatTableGateway.existsChat(idReserva, function(err, exists) {
+    if(err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/chat');
+    }
     // Si existe el chat
     if (exists) {
       // Cargamos el chat
       chatTableGateway.loadChat(idReserva, function(err, chat) {
+        if(err) {
+          req.session.error = 'Error 500: Internal Server Error';
+          res.redirect('/chat');
+        }
         // Registramos el chat si no está ya registrado
         let found = false;
         openChats.forEach((savedChat) => {
@@ -43,12 +51,28 @@ router.get('/', function(req, res, next) {
       chatFactory(function(chat) {
         // Obtenemos el id del usuario asociado a la reserva
         reservaTableGateway.getIdUsuario(idReserva, function(err, idUsuario) {
+          if(err) {
+            req.session.error = 'Error 500: Internal Server Error';
+            res.redirect('/chat');
+          }
           // Obtenemos el id de la oferta asocidada a la reserva
           reservaTableGateway.getIdOferta(idReserva, function(err, idOferta) {
+            if(err) {
+              req.session.error = 'Error 500: Internal Server Error';
+              res.redirect('/chat');
+            }
             // Obtenemos el id del Owner asociado a la oferta
             ofertaTableGateway.getIdOwner(idOferta, function(err, idOwner) {
+              if(err) {
+                req.session.error = 'Error 500: Internal Server Error';
+                res.redirect('/chat');
+              }
               // Insertamos el chat en la base de datos
-              chatTableGateway.insertChat(chat.uuid, idOwner, idUsuario, idReserva, function(er) {
+              chatTableGateway.insertChat(chat.uuid, idOwner, idUsuario, idReserva, function(err) {
+                if(err) {
+                  req.session.error = 'Error 500: Internal Server Error';
+                  res.redirect('/chat');
+                }
                 // Registramos el chat
                 openChats.add(chat);
 

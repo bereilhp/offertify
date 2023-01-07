@@ -30,15 +30,32 @@ router.get('/', function(req, res, next) {
   reservas.forEach((reserva) => {
     pendingCallbacks++;
     reservaTableGateway.getIdOferta(reserva.uuid, function(err, idOferta) {
+      if (err) {
+        req.session.error = 'Error 500: Internal Server Error';
+        req.redirect('/Reservas');
+      }
+
       pendingCallbacks++;
       ofertaTableGateway.loadOferta(idOferta, function(err, oferta) {
+        if (err) {
+          req.session.error = 'Error 500: Internal Server Error';
+          req.redirect('/Reservas');
+        }
         reserva.oferta = oferta;
         
         // Cargamos el local asociado a la oferta
         pendingCallbacks++;
         ofertaTableGateway.getIdLocal(oferta.uuid, function(err, idLocal) {
+          if (err) {
+            req.session.error = 'Error 500: Internal Server Error';
+            req.redirect('/Reservas');
+          }
           pendingCallbacks++;
           localTableGateway.loadVenue(idLocal, function(err, local) {
+            if (err) {
+              req.session.error = 'Error 500: Internal Server Error';
+              req.redirect('/Reservas');
+            }
             reserva.oferta.local = local;
             reservasCargadas.push(reserva);
 
@@ -78,7 +95,14 @@ router.post('/cancelar', function(req, res, next) {
 
   // Obtenemos el usuario y cancelamos la reserva
   userTableGateway.loadUser(req.session.user.name, function(err, user) {
+    if (err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      req.redirect('/Reservas');
+    }
     user.cancelarReserva(idReserva, function(err) {
+      if (err) {
+        req.session.error = 'Error 500: Internal Server Error';
+      }
       req.session.user = user;
       res.redirect('/Reservas');
     });

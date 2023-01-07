@@ -94,6 +94,17 @@ const ChatTableGateway = class ChatTableGateway extends TableGateway {
         }
         this.get(statement, checkerCallback, callback);
     }
+
+    /**
+     * Función que borra el chat asociado a la reserva indicada.
+     *  
+     * @param {string} reservaId Id de la reserva a la que pertenece el chat
+     * @param {function(any | null)} callback Callback ejecutado al finalizar la operación.
+     */
+    deleteChat(reservaId, callback) {
+        const statement = `DELETE FROM Chats WHERE IdReserva = '${reservaId}'`;
+        this.run(statement, callback);
+    }
 }
 
 module.exports = ChatTableGateway;

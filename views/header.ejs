@@ -47,3 +47,6 @@
                 <span class="navbar-text">Bienvenido <%= user.name %> xD </span>
             </div>
         </nav>
+        <% if (error) { %>
+          <div class="alert alert-danger mt-3"><%= error %></div> 
+        <% } %>

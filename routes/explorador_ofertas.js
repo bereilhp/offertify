@@ -21,10 +21,18 @@ router.get('/', function(req, res, next) {
 
   // Cargamos todos los locales
   localTableGateway.loadAllVenues(function(err, locales) {
+    if(err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/explorador_ofertas');
+    }
     // Obtenemos todas las ofertas (Activas de cada local)
     locales.forEach((local) => {
       pendingCallbacks++; 
       ofertaTableGateway.loadOfertasLocal(local.uuid, function(err, ofertas) {
+        if(err) {
+          req.session.error = 'Error 500: Internal Server Error';
+          res.redirect('/explorador_ofertas');
+        }
         ofertas.forEach((oferta) => {
           if (oferta.activa) {
             oferta.local = local.nombre;
@@ -64,7 +72,11 @@ router.post('/', function(req, res, next) {
 
   // Creamos una reserva
   userTableGateway.loadUser(req.session.user.name, function(err, user) {
-    user.hacerReserva(ofertaId, telefono, hora, dia, function(err) {
+    if(err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/explorador_ofertas');
+    }
+    user.hacerReserva(ofertaId, telefono, hora, dia, function(reserva) {
       req.session.user = user;
       res.redirect('/Reservas');
     });

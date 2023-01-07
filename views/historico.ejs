@@ -51,7 +51,6 @@
                     </div>
                     <div id="offerBts" class="mt-5">
                         <button id="reactivar-btn" type="submit" name="oferta" class="btn btn-success">Reactivar</button>
-                        <button id="borrar-btn" type="submit" name="oferta" class="btn btn-danger">Borrar Registro</button>
                     </div>
                     <div class="mb-3"></div>
                 </form>
@@ -69,9 +68,9 @@
         $('.editar-btn').on('click', function(e) {
             // Obtenemos la oferta
             let oferta = null;
-            const ofertaId = $(this).attr('id');
+            let ofertaId = $(this).attr('id');
             ofertas.forEach((o) => {
-                if (o.uuid = ofertaId) {
+                if (o.uuid === ofertaId) {
                     oferta = o;
                 }
             })
@@ -84,7 +83,6 @@
 
             // Modificamos el valor de los botones del formulario
             $('#reactivar-btn').val(oferta.uuid);
-            $('#borrar-btn').val(oferta.uuid);
 
             // Hacemos visible el formulario
             $('#editar_local').removeClass('d-none');
@@ -93,11 +91,6 @@
         // Listener para guardar
         $('#reactivar-btn').on('click', function(e) {
             $('#formulario').attr('action', '/historico/reactivar');
-        });
-
-        // Listener para desactivar
-        $('#borrar-btn').on('click', function(e) {
-            $('#formulario').attr('action', '/historico/borrar');
         });
     </script>
     <%- include("footer", {}) %>

@@ -20,12 +20,24 @@ router.get('/', function(req, res, next) {
 
   pendingCallbacks++;
   ofertaTableGateway.loadOfertas(req.session.user.uuid, function(err, ofertas) {
+    if (err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/ofertasActivas');
+    }
     ofertas.forEach((oferta) => {
       if (oferta.activa) {
         pendingCallbacks++;
         ofertaTableGateway.getIdLocal(oferta.uuid, function(err, idLocal) {
+          if (err) {
+            req.session.error = 'Error 500: Internal Server Error';
+            res.redirect('/ofertasActivas');
+          }
           pendingCallbacks++;
           localTableGateway.loadVenue(idLocal, function(err, local) {
+            if (err) {
+              req.session.error = 'Error 500: Internal Server Error';
+              res.redirect('/ofertasActivas');
+            }
             oferta.local = local;
             ofertasActivas.push(oferta);
 
@@ -65,7 +77,14 @@ router.post('/editar', function(req, res, next) {
   
   // Editamos la oferta y redirigimos a ofertasActivas
   userTableGateway.loadUser(req.session.user.name, function(err, owner) {
+    if (err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/ofertasActivas');
+    }
     owner.editarOferta(idOferta, imagen, precio, descripcion, function(err) {
+      if (err) {
+        req.session.error = 'Error 500: Internal Server Error';
+      }
       req.session.user = owner;
       res.redirect('/ofertasActivas');
     });
@@ -78,7 +97,14 @@ router.post('/desactivar', function(req, res, next) {
   
   // Editamos la oferta y redirigimos a ofertasActivas
   userTableGateway.loadUser(req.session.user.name, function(err, owner) {
+    if (err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/ofertasActivas');
+    }
     owner.desactivarOferta(idOferta, function(err) {
+      if (err) {
+        req.session.error = 'Error 500: Internal Server Error';
+      }
       req.session.user = owner;
       res.redirect('/ofertasActivas');
     });

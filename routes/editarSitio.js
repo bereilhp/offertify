@@ -21,8 +21,14 @@ router.post('/annadir', function(req, res, next) {
 
   // Obtenemos el usuario y registramos el local
   userTableGateway.loadUser(req.session.user.name, function(err, owner) {
+    if(err) {
+      req.session.error = 'Error 500: Internal Server Error';
+    }
     owner.crearLocal(nombre, calle, codigoPostal, logo, function(err) {
       // Al crearse el local, redirigmos a /editarSitio
+      if (err) {
+        req.session.error = 'Error 500: Internal Server Error';
+      }
       req.session.user = owner;
       res.redirect('/editarSitio');
     });
@@ -40,7 +46,14 @@ router.post('/editar', function(req, res, next) {
 
   // Obtenemos el usuario y editamos el local
   userTableGateway.loadUser(req.session.user.name, function(err, owner) {
+    if(err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/editarSitio');
+    }
     owner.editarLocal(idLocal, nombre, calle, codigoPostal, logo, function(err) {
+      if(err) {
+        req.session.error = 'Error 500: Internal Server Error';
+      }
       // Al crearse el local, redirigmos a /editarSitio
       req.session.user = owner;
       res.redirect('/editarSitio');

@@ -302,6 +302,24 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
+    test('ChatTableGateway tiene operación para borrar chat al cancelar reserva', done => {
+        const ownerId = '123386779012a0fj0adjf23359789012';
+        const userId = '123256779312245628931awf0afj9012';
+        const reservaId = '1ja0ja0svj0jav587493129356489010';
+        const chatId = 'efifj4040402850aofjas0vj020n9012';
+        const chat = new Chat(chatId);
+
+        const ctg = new ChatTableGateway();  
+        ctg.deleteChat(reservaId, function(err) {
+            // Verificamos que se ha insertado el usuario correctamente
+            expect(err).toBeNull();
+            
+            done();
+            return;
+        });
+    });
+
+
     test('ChatTableGateway tiene operación para recuperar Chat', done => {
         const mockChatFactory = function(callback, uuid) {
             let chat = new Chat(uuid);

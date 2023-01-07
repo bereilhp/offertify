@@ -26,7 +26,16 @@ router.post('/', function(req, res, next) {
 
   // Creamos una oferta y redirigimos a ofertasActivas
   userTableGateway.loadUser(req.session.user.name, function(err, owner) {
+    if (err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/NuevaOferta');
+    }
     owner.hacerOferta(imagen, precio, descripcion, idLocal, function(err) {
+      if (err) {
+        req.session.error = 'Error 500: Internal Server Error';
+        res.redirect('/NuevaOferta');
+      }
+      
       req.session.user = owner;
       res.redirect('/ofertasActivas');
     });

@@ -22,21 +22,41 @@ router.get('/', function(req, res, next) {
   // Cargamos la lista de chats en los que participa el dueño
   pendingCallbacks++;
   chatTableGateway.loadChatIds(req.session.user.uuid, function(err, idList) {
+    if(err) {
+      req.session.error = err;
+      res.redirect('/chats');
+    }
     // Para cada Id, cargamos el id de la reserva asociada
     idList.forEach((id) => {
       pendingCallbacks++;
       chatTableGateway.getIdReserva(id, function(err, idReserva) {
+        if(err) {
+          req.session.error = 'Error 500: Internal Server Error';
+          res.redirect('/chats');
+        }
         // Cargamos la reserva asociada al id
         pendingCallbacks++;
         reservaTableGateway.loadReserva(idReserva, function(err, reserva) {
+          if(err) {
+            req.session.error = 'Error 500: Internal Server Error';
+            res.redirect('/chats');
+          }
           let chat = {};
           chat.reserva = reserva.uuid;
           
           // Cargamos el nombre del usuario asociado a la reserva
           pendingCallbacks++;
           reservaTableGateway.getIdUsuario(idReserva, function(err, idUsuario) {
+            if(err) {
+              req.session.error = 'Error 500: Internal Server Error';
+              res.redirect('/chats');
+            }
             pendingCallbacks++;
             userTableGateway.loadUserFromId(idUsuario, function(err, user) {
+              if(err) {
+                req.session.error = 'Error 500: Internal Server Error';
+                res.redirect('/chats');
+              }
               // Guardamos el nombre del usuario
               chat.usuario = user.name;
 

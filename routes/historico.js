@@ -21,11 +21,23 @@ router.get('/', function(req, res, next) {
 
   pendingCallbacks++;
   ofertaTableGateway.loadOfertas(req.session.user.uuid, function(err, ofertas) {
+    if(err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/historico');
+    }
     ofertas.forEach((oferta) => {
       pendingCallbacks++;
       ofertaTableGateway.getIdLocal(oferta.uuid, function(err, idLocal) {
+        if(err) {
+          req.session.error = 'Error 500: Internal Server Error';
+          res.redirect('/historico');
+        }
         pendingCallbacks++;
         localTableGateway.loadVenue(idLocal, function(err, local) {
+        if(err) {
+          req.session.error = 'Error 500: Internal Server Error';
+          res.redirect('/historico');
+        }
           oferta.local = local;
           historicoOfertas.push(oferta);
 
@@ -62,20 +74,15 @@ router.post('/reactivar', function(req, res, next) {
   
   // Reactivamos la oferta y redirigimos a ofertasActivas
   userTableGateway.loadUser(req.session.user.name, function(err, owner) {
+    if(err) {
+      req.session.error = 'Error 500: Internal Server Error';
+      res.redirect('/historico');
+    }
     owner.activarOferta(idOferta, function(err) {
-      req.session.user = owner;
-      res.redirect('/ofertasActivas');
-    });
-  });
-});
-
-/* POST /ofertasActivas/borrar: borra una oferta */
-router.post('/borrar', function(req, res, next) {
-  const idOferta = req.body.oferta;
-  
-  // Editamos la oferta y redirigimos a ofertasActivas
-  userTableGateway.loadUser(req.session.user.name, function(err, owner) {
-    owner.desactivarOferta(idOferta, function(err) {
+      if(err) {
+        req.session.error = 'Error 500: Internal Server Error';
+        res.redirect('/historico');
+      }
       req.session.user = owner;
       res.redirect('/ofertasActivas');
     });

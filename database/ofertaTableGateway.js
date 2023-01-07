@@ -83,6 +83,21 @@ const OfertaTableGateway = class OfertaTableGateway extends TableGateway {
         }
         this.all(statement, factory, callback);
     }
+
+    /**
+     * Función que carga todas las ofertas asociadas a un local.
+     *  
+     * @param {string} localId Id del local al que pertenece la oferta
+     * @param {function(any | null, array<Oferta>| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve una lista de ofertas y err será null.
+     */
+    loadOfertasLocal(localId, callback) {
+        const statement = `SELECT UUID, Precio, Descripcion, Foto, Activa FROM Ofertas WHERE LocalId = '${localId}';`;
+        const factory = function(row) {
+            return ofertaFactory(row.Foto, row.Precio, row.Activa, row.Descripcion, row.UUID);
+        }
+        this.all(statement, factory, callback);
+    }
 }
 
 module.exports = OfertaTableGateway;

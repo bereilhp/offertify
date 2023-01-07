@@ -118,3 +118,11 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = { app, server };
+
+// Si no existe, creamos un admin de prueba
+const { userExists, registerUser } = require('./model/usuarios')
+userExists('admin@offertify.com', function(err, exists) {
+    if (!exists) {
+        registerUser('admin@offertify.com', 'admin', 'admin', () => {});
+    }
+});

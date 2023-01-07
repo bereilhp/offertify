@@ -17,7 +17,7 @@
               <% locales.forEach((local) => { %>
                 <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
                   <h3><%= local.nombre %></h3>
-                  <button id="<%= local.uuid %>" class="btn btn-dark ver-btn">ver</button>
+                  <button id="<%= local.uuid %>" class="btn btn-primary ver-btn">ver</button>
                 </div>
               <% }) %>
              <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
@@ -56,8 +56,8 @@
                     
                 </div>
                 <div id="offerBts" class="mt-5">
-                    <button id="enviar-btn" type="submit" class="btn btn-success">Activar</button>
-                    <button id="cancelar-btn" type="button" class="btn btn-danger">Borrar</button>
+                    <button id="enviar-btn" type="submit" class="btn btn-success">Guardar</button>
+                    <button id="cancelar-btn" type="button" class="btn btn-danger">Cancelar</button>
                 </div>
             </form>
 

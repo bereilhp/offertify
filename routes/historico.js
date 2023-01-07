@@ -55,24 +55,22 @@ function waitForPendingCallbacks(req, res, next) {
   }
 }
 
-/* POST /ofertasActivas/editar: edita una oferta y recarga la página */
-router.post('/editar', function(req, res, next) {
-  const descripcion = req.body.descripcion;
-  const precio = req.body.precio;
-  const imagen = req.body.imagen;
+/* POST /reactivar: reactiva una oferta */
+router.post('/reactivar', function(req, res, next) {
   const idOferta = req.body.oferta;
+  console.log(idOferta)
   
-  // Editamos la oferta y redirigimos a ofertasActivas
+  // Reactivamos la oferta y redirigimos a ofertasActivas
   userTableGateway.loadUser(req.session.user.name, function(err, owner) {
-    owner.editarOferta(idOferta, imagen, precio, descripcion, function(err) {
+    owner.activarOferta(idOferta, function(err) {
       req.session.user = owner;
       res.redirect('/ofertasActivas');
     });
   });
 });
 
-/* POST /ofertasActivas/desactivar: desactiva una oferta y recarga la página */
-router.post('/desactivar', function(req, res, next) {
+/* POST /ofertasActivas/borrar: borra una oferta */
+router.post('/borrar', function(req, res, next) {
   const idOferta = req.body.oferta;
   
   // Editamos la oferta y redirigimos a ofertasActivas

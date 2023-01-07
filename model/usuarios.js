@@ -203,6 +203,7 @@ const Owner = class Owner extends User {
         let ofertaAActivar = null;
 
         this.ofertas.forEach((oferta) => {
+            console.log(idOferta)
             if (oferta.uuid === idOferta) {
                 oferta.activa = 1;
                 ofertaAActivar = oferta;

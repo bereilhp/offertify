@@ -15,6 +15,8 @@ const { ofertaFactory } = require('./ofertas');
 const { resennaFactory } = require('./resennas');
 const { reservaFactory } = require('./reservas');
 
+let testing = false;
+
 const User = class User {
     constructor(uuid, name, hash) {
         this.uuid = uuid;
@@ -336,7 +338,7 @@ function registerUser(name, password, rol, callback) {
             callback(err, null);
        } else {
             userFactory(name, hash, rol, function(user) {
-                const UTG = (UserTableGateway) ? UserTableGateway : require('../database/userTableGateway');
+                const UTG = (testing) ? UserTableGateway : require('../database/userTableGateway');
                 const userTableGateway = new UTG();
                 userTableGateway.insertUser(user.uuid, user.name, user.hash, user.rol, function(err) {
                     if(err) {
@@ -423,7 +425,7 @@ const OwnerBuilder = class OwnerBuilder extends UserBuilder {
 }
 
 function userExists(email, callback) {
-    const UTG = (UserTableGateway) ? UserTableGateway : require('../database/userTableGateway');
+    const UTG = (testing) ? UserTableGateway : require('../database/userTableGateway');
     const utg = new UTG();
     utg.userExists(email, callback);
 }

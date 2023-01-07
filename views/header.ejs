@@ -14,7 +14,7 @@
                     Offertify
                 </a>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <% if (user.group === "user") { %>
+                    <% if (user.rol === "user") { %>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#">Explorar Ofertas</a>
                     </li>
@@ -22,7 +22,7 @@
                         <a class="nav-link" aria-current="page" href="#">Mis Reservas</a>
                     </li>
                     <% } %>
-                    <% if (user.group === "owner") { %>
+                    <% if (user.rol === "owner") { %>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Acciones
@@ -38,7 +38,7 @@
                         <a class="nav-link" aria-current="page" href="#">Editar Sitio</a>
                     </li>
                     <% } %>
-                    <% if (user.group === "admin") { %>
+                    <% if (user.rol === "admin") { %>
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="interfaz_admin"> interfaz admin</a>
                         </li>

@@ -12,6 +12,8 @@ const ResennaTableGateway = rewire('../../database/resennaTableGateway');
 const ReservaTableGateway = rewire('../../database/reservaTableGateway');
 
 const usuarios = rewire('../../model/usuarios');
+usuarios.__set__({ testing: true });
+
 const User = usuarios.User;
 const Client = usuarios.Client;
 const Owner = usuarios.Owner;

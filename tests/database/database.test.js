@@ -721,4 +721,32 @@ describe('Tests que requieren base de datos de pruebas', () => {
             });
         });
     });
+
+    test('LocalTableGateway tiene operación para cargar todos los locales', done => {
+        const ownerUuid = '300ufijoi4oijglwj890123456789013';
+        const name = 'Owner 1';
+        const hash = 0x02;
+        const owner = new Owner(ownerUuid, name, hash);
+
+        const venueUuid = '901804803';
+        const nombre = 'Local';
+        const calle = 'Calle Ensamblador 15';
+        const codigoPostal = 29078;
+        const logo = 'https://url.logo.com/logo.png'
+        const local = new Local(venueUuid, nombre, calle, codigoPostal, logo);
+
+        const ltg = new LocalTableGateway();  
+        ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, owner.uuid, () => {
+            ltg.loadAllVenues(function(err, venueList) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(venueList).toContainEqual(local);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
 });

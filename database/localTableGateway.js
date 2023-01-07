@@ -79,6 +79,20 @@ const LocalTableGateway = class LocalTableGateway extends TableGateway {
         }
         this.get(statement, factory, callback);
     }
+
+    /**
+     * Función que carga todos los locales.
+     *  
+     * @param {function(any | null, array<Local> | null)} callback Callback ejecutado al cargar los locales. Si todo va bien, devuelve 
+     * una lista de locales y err será null.
+     */
+    loadAllVenues(callback) {
+        const statement = `SELECT UUID, Nombre, Calle, CodigoPostal, Logo FROM Locales;`;
+        const factory = function(row) {
+            return localFactory(row.Nombre, row.Calle, row.CodigoPostal, row.Logo, row.UUID);
+        }
+        this.all(statement, factory, callback);
+    }
 }
 
 module.exports = LocalTableGateway;

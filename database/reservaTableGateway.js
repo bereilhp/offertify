@@ -42,6 +42,21 @@ const ReservaTableGateway = class ReservaTableGateway extends TableGateway {
     }
 
     /**
+     * Función que recupera una reserva en función de su id.
+     *  
+     * @param {string} reservaId Id del usuario al que pertenece la reserva
+     * @param {function(any | null, Reserva| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve una reserva y err será null.
+     */
+    loadReserva(reservaId, callback) {
+        const statement = `SELECT UserId, Telefono, Hora, Dia, OfertaId FROM Reservas WHERE UUID = '${reservaId}';`;
+        const factory = function(row) {
+            return reservaFactory(row.Hora, row.Dia, row.Telefono, row.OfertaId, reservaId);
+        }
+        this.get(statement, factory, callback);
+    }
+
+    /**
      * Función que recupera el Id de la oferta asociada a la reserva.
      *  
      * @param {string} idReserva Id de la oferta.

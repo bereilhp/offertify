@@ -799,4 +799,29 @@ describe('Tests que requieren base de datos de pruebas', () => {
             });
         });
     });
+    
+    test('OfertaTableGateway tiene operación para recuperar el Id del local asociado a una oferta', done => {
+        const ownerId = '4390fj0ajf00bn40nfw0jf0j0jd0fjqf';
+        const localId = '329020ffq30300ajf0j0n0na0nv0230bg';
+        const ofertaId = '48028r0390ajf0j30:w3a0fh';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const activa = 1;
+        const descripcion = 'Oferta de Prueba X';
+        const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
+
+        const otg = new OfertaTableGateway();  
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {
+            otg.getIdLocal(ofertaId, function(err, idLocal) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(idLocal).toEqual(localId);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
 });

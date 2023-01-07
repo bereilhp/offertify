@@ -113,6 +113,21 @@ const OfertaTableGateway = class OfertaTableGateway extends TableGateway {
         }
         this.get(statement, factory, callback);
     }
+    
+    /**
+     * Función que recupera el Id del local asociado a una oferta
+     *  
+     * @param {string} ofertaId Id de la oferta
+     * @param {function(any | null, string | null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve el id del local y err será null.
+     */
+    getIdLocal(ofertaId, callback) {
+        const statement = `SELECT LocalId FROM Ofertas WHERE UUID = '${ofertaId}';`;
+        const factory = function(row) {
+            return row.LocalId;
+        }
+        this.get(statement, factory, callback);
+    }
 }
 
 module.exports = OfertaTableGateway;

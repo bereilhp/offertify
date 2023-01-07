@@ -54,7 +54,7 @@ const ChatTableGateway = class ChatTableGateway extends TableGateway {
      * Función que recupera un todos los chats asociados a un Owner de la base de datos.
      *  
      * @param {string} ownerId Id del dueño al que pertenecen los chats
-     * @param {function(any | null, array<Chat> | null)} callback Callback ejecutado al cargar los chats. Si todo va bien, devuelve 
+     * @param {function(any | null, array<string> | null)} callback Callback ejecutado al cargar los chats. Si todo va bien, devuelve 
      * un chat y err será null.
      */
     loadChatIds(ownerId, callback) {
@@ -63,6 +63,21 @@ const ChatTableGateway = class ChatTableGateway extends TableGateway {
             return row.UUID;
         }
         this.all(statement, factory, callback);
+    }
+    
+    /**
+     * Función que recupera el Id de la reserva asociada al chat
+     *  
+     * @param {string} chatId Id del chat
+     * @param {function(any | null, string | null)} callback Callback ejecutado finalizar. Si todo va bien, devuelve 
+     * un id y err será null.
+     */
+    getIdReserva(chatId, callback) {
+        const statement = `SELECT IdReserva FROM Chats WHERE UUID = '${chatId}'`;
+        const factory = function(row) {
+            return row.IdReserva;
+        }
+        this.get(statement, factory, callback);
     }
 
     /**

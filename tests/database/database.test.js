@@ -80,7 +80,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     afterAll(() => {
-        //fs.unlinkSync('./test_database.db');
+        fs.unlinkSync('./test_database.db');
     });
 
     test('UserTableGateway tiene operación para insertar usuario', done => {
@@ -330,6 +330,34 @@ describe('Tests que requieren base de datos de pruebas', () => {
                     return;
                 } else {
                     expect(loadedChats[0]).toBe(chat.uuid);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
+
+    test('ChatTableGateway tiene operación para recuperar el Id de la reserva asociada al chat', done => {
+        const mockChatFactory = function(callback, uuid) {
+            let chat = new Chat(uuid);
+            callback(chat);
+        }
+        ChatTableGateway.__set__({ chatFactory: mockChatFactory });
+
+        const ownerId = '12R30awjf0wvj033867730jafoadfjjj12';
+        const userId = '128798465199920ajf0je0jfa6789012';
+        const reservaId = 'asjodfjeojoJ30j0afjajf0ajfjf0201';
+        const chatId = '33216530aj0fja0wej7e0gm40afj0aj4';
+        const chat = new Chat(chatId);
+
+        const ctg = new ChatTableGateway();
+        ctg.insertChat(chat.uuid, ownerId, userId, reservaId, () => {
+            ctg.getIdReserva(chatId, function(err, idReserva) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(idReserva).toBe(reservaId);
                     done();
                     return;
                 }

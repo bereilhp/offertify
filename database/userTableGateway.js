@@ -52,6 +52,33 @@ const UserTableGateway = class UserTableGateway extends TableGateway {
         });
     }
 
+    /**
+     * Función que carga un usuario de la base de datos usando su Id.
+     *  
+     * @param {string} userId Id del usuario
+     * @param {function(err, user)} callback Callback ejecutado al cargar el usuario. Si todo va bien, devuelve 
+     * un usuario y err será null.
+     */
+    loadUserFromId(userId, callback) {
+        const statement = `SELECT UUID, Hash, Rol, Nombre FROM Usuarios WHERE UUID = '${userId}'`;
+        let db = new sqlite3.Database(DB_PATH, () => {
+            db.serialize(() => {
+                db.get(statement, function(err, row) {
+                    if (err) {
+                        console.log(err);
+                        callback(err, null);
+                    } else {
+                        const userCreatedCallback = function(user) {
+                            callback(null, user);
+                        }
+                        userFactory(row.Nombre, row.Hash, row.Rol, userCreatedCallback, row.UUID);
+                    }
+                });
+            });
+            db.close();
+        });
+    }
+
     userExists(name, callback) {
         const statement = `SELECT COUNT(*) AS Usuario FROM Usuarios WHERE Nombre = '${name}'`;
         const userChecker = function(row) {

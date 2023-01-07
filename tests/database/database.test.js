@@ -120,6 +120,27 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
     
+    test('UserTableGateway tiene operación para recuperar Usuario por Id', done => {
+        const uuid = '1234567890130jaf0jv0ajv056789012';
+        const name = 'Usuario Z';
+        const hash = 0x01;
+        const user = new Client(uuid, name, hash);
+
+        const utg = new UserTableGateway();
+        utg.insertUser(user.uuid, user.name, user.hash, user.rol, () => {
+            utg.loadUserFromId(user.uuid, function(err, loadedUser) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(loadedUser.uuid).toBe(user.uuid);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
+
     test('UserTableGateway recupera Clientes para rol user', done => {
         const uuid = '12345678901234567890123456789016';
         const name = 'Cliente 1';

@@ -7,6 +7,9 @@ const chatTableGateway = new ChatTableGateway();
 const ReservaTableGateway = require('../database/reservaTableGateway');
 const reservaTableGateway = new ReservaTableGateway();
 
+const UserTableGateway = require('../database/userTableGateway');
+const userTableGateway = new UserTableGateway();
+
 let pendingCallbacks = 0;
 let ownerChats = [];
 
@@ -24,6 +27,23 @@ router.get('/', function(req, res, next) {
       pendingCallbacks++;
       chatTableGateway.getIdReserva(id, function(err, idReserva) {
         // Cargamos la reserva asociada al id
+        pendingCallbacks++;
+        reservaTableGateway.loadReserva(idReserva, function(err, reserva) {
+          let chat = {};
+          chat.reserva.descripcion;
+
+          // Cargamos el nombre del usuario asociado a la reserva
+          pendingCallbacks++;
+          reservaTableGateway.getIdUsuario(idReserva, function(err, idUsuario) {
+            pendingCallbacks++;
+            userTableGateway
+            
+
+            pendingCallbacks--;
+          });
+
+          pendingCallbacks--;
+        });
 
         pendingCallbacks--;
       }); 

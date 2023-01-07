@@ -19,7 +19,7 @@ const ChatTableGateway = class ChatTableGateway extends TableGateway {
      * @param {function(any | null)} callback Callback ejecutado al finalizar la inserción. Devuelve el chat insertado
      */
     insertChat(chatId, ownerId, userId, reservaId, callback) {
-        const statement = `INSERT INTO Chats (UUID, UserId, OwnerId, IdReserva) VALUES ('${chatId}', '${ownerId}', '${userId}', '${reservaId}');`;
+        const statement = `INSERT INTO Chats (UUID, UserId, OwnerId, IdReserva) VALUES ('${chatId}', '${userId}', '${ownerId}', '${reservaId}');`;
         this.run(statement, callback);
     } 
 
@@ -48,6 +48,21 @@ const ChatTableGateway = class ChatTableGateway extends TableGateway {
             });
         });
         db.close();
+    }
+
+    /**
+     * Función que recupera un todos los chats asociados a un Owner de la base de datos.
+     *  
+     * @param {string} ownerId Id del dueño al que pertenecen los chats
+     * @param {function(any | null, array<Chat> | null)} callback Callback ejecutado al cargar los chats. Si todo va bien, devuelve 
+     * un chat y err será null.
+     */
+    loadChatIds(ownerId, callback) {
+        const statement = `SELECT UUID FROM Chats WHERE OwnerId = '${ownerId}'`;
+        const factory = function(row) {
+            return row.UUID;
+        }
+        this.all(statement, factory, callback);
     }
 
     /**

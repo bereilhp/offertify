@@ -7,6 +7,9 @@ const session = require('express-session');
 const http = require('http');
 const {Server} = require('socket.io');
 
+const MessageTableGateway = require('./database/messageTableGateway');
+const messageTableGateway = new MessageTableGateway();
+
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const exploradorRoutes = require('./routes/explorador_ofertas');
@@ -20,21 +23,23 @@ const interfazAdminRouter = require('./routes/interfaz_admin');
 const interfazEditarSitio = require('./routes/editarSitio');
 const historicoRouter = require("./routes/historico");
 const chatsRouter = require("./routes/chats");
-const chatRouter = require("./routes/chat");
+const { chatRouter, openChats } = require("./routes/chat");
 const ofertasActivasRouter = require("./routes/ofertasActivas");
+const { mensajeFactory } = require('./model/mensajes');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
 // Creamos una variable para los chats abiertos
-app.locals.openChats = new Set();
-
 io.on('connection', (socket) => {
   // Cuando se recibe un mensaje por un chat, se reenvía a todos los participantes
-  app.locals.openChats.forEach(chat => {
+  openChats.forEach(chat => {
     socket.on(chat.uuid, (msg) => {
-      // Reenviamos el mensaje a todos los usuarios conectados
+      // Creamos un mensaje
+      const mensaje = mensajeFactory(msg.sender, msg.message, null);
+
+      // Faltaría guardar en BBDD
       io.emit(chat.uuid, msg);
     });
   });

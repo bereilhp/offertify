@@ -1,6 +1,7 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  height: 100vh;
 }
 
 nav {
@@ -157,3 +158,19 @@ a {
   height: 100%;
 }
 
+div.message {
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    padding-left: 2vw;
+    padding-right: 2vw;
+    margin-bottom: 2vh;
+
+    border-style: solid;
+    border-width: 1px;
+}
+div.message > p {
+    margin: 0 !important;
+}
+div.message > p.sender {
+    font-weight: bold;
+}

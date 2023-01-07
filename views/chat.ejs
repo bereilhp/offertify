@@ -1,0 +1,84 @@
+<%- include("header", {}) %>
+
+<div class="container d-flex flex-column justify-content-center align-items-center h-75 mt-3">
+    <div class="w-75 h-100 rounded" style="background-color: white;">
+        <div class="ps-5 pt-3 pe-5">
+            <h1><%= title %></h1>
+            <hr>
+        </div>
+        <div id="chat" class="h-75 ps-5 pe-5 overflow-auto"></div>
+        <div class="ps-5 pe-5 pt-2 pb-1 mb-5 rounded" style="background-color: white;">
+            <form id="message-form">
+                <div class="mb-3 row">
+                    <div class="col-10">
+                        <input id="message-input" class="form-control" type="text" placeholder="Start typing...">
+                    </div>
+                    <div class="col-1">
+                        <button id="send-button" class="btn btn-primary" type="submit">Send</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    $('body').css('background-color', '#e4b637');
+
+    const socket = io();
+    const form = document.getElementById("message-form");
+    const input = document.getElementById("message-input");
+    const chat = document.getElementById("chat");
+
+    // Cuando se pulse el botón, se envía un mensaje
+    form.addEventListener("submit", function(e) {
+        // Evitamos que se propague el evento
+        e.preventDefault();
+
+        // Si hay texto en el mensaje, se envía
+        if (input.value) {
+            socket.emit("<%= chat.uuid %>", {sender: "<%= user.name %>", message: input.value});
+            input.value = "";
+        }
+    });
+
+    // Al recibir un mensaje del servidor, se añade al chat
+    socket.on("<%= chat.uuid %>", (msg) => {
+        createMessage(msg);
+    });
+
+    // Al inciar, añadimos todos los mensajes del chat
+    const chatForScript = JSON.parse('<%- chatForScript %>');
+    chatForScript.mensajes.forEach((mensaje) => {
+        msg.sender = mensaje.nombreUsuario;
+        msg.message = mensaje.texto;
+
+        createMessage(msg);
+    });
+
+    function createMessage(msg) {
+        // Añadimos un div con el mensaje
+        const div = document.createElement("div");
+        div.classList.add("message");
+        div.classList.add("rounded");
+
+        const p_sender = document.createElement("p");
+        p_sender.classList.add("sender");
+        p_sender.textContent = msg.sender;
+
+        const p_message = document.createElement("p");
+        p_message.classList.add("content");
+        p_message.textContent = msg.message;
+
+        div.appendChild(p_sender);
+        div.appendChild(p_message);
+
+        chat.appendChild(div);
+
+        // Hacemos scroll al final del div
+        chat.scrollTo(0, chat.scrollHeight);
+    }
+</script>
+
+<%- include("footer", {}) %>

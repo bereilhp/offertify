@@ -13,6 +13,9 @@ const localTableGateway = new LocalTableGateway();
 const UserTableGateway = require('../database/userTableGateway');
 const userTableGateway = new UserTableGateway();
 
+const ChatTableGateway = require('../database/chatTableGateway');
+const chatTableGateway = new ChatTableGateway();
+
 let pendingCallbacks = 0;
 let reservasCargadas = [];
 
@@ -64,7 +67,6 @@ function waitForPendingCallbacks(req, res, next) {
       return;
     }, 0.1);
   } else {
-    console.log(reservasCargadas)
     res.render('misReservas', { title: 'Mis Reservas', reservas: reservasCargadas })
   }
 }
@@ -81,6 +83,16 @@ router.post('/cancelar', function(req, res, next) {
       res.redirect('/Reservas');
     });
   });  
+});
+
+/* POST /Reservas/Chat: Carga el chat asociado a la reserva */
+router.post('/chat', function(req, res, next) {
+  // Obtenemos el Id de la reserva
+  const idReserva = req.body.reserva; 
+  
+  // Cargamos el chat adecuado
+  req.session.idReserva = idReserva;
+  res.redirect('/chat');
 });
 
 module.exports = router;

@@ -8,12 +8,14 @@ let ResennaTableGateway = require('../database/resennaTableGateway');
 let LocalTableGateway = require('../database/localTableGateway');
 let ReservaTableGateway = require('../database/reservaTableGateway');
 let UserTableGateway = require('../database/userTableGateway');
+let ChatTableGateway = require('../database/chatTableGateway');
 console.log('imported')
 
 const { localFactory } = require('./locales');
 const { ofertaFactory } = require('./ofertas');
 const { resennaFactory } = require('./resennas');
 const { reservaFactory } = require('./reservas');
+const { chatFactory } = require('./chats');
 
 let testing = false;
 

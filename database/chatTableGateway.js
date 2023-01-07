@@ -1,6 +1,7 @@
 const path = require('path');
 const sqlite3 = require('sqlite3');
 const TableGateway = require("./tableGateway");
+let { chatFactory } = require('../model/chats');
 
 let DB_PATH = path.join(__dirname, 'database.db');
 
@@ -47,6 +48,21 @@ const ChatTableGateway = class ChatTableGateway extends TableGateway {
             });
         });
         db.close();
+    }
+
+    /**
+     * Función que comprueba si existe un chat en la base de datos, basándose en la `Reserva` a la que pertenece.
+     *  
+     * @param {string} reservaId Id de la reserva a la que pertenece el chat
+     * @param {function(any | null, Chat | null)} callback Callback ejecutado al finalizar la comprobaión. Si todo 
+     * va bien, devuelve `true` o `false` y err será null.
+     */
+    existsChat(reservaId, callback) {
+        const statement = `SELECT COUNT(*) AS count FROM Chats WHERE IdReserva = '${reservaId}'`;
+        const checkerCallback = function(row) {
+            return row.count == 1;
+        }
+        this.get(statement, checkerCallback, callback);
     }
 }
 

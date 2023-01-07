@@ -286,7 +286,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
             let chat = new Chat(uuid);
             callback(chat);
         }
-        database.__set__({ chatFactory: mockChatFactory });
+        ChatTableGateway.__set__({ chatFactory: mockChatFactory });
 
         const ownerId = '12338677901224867893123359789012';
         const userId = '12325677931224562893123336789012';
@@ -302,6 +302,34 @@ describe('Tests que requieren base de datos de pruebas', () => {
                     return;
                 } else {
                     expect(loadedChat.uuid).toBe(chat.uuid);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
+    
+    test('ChatTableGateway tiene operación para ver si existe un Chat', done => {
+        const mockChatFactory = function(callback, uuid) {
+            let chat = new Chat(uuid);
+            callback(chat);
+        }
+        ChatTableGateway.__set__({ chatFactory: mockChatFactory });
+
+        const ownerId = '123386779012230faj0sjf0va9789012';
+        const userId = '1232567730a0fja0v00bvn3336789012';
+        const reservaId = 'asjo30ja0jwf0snv0b0avjncn03f0201';
+        const chatId = '3309f9asdj30ja0jv0anv0n0ann20384';
+        const chat = new Chat(chatId);
+
+        const ctg = new ChatTableGateway();
+        ctg.insertChat(chat.uuid, ownerId, userId, reservaId, () => {
+            ctg.existsChat(reservaId, function(err, exists) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(exists).toBeTruthy();
                     done();
                     return;
                 }

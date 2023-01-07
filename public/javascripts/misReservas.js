@@ -1,7 +1,7 @@
 // Listener para botón chat
 $('#chat-btn').on('click', function(e) {
-    // TO DO
-    e.preventDefault();
+    // Obtenemos el formulario
+    $(this).parent().attr('action', '/Reservas/chat');
 });
 
 // Listener para botón cancelar

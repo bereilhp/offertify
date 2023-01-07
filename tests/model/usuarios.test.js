@@ -10,6 +10,7 @@ const LocalTableGateway = rewire('../../database/localTableGateway');
 const OfertaTableGateway = rewire('../../database/ofertaTableGateway');
 const ResennaTableGateway = rewire('../../database/resennaTableGateway');
 const ReservaTableGateway = rewire('../../database/reservaTableGateway');
+const ChatTableGateway = rewire('../../database/chatTableGateway');
 
 const usuarios = rewire('../../model/usuarios');
 usuarios.__set__({ testing: true });
@@ -147,6 +148,7 @@ describe('Tests que requieren Mock de BBDD', () => {
         
         UserTableGateway.__set__({ DB_PATH: DB_PATH });
         ReservaTableGateway.__set__({ DB_PATH: DB_PATH });
+        ChatTableGateway.__set__({ DB_PATH: DB_PATH });
         ResennaTableGateway.__set__({ DB_PATH: DB_PATH });
         OfertaTableGateway.__set__({ DB_PATH: DB_PATH });
         LocalTableGateway.__set__({ DB_PATH: DB_PATH });
@@ -321,6 +323,7 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('Client -> Cliente puede crear reservas', done => {
+        usuarios.__set__({ ReservaTableGateway: ReservaTableGateway })
         const user = new Client('if3fjwe0cqw', 'Cliente Prueba para Reservas 1', 0x01);
 
         const ofertaId = '080480fj20f02m30j02802380t82u0fj';

@@ -4,6 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
+const http = require('http');
+const {Server} = require('socket.io');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -18,9 +20,25 @@ const interfazAdminRouter = require('./routes/interfaz_admin');
 const interfazEditarSitio = require('./routes/editarSitio');
 const historicoRouter = require("./routes/historico");
 const chatsRouter = require("./routes/chats");
+const chatRouter = require("./routes/chat");
 const ofertasActivasRouter = require("./routes/ofertasActivas");
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+// Creamos una variable para los chats abiertos
+app.locals.openChats = new Set();
+
+io.on('connection', (socket) => {
+  // Cuando se recibe un mensaje por un chat, se reenvía a todos los participantes
+  app.locals.openChats.forEach(chat => {
+    socket.on(chat.uuid, (msg) => {
+      // Reenviamos el mensaje a todos los usuarios conectados
+      io.emit(chat.uuid, msg);
+    });
+  });
+});
 
 // Setup de la sesión
 app.use(session({
@@ -74,6 +92,7 @@ app.use('/interfaz_admin', interfazAdminRouter);
 app.use('/editarSitio', interfazEditarSitio);
 app.use("/historico", historicoRouter);
 app.use("/chats", chatsRouter);
+app.use("/chat", chatRouter);
 app.use("/ofertasActivas", ofertasActivasRouter);
 
 
@@ -93,4 +112,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+module.exports = { app, server };

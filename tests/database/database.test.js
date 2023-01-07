@@ -649,7 +649,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const localId = '300aj0j0asdv0n0en0ganb0ae0nc4gn2';
         const ofertaId = '3908faj0j0n0n0qh4ht9haf98h9ad012';
         const foto = 'http://url.foto.com/foto.png';
-        const precio = 10.4;
+        const precio = 13.4;
         const activa = 1;
         const descripcion = 'Oferta de Prueba 1';
         const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
@@ -870,6 +870,31 @@ describe('Tests que requieren base de datos de pruebas', () => {
                     return;
                 } else {
                     expect(idLocal).toEqual(localId);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
+    
+    test('OfertaTableGateway tiene operación para recuperar el Id del dueño asociado a una oferta', done => {
+        const ownerId = '4390fj0ajf00bn40nf30jfafj0env0nf';
+        const localId = '329020ffq30300ajf30ajf0ja0vn0n0bg';
+        const ofertaId = '48028r039ajf0ajv0an0n0fh';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const activa = 1;
+        const descripcion = 'Oferta de Prueba Y';
+        const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
+
+        const otg = new OfertaTableGateway();  
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {
+            otg.getIdOwner(ofertaId, function(err, idOwner) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(idOwner).toEqual(ownerId);
                     done();
                     return;
                 }

@@ -128,6 +128,21 @@ const OfertaTableGateway = class OfertaTableGateway extends TableGateway {
         }
         this.get(statement, factory, callback);
     }
+    
+    /**
+     * Función que recupera el Id del dueño asociado a una oferta
+     *  
+     * @param {string} ofertaId Id de la oferta
+     * @param {function(any | null, string | null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve el id del dueño y err será null.
+     */
+    getIdOwner(ofertaId, callback) {
+        const statement = `SELECT OwnerId FROM Ofertas WHERE UUID = '${ofertaId}';`;
+        const factory = function(row) {
+            return row.OwnerId;
+        }
+        this.get(statement, factory, callback);
+    }
 }
 
 module.exports = OfertaTableGateway;

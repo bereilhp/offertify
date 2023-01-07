@@ -57,6 +57,21 @@ const ReservaTableGateway = class ReservaTableGateway extends TableGateway {
     }
 
     /**
+     * Función que recupera el Id del usuario creador de la reserva.
+     *  
+     * @param {string} idReserva Id de la reserva.
+     * @param {function(any | null, array<Reserva>| null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve un string y err será null.
+     */
+    getIdUsuario(idReserva, callback) {
+        const statement = `SELECT UserId FROM Reservas WHERE UUID = '${idReserva}';`;
+        const factory = function(row) {
+            return row.UserId;
+        }
+        this.get(statement, factory, callback);
+    }
+
+    /**
      * Función que borra una reserva de la base de datos.
      * 
      * @param {string} idReserva Id de la reserva a borrar

@@ -496,6 +496,30 @@ describe('Tests que requieren base de datos de pruebas', () => {
         });
     });
 
+    test('ReservaTableGateway tiene operación para recuperar Id del usuario que la realizó', done => {
+        const userId = '1R23fdsdcasv23n233r398v8nvs0fn12';
+        const ofertaId = '9142-247901204567899123h84915412';
+        const reservaId = '38fji789459987466184591j32823fa2';
+        const telefono = 660800902;
+        const hora = '03:43';
+        const dia = '29/12/22';
+        const reserva = new Reserva(reservaId, hora, dia, telefono, ofertaId);
+
+        const rtg = new ReservaTableGateway();  
+        rtg.insertReserva(reserva.uuid, reserva.telefono, reserva.hora, reserva.dia, userId, reserva.idOferta, () => {
+            rtg.getIdUsuario(reservaId, function(err, idUsuario) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(idUsuario).toBe(userId);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
+
     test('ReservaTableGateway tiene operación para recuperar el ID de la Oferta Asociada', done => {
         const userId = '1R23fdsdcasv23n233r0fjwfnce0fn12';
         const ofertaId = 'fj20jf023fj02jf02jf03j0gn320gn12';

@@ -9,21 +9,36 @@
 
 
     <div class="content row w-100">
+        <div id="formularioReserva" class="d-none">
+            <form method="post" action="explorador_ofertas">
+                <div id="div-hora" class="mb-3">
+                    <label class="form-label" for="hora-input">Hora</label>
+                    <input id="hora-input" class="form-control" type="text" name="hora" required>
+                </div>
+                <div id="div-dia" class="mb-3">
+                    <label class="form-label" for="dia-input">Dia</label>
+                    <input id="dia-input" class="form-control" type="text" name="dia" required>
+                </div>
+                <div id="div-telefono" class="mb-3">
+                    <label class="form-label" for="telefono-input">Dia</label>
+                    <input id="telefono-input" class="form-control" type="text" name="telefono" required>
+                </div>
+                <button id="submit" type="submit" class="btn btn-primary" name="oferta" value="">reservar</button>
+            </form>
+        </div>
         <div id="div-ofertas" class="col-4">
             <div class="title d-flex flex-column align-items-center justify-content-center">
                 OFERTAS CERCANAS
             </div>
             
             <% ofertas.forEach((oferta) => { %>
-                <form method="post" action="explorador_ofertas">
-                    <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
-                        <h3><%= oferta.local %></h3>
-                        <p>Descripción: <%= oferta.descripcion %></p>
-                        <p>Precio: <%= oferta.precio %></p>
-                        <button class="btn btn-primary" name="<%= oferta.uuid %>">reservar</button>
-                        <img id="img_ofertas" src="<%= oferta.foto %>"  width="1%">
-                    </div>
-                </form>
+                <div  class="ofertas d-flex flex-column align-items-center justify-content-center">
+                    <h3><%= oferta.local %></h3>
+                    <p>Descripción: <%= oferta.descripcion %></p>
+                    <p>Precio: <%= oferta.precio %></p>
+                    <img id="img_ofertas" src="<%= oferta.foto %>"  width="1%">
+                    <button id="<%= oferta.uuid %>" class="btn btn-primary reservar-btn" >reservar</button>
+                </div>
             <%}); %>
         </div>
         <div id="div-mapa" class="col"><button onclick="generar_bar()">
@@ -32,6 +47,8 @@
             <div id="map"></div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="javascripts/explorador_ofertas.js"></script>
 
     <script>
         //Añadir mapa 

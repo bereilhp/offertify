@@ -751,7 +751,7 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
     
     test('OfertaTableGateway tiene operación para recuperar todas las ofertas asociadas a un local', done => {
-        const ownerId = '30jf0sj03n0vsn0n0gn0j03rewe0fjqf';
+        const ownerId = '4802f002bv02n0jc02n0j03rewe0fjqf';
         const localId = '329020ffq0w40h0t4hg0wnf02nv0230bg';
         const ofertaId = '48028r01f0n03g02nf02n0h0';
         const foto = 'http://url.foto.com/foto.png';

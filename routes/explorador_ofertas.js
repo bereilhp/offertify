@@ -67,7 +67,7 @@ router.post('/', function(req, res, next) {
   userTableGateway.loadUser(req.session.user.name, function(err, user) {
     user.hacerReserva(ofertaId, telefono, hora, dia, function(err) {
       req.session.user = user;
-      res.redirect('/misReservas');
+      res.redirect('/Reservas');
     });
   });
 });

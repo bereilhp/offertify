@@ -98,6 +98,21 @@ const OfertaTableGateway = class OfertaTableGateway extends TableGateway {
         }
         this.all(statement, factory, callback);
     }
+
+    /**
+     * Función que recupera una oferta a partir de su UUID 
+     *  
+     * @param {string} ofertaId Id de la oferta
+     * @param {function(any | null, Oferta | null)} callback Callback ejecutado al finalizar la carga. Si todo va bien, 
+     * devuelve una oferta y err será null.
+     */
+    loadOferta(ofertaId, callback) {
+        const statement = `SELECT UUID, Precio, Descripcion, Foto, Activa FROM Ofertas WHERE UUID = '${ofertaId}';`;
+        const factory = function(row) {
+            return ofertaFactory(row.Foto, row.Precio, row.Activa, row.Descripcion, row.UUID);
+        }
+        this.get(statement, factory, callback);
+    }
 }
 
 module.exports = OfertaTableGateway;

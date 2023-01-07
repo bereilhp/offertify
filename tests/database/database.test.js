@@ -593,9 +593,9 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('OfertaTableGateway tiene operación para actualizar oferta', done => {
-        const ownerId = 'f9aefj30jfawnv0n7890123456789012';
-        const localId = 'fjowfjoawevno43nbn340qfj0q4j4gn2';
-        const ofertaId = 'fjasdfj03jf4n03n0bn0wnvh56789012';
+        const ownerId = '300jf0fajs0gn04gn090123456789012';
+        const localId = '300aj0j0asdv0n0en0ganb0ae0nc4gn2';
+        const ofertaId = '3908faj0j0n0n0qh4ht9haf98h9ad012';
         const foto = 'http://url.foto.com/foto.png';
         const precio = 10.4;
         const activa = 1;
@@ -768,6 +768,31 @@ describe('Tests que requieren base de datos de pruebas', () => {
                     return;
                 } else {
                     expect(ofertasList).toContainEqual(oferta);
+                    done();
+                    return;
+                }
+            });
+        });
+    });
+    
+    test('OfertaTableGateway tiene operación para recuperar una oferta a partir de su Id', done => {
+        const ownerId = '4802f002bv02n0jc30f0jf0j0jd0fjqf';
+        const localId = '329020ffq30f0sja0je0jf032nv0230bg';
+        const ofertaId = '48028r0130fsa0j0j0g2n0h0';
+        const foto = 'http://url.foto.com/foto.png';
+        const precio = 10.4;
+        const activa = 1;
+        const descripcion = 'Oferta de Prueba X';
+        const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
+
+        const otg = new OfertaTableGateway();  
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {
+            otg.loadOferta(ofertaId, function(err, ofertaCargada) {
+                if (err) {
+                    done(err);
+                    return;
+                } else {
+                    expect(ofertaCargada.uuid).toEqual(oferta.uuid);
                     done();
                     return;
                 }

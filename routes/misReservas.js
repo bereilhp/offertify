@@ -102,9 +102,16 @@ router.post('/cancelar', function(req, res, next) {
     user.cancelarReserva(idReserva, function(err) {
       if (err) {
         req.session.error = 'Error 500: Internal Server Error';
+        req.redirect('/Reservas');
       }
-      req.session.user = user;
-      res.redirect('/Reservas');
+      // Tras cancelar la reserva, se elimina el chat asociado de la base de datos
+      chatTableGateway.deleteChat(idReserva, function(err) {
+        if (err) {
+          req.session.error = 'Error 500: Internal Server Error';
+        }
+        req.session.user = user;
+        res.redirect('/Reservas');
+      });
     });
   });  
 });

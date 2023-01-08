@@ -54,6 +54,7 @@ describe('Tests que requieren Mock de BBDD', () => {
         });
         
         MessageTableGateway.__set__({ DB_PATH: DB_PATH });
+        chats.__set__({ MessageTableGateway: MessageTableGateway });
     });
 
     afterAll(() => {
@@ -61,6 +62,7 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
     
     test('chatFactory() crea Chats', done => {
+        chats.__set__({ MessageTableGateway: MessageTableGateway });
         const callback = function(chat) {
             expect(chat).toBeInstanceOf(Chat);
 
@@ -71,6 +73,7 @@ describe('Tests que requieren Mock de BBDD', () => {
     });
 
     test('chatFactory() crea uuids diferentes para cada chat', done => {
+        chats.__set__({ MessageTableGateway: MessageTableGateway });
         chatFactory(function(chat_1) {
             chatFactory(function(chat_2) {
                 expect(chat_1.uuid).not.toEqual(chat_2.uuid);
@@ -82,6 +85,7 @@ describe('Tests que requieren Mock de BBDD', () => {
     });    
 
     test('chatFactory crea uuid sólo si no se especifica', done => {
+        chats.__set__({ MessageTableGateway: MessageTableGateway });
         const callback = function(chat) {
             expect(chat.uuid).toBe('id');
 
@@ -95,13 +99,13 @@ describe('Tests que requieren Mock de BBDD', () => {
        // Creamos mensaje de prueba
         chats.__set__({ MessageTableGateway: MessageTableGateway });
 
-        const senderUuid = '12345678234234567890123456789013';
+        const senderUuid = '130fa0wjf0aw04n0n3q0ng0q3n089013';
         const senderName = 'Message Sender 1';
         const senderHash = 0x02;
         const sender = new Owner(senderUuid, senderName, senderHash);
 
-        const chatId = '30fjw0jf0340gnq0ecmwe0ng043gnhfn';
-        const messageId = 'f0ajc03ng0mv03nb034nb0335w789-12';
+        const chatId = '3030fja0wj0anv0an0nwe0ng043gnhfn';
+        const messageId = 'f0ajc03ng030ja0jf0anv0n35w789-12';
         const texto = 'Mensaje de Prueba';
         const timestamp = null
         const message = new Mensaje(messageId, sender, texto, timestamp);

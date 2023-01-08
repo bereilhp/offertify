@@ -260,14 +260,14 @@ describe('Tests que requieren Mock de BBDD', () => {
         const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
 
         const otg = new OfertaTableGateway();
-        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {
+            admin.borrarOferta(oferta.uuid, function(err) {
+                otg.loadOfertas(ownerId, function(err, listaOfertas) {
+                    expect(listaOfertas).toEqual([]);
 
-        admin.borrarOferta(oferta.uuid, function(err) {
-            otg.loadOfertas(ownerId, function(err, listaOfertas) {
-                expect(listaOfertas).toEqual([]);
-
-                done();
-                return;
+                    done();
+                    return;
+                });
             });
         });
     });
@@ -284,13 +284,13 @@ describe('Tests que requieren Mock de BBDD', () => {
         const resenna = new Resenna(resennaId, descripcion);
 
         const rtg = new ResennaTableGateway();  
-        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {});
-        
-        admin.borrarResenna(resenna.uuid, function(err) {
-            expect(err).toBeNull();
+        rtg.insertResenna(resenna.uuid, resenna.descripcion, userId, ofertaId, () => {
+            admin.borrarResenna(resenna.uuid, function(err) {
+                expect(err).toBeNull();
 
-            done();
-            return;
+                done();
+                return;
+            });
         });
     });
 
@@ -837,26 +837,26 @@ describe('Tests que requieren Mock de BBDD', () => {
         const local = new Local(localId, nombre, calle, codigoPostal, logo);
 
         const ltg = new LocalTableGateway();
-        ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, ownerId, () => {});
+        ltg.insertVenue(local.uuid, local.nombre, local.calle, local.codigoPostal, local.logo, ownerId, () => {
+            // Creamos e insertamos una oferta de prueba en la base de datos
+            const ofertaId = '3020jf0qdm03ng0nv0nv02nh56789012';
+            const foto = 'http://url.foto.com/foto.png';
+            const precio = 10.4;
+            const activa = 1;
+            const descripcion = 'Oferta de Prueba 1';
+            const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
 
-        // Creamos e insertamos una oferta de prueba en la base de datos
-        const ofertaId = '3020jf0qdm03ng0nv0nv02nh56789012';
-        const foto = 'http://url.foto.com/foto.png';
-        const precio = 10.4;
-        const activa = 1;
-        const descripcion = 'Oferta de Prueba 1';
-        const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
+            const otg = new OfertaTableGateway();  
+            otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {
+                const callback = function(owner) {
+                    expect(owner.ofertas).toEqual([oferta]);
+                    
+                    done();
+                    return;
+                }
 
-        const otg = new OfertaTableGateway();  
-        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
-
-        const callback = function(owner) {
-            expect(owner.ofertas).toEqual([oferta]);
-            
-            done();
-            return;
-        }
-
-        userFactory(name, hash, 'owner', callback, ownerId);
+                userFactory(name, hash, 'owner', callback, ownerId);
+            });
+        });
     });
 });

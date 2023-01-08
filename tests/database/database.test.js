@@ -764,9 +764,9 @@ describe('Tests que requieren base de datos de pruebas', () => {
     });
 
     test('OfertaTableGateway tiene operación para actualizar oferta', done => {
-        const ownerId = '300jf0fajs0gn04gn090123456789012';
-        const localId = '300aj0j0asdv0n0en0ganb0ae0nc4gn2';
-        const ofertaId = '3908faj0j0n0n0qh4ht9haf98h9ad012';
+        const ownerId = 'alsdfjoejaosvongn090123456789012';
+        const localId = '300aj0j0asdv00afjs0dc0an0nnc4gn2';
+        const ofertaId = '3908faj0j0n0n0qh4ht30j300aj0j002';
         const foto = 'http://url.foto.com/foto.png';
         const precio = 13.4;
         const activa = 1;
@@ -774,15 +774,15 @@ describe('Tests que requieren base de datos de pruebas', () => {
         const oferta = new Oferta(ofertaId, foto, precio, activa, descripcion);
 
         const otg = new OfertaTableGateway();  
-        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {});
+        otg.insertOferta(oferta.uuid, oferta.precio, oferta.descripcion, oferta.foto, oferta.activa, ownerId, localId, () => {
+            const newPrice = 11.9;
+            otg.updateOferta(oferta.uuid, newPrice, oferta.descripcion, oferta.foto, oferta.activa, function(err) {
+                otg.loadOfertas(ownerId, function(err, listaOfertas) {
+                    expect(listaOfertas[0].precio).toBe(newPrice);
 
-        const newPrice = 11.9;
-        otg.updateOferta(oferta.uuid, newPrice, oferta.descripcion, oferta.foto, oferta.activa, function(err) {
-            otg.loadOfertas(ownerId, function(err, listaOfertas) {
-                expect(listaOfertas[0].precio).toBe(newPrice);
-
-                done();
-                return;
+                    done();
+                    return;
+                });
             });
         });
     });
